@@ -1,0 +1,26 @@
+{
+   libreadline
+   Memcheck:Leak
+   #match-leak-kinds: all
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/*
+   ...
+   #fun:readline
+   #...
+}
+
+#{
+#   libreadline-full
+#   Memcheck:Leak
+#   match-leak-kinds: reachable
+#   fun:malloc
+#   fun:xmalloc
+#   fun:rl_make_bare_keymap
+#   fun:rl_generic_bind
+#   fun:rl_parse_and_bind
+#   obj:/usr/lib/x86_64-linux-gnu/libreadline.so.8.1
+#   fun:rl_initialize
+#   fun:readline
+#   fun:main
+#}
