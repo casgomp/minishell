@@ -6,7 +6,7 @@
 /*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 14:31:22 by raphha           ###   ########.fr       */
+/*   Updated: 2025/09/12 15:18:45 by raphha           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef struct s_splitparams
 	char		activeq;
 }	t_splprms;
 
-void	rmquotes_expand(char *const qutdstr,
+void	ft_rmquotes_expand(char *const qutdstr,
 			char const *const q, char const esc);
 
 #endif

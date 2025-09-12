@@ -6,7 +6,7 @@
 /*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 14:31:46 by raphha           ###   ########.fr       */
+/*   Updated: 2025/09/12 15:18:45 by raphha           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static char	**transform_list(t_splprms *const ptsp, char const *const s,
 		if (!splt[idx])
 			return (cleanup(ptsp), (char **) NULL);
 		if (rmq)
-			rmquotes_expand(splt[idx], q, '\\');
+			ft_rmquotes_expand(splt[idx], q, '\\');
 		++idx;
 		ptsp->tsl = ptsp->tsl->next;
 	}
