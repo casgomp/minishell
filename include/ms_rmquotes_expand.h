@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split_quotes.h                                  :+:      :+:    :+:   */
+/*   ms_rmquotes_expand.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 15:18:45 by raphha           ###   ########.fr       */
+/*   Updated: 2025/09/13 15:32:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_SPLIT_QUOTES_H
 # define FT_SPLIT_QUOTES_H
 
-void	ft_rmquotes_expand(char *const qutdstr,
+void	ms_rmquotes_expand(char *const qutdstr,
 			char const *const q, char const esc);
 
 #endif
