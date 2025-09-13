@@ -1,3 +1,3 @@
-#Ideas
+# Ideas
 
 Open minishell inside minishell
