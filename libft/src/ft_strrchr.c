@@ -3,29 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 11:23:52 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/16 16:21:21 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:02:28 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:02:30 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_string.h"
 
 char	*ft_strrchr(const char *s, int c)
 {
-	char	ch;
-	char	*sc;
+	int	i;
 
-	ch = (char)c;
-	sc = (char *) NULL;
-	while (*s)
+	i = 0;
+	while (s[i])
 	{
-		if ((*s) == ch)
-			sc = (char *)s;
-		++s;
+		i ++;
 	}
-	if (ch == '\0')
-		sc = (char *)s;
-	return (sc);
+	if (c == '\0')
+	{
+		return ((char *)s + i);
+	}
+	while (i >= 0)
+	{
+		if (s[i] == (char)c)
+		{
+			return ((char *)s + i);
+		}
+		i --;
+	}
+	return (NULL);
 }

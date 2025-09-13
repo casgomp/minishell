@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isascii.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 21:07:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/09 22:55:43 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:57:26 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:57:29 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_ctype.h"
 
 int	ft_isascii(int c)
 {
-	return (0 <= c && c <= 127);
+	if (c >= 0 && c <= 127)
+	{
+		return (1);
+	}
+	return (0);
 }

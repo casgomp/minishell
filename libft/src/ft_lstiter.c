@@ -1,22 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstiter_bonus.c                                 :+:      :+:    :+:   */
+/*   ft_lstiter.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 16:52:41 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:16:14 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:55:33 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:55:35 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
+#include "ft_linked_list.h"
 
 void	ft_lstiter(t_list *lst, void (*f)(void *))
 {
-	while (lst)
+	t_list	*current;
+
+	current = lst;
+	while (current != NULL)
 	{
-		(*f)(lst->content);
-		lst = lst->next;
+		f(current->content);
+		current = current->next;
 	}
 }

@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isalpha.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 11:38:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/09 22:55:26 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:57:19 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:57:21 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_ctype.h"
 
 int	ft_isalpha(int c)
 {
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+	{
+		return (1);
+	}
+	return (0);
 }

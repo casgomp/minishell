@@ -3,78 +3,85 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/07/02 15:43:52 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:59:57 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:00:00 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "ft_printf.h"
 
-#include "libft.h"
-#include "rh_fmtconv_std.h"
-#include "rh_fmtconv_xtra.h"
-#include "rh_fmtspec.h"
-#include "rh_write.h"
-
-#include <stdarg.h>
-#include <stdlib.h>
-
-static int	rh_print_fmtstr(t_bytecount *const bcp, const char **pfmt);
-static int	rh_print_arg(t_bytecount *const bcp, const char **pfmt,
-				va_list *valst);
-
-int	ft_printf(const char *fmt, ...)
+static int	ft_is_converter(char c)
 {
-	va_list		valst;
-	t_bytecount	bc;
+	size_t	i;
+	char	*str;
 
-	bc = (t_bytecount){0, 0};
-	va_start(valst, fmt);
-	while (*fmt)
+	str = "cspdiuxX";
+	i = 0;
+	while (str[i])
 	{
-		if (!rh_print_fmtstr(&bc, &fmt))
-			return (bc.total);
-		if ((*fmt) && (*fmt) == '%')
-			if (!rh_print_arg(&bc, &fmt, &valst))
-				return (bc.total);
+		if (str[i] == c)
+		{
+			return (1);
+		}
+		i ++;
 	}
-	va_end(valst);
-	return (bc.total);
+	return (0);
 }
 
-static int	rh_print_fmtstr(t_bytecount *const bcp, const char **pfmt)
+static void	ft_convert(char converter, va_list *ap, int *count_chars)
 {
-	const char *const	startpos = *pfmt;
-	size_t				outstrlen;
+	int	flag;
 
-	while ((**pfmt) && (**pfmt) != '%')
-		++(*pfmt);
-	outstrlen = (*pfmt) - startpos;
-	return (try_write(bcp, startpos, outstrlen));
+	if (converter == 'c')
+		flag = ft_putchar_prnt(va_arg(*ap, int), count_chars);
+	else if (converter == 's')
+		flag = ft_putstr_prnt(va_arg(*ap, char *), count_chars);
+	else if (converter == 'p')
+		flag = ft_putnbr_base_prnt_address_pre((uintptr_t)va_arg(*ap, void *), 
+				count_chars, 1, 1);
+	else if (converter == 'd' || converter == 'i')
+		flag = ft_putnbr_base_prnt(va_arg(*ap, int), count_chars, "0123456789");
+	else if (converter == 'u')
+		flag = ft_putnbr_base_prnt_address(va_arg(*ap, unsigned int), 
+				count_chars, "0123456789");
+	else if (converter == 'x')
+		flag = ft_putnbr_base_prnt_address(va_arg(*ap, unsigned int), 
+				count_chars, "0123456789abcdef");
+	else if (converter == 'X')
+		flag = ft_putnbr_base_prnt_address(va_arg(*ap, unsigned int),
+				count_chars, "0123456789ABCDEF");
+	else
+		flag = 0;
+	if (flag == -1)
+		(*count_chars) = -1;
 }
 
-static int	rh_print_arg(t_bytecount *const bcp, const char **pfmt,
-				va_list *valst)
+int	ft_printf(const char *format, ...)
 {
-	t_fmtspec	fmtspec;
+	va_list	ap;
+	int		count_chars;
+	size_t	i;
 
-	rh_set_formatspec(pfmt, &fmtspec);
-	if (!fmtspec.is_valid)
-		bcp->lastwrite = (rh_convspec_invalidfs(&fmtspec));
-	else if (fmtspec.convspec == 'c')
-		bcp->lastwrite = (rh_convspec_c(valst, &fmtspec));
-	else if (fmtspec.convspec == 's')
-		bcp->lastwrite = (rh_convspec_s(valst, &fmtspec));
-	else if (fmtspec.convspec == 'p')
-		bcp->lastwrite = (rh_convspec_p(valst, &fmtspec));
-	else if (ft_strchr("diu", fmtspec.convspec))
-		bcp->lastwrite = (rh_convspec_diu(valst, &fmtspec));
-	else if (ft_tolower(fmtspec.convspec) == 'x')
-		bcp->lastwrite = (rh_convspec_x(valst, &fmtspec));
-	else if (fmtspec.convspec == '%')
-		bcp->lastwrite = (rh_convspec_percent());
-	bytecount_eval(bcp);
-	return (0 <= bcp->total);
+	if (format == NULL)
+		return ('\0');
+	va_start(ap, format);
+	count_chars = 0;
+	i = 0;
+	while (format[i])
+	{
+		if (format[i] == '%' && ft_is_converter(format[i + 1]) == 1)
+		{
+			ft_convert(format[i + 1], &ap, &count_chars);
+			if (count_chars == -1)
+				return (count_chars);
+			i += 2;
+		}
+		if (format[i] == '%' && format[i + 1] == '%')
+			i ++;
+		if (!(format[i] == '\0'))
+			ft_putchar_prnt(format[i++], &count_chars);
+	}
+	va_end(ap);
+	return (count_chars);
 }

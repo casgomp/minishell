@@ -3,28 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 11:30:12 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/20 09:49:51 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:03:31 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:03:33 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_memory.h"
 
 int	ft_memcmp(const void *s1, const void *s2, size_t n)
 {
-	const unsigned char	*sc1;
-	const unsigned char	*sc2;
+	size_t			i;
+	unsigned char	*x;
+	unsigned char	*y;	
 
-	if (n == 0)
-		return (0);
-	sc1 = (const unsigned char *)s1;
-	sc2 = (const unsigned char *)s2;
-	while ((*sc1 == *sc2) && --n)
+	x = (unsigned char *)s1;
+	y = (unsigned char *)s2;
+	i = 0;
+	while (i < n)
 	{
-		++sc1;
-		++sc2;
+		if (x[i] != y[i])
+		{
+			return (x[i] - y[i]);
+		}
+		i ++;
 	}
-	return (((*sc1) - (*sc2)));
+	return (0);
 }

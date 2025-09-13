@@ -3,26 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 22:08:14 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 19:45:53 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:03:47 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:03:49 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_memory.h"
 
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	unsigned char		*local_dest;
-	const unsigned char	*local_src;
+	size_t	i;
 
-	if (dest || src)
+	i = 0;
+	if (dest == src || n == 0)
 	{
-		local_dest = dest;
-		local_src = src;
-		while (n--)
-			*(local_dest++) = *(local_src++);
+		return (dest);
+	}
+	while (i < n)
+	{
+		((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+		i ++;
 	}
 	return (dest);
 }

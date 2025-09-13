@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
+/*   ft_lstadd_back.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 16:20:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:07:52 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:55:02 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:55:06 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
+#include "ft_linked_list.h"
 
 void	ft_lstadd_back(t_list **lst, t_list *new)
 {
-	t_list	*llst;
+	t_list	*current;
 
-	if (lst && new)
+	if (new == NULL)
 	{
-		llst = ft_lstlast(*lst);
-		if (llst)
-			llst->next = new;
-		else
-			(*lst) = new;
+		return ;
 	}
+	if (*lst == NULL)
+	{
+		*lst = new;
+		return ;
+	}
+	current = *lst;
+	while (current->next != NULL)
+	{
+		current = current->next;
+	}
+	current->next = new;
 }

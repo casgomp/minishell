@@ -3,30 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/11 11:23:49 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/20 14:42:57 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:06:43 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:06:45 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <limits.h>
-#include <unistd.h>
+#include "ft_fd.h"
 
 void	ft_putnbr_fd(int n, int fd)
 {
-	unsigned int	ui;
-	char			d;
+	char	c;
 
-	ui = (unsigned int)n;
+	if (n == -2147483648)
+	{
+		write(fd, "-2147483648", 11);
+		return ;
+	}
 	if (n < 0)
 	{
-		if (n > INT_MIN)
-			ui = -n;
 		write(fd, "-", 1);
+		n = -n;
 	}
-	if (ui >= 10)
-		ft_putnbr_fd(ui / 10, fd);
-	d = (char)(ui % 10 + '0');
-	write(fd, &d, 1);
+	if (n > 9)
+	{
+		ft_putnbr_fd(n / 10, fd);
+	}
+	c = n % 10 + '0';
+	write(fd, &c, 1);
 }

@@ -3,23 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_tolower.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 10:52:44 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:19:27 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:59:24 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:59:26 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_ctype.h"
 
 int	ft_tolower(int c)
 {
-	int		delta;
-	char	ch;
-
-	ch = (char)c;
-	if (('A' <= ch) && (ch <= 'Z'))
+	if (c >= 'A' && c <= 'Z')
 	{
-		delta = 'a' - 'A';
-		c += delta;
+		return (c + ('a' - 'A'));
 	}
 	return (c);
 }

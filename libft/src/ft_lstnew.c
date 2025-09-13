@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
+/*   ft_lstnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 15:46:27 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:16:25 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:56:35 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:56:37 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
-#include <stdlib.h>
+#include "ft_linked_list.h"
 
 t_list	*ft_lstnew(void *content)
 {
-	t_list	*lst;
+	t_list	*node;
 
-	lst = (t_list *)malloc(sizeof(t_list));
-	if (lst)
+	node = malloc(sizeof(t_list));
+	if (!node)
 	{
-		lst->content = content;
-		lst->next = (t_list *) NULL;
+		return (NULL);
 	}
-	return (lst);
+	node->content = content;
+	node->next = NULL;
+	return (node);
 }

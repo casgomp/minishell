@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_front_bonus.c                            :+:      :+:    :+:   */
+/*   ft_lstadd_front.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 16:07:35 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:15:18 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:56:07 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:56:09 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
+#include "ft_linked_list.h"
 
 void	ft_lstadd_front(t_list **lst, t_list *new)
 {
-	new->next = (*lst);
-	(*lst) = new;
+	new->next = *lst;
+	*lst = new;
 }

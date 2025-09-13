@@ -3,68 +3,101 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 21:08:22 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/04 17:36:41 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:05:03 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:05:06 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_alloc.h"
+#include "ft_string.h"
 
-#include "libft.h"
-#include <stdlib.h>
-
-static size_t	section_count(char const *s, const char c)
+static size_t	ft_count_words(char const *s, char c)
 {
-	size_t	cnt;
+	size_t	words;
+	int		i;
 
-	cnt = 0;
-	while (*s)
+	words = 0;
+	i = 0;
+	while (s[i])
 	{
-		if (*s && c != *s)
-			++cnt;
-		while (*s && c != *s)
-			++s;
-		while (*s && c == *s)
-			++s;
+		while (s[i] == c)
+		{
+			i ++;
+		}
+		if (s[i] && s[i] != c)
+		{
+			words ++;
+		}
+		while (s[i] && s[i] != c)
+		{
+			i ++;
+		}
 	}
-	return (cnt);
+	return (words);
 }
 
-static char	**cleanup_strarr(char **split, size_t failidx)
+static size_t	ft_len(char *start, char c)
 {
-	size_t	idx;
+	size_t	len;
 
-	idx = 0;
-	while (idx < failidx)
+	len = 0;
+	while (*start && *start == c)
 	{
-		free(split[idx]);
-		++idx;
+		start ++;
 	}
-	free(split);
-	return ((char **) NULL);
+	while (*start && *start != c)
+	{
+		start ++;
+		len ++;
+	}
+	return (len);
+}
+
+static int	ft_alloc_protect(char **arr, char *t, char c, size_t words)
+{
+	int		i;
+	size_t	len;
+
+	i = 0;
+	while (i < (int)words)
+	{
+		while (*t && *t == c)
+			t ++;
+		len = ft_len(t, c);
+		arr[i] = ft_substr(t, 0, len);
+		if (!arr[i])
+		{
+			i --;
+			while (i >= 0)
+				free(arr[i--]);
+			free(arr);
+			arr = (NULL);
+			return (-1);
+		}
+		t += len;
+		i ++;
+	}
+	arr[i] = NULL;
+	return (0);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	char			**split;
-	char			*sub;
-	const size_t	subs = section_count(s, c);
-	size_t			idx;
+	int		fail;
+	char	**arr;
+	char	*t;
+	size_t	words;
 
-	split = (char **)malloc((subs + 1) * sizeof(char *));
-	if (!split)
-		return ((char **) NULL);
-	split[subs] = (char *) NULL;
-	idx = 0;
-	while (idx < subs)
-	{
-		while (*s == c)
-			++s;
-		sub = ft_substr(s, 0, (ft_strchr(s, c) - s));
-		if (!sub)
-			return (cleanup_strarr(split, idx));
-		split[idx++] = sub;
-		s += ft_strlen(sub) + 1;
-	}
-	return (split);
+	if (!s)
+		return (NULL);
+	words = ft_count_words(s, c);
+	arr = malloc(sizeof(char *) * (words + 1));
+	if (!arr)
+		return (NULL);
+	t = (char *)s;
+	fail = ft_alloc_protect(arr, t, c, words);
+	if (fail)
+		return (NULL);
+	return (arr);
 }

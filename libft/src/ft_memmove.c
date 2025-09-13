@@ -3,30 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 22:19:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 19:46:06 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:03:59 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:04:01 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
-#include <stddef.h>
+#include "ft_memory.h"
 
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
-	unsigned char		*local_dest;
-	const unsigned char	*local_src;
+	size_t			i;
 
-	if (dest || src)
+	if (dest == src || n == 0)
+		return (dest);
+	if ((unsigned char *)dest < (unsigned char *)src)
 	{
-		local_dest = dest;
-		local_src = src;
-		if (local_dest < local_src)
-			ft_memcpy(dest, src, n);
-		else if (local_dest > local_src)
-			while (n--)
-				*(local_dest + n) = *(local_src + n);
+		i = 0;
+		while (i < n)
+		{
+			((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+			i ++;
+		}
+	}
+	else
+	{
+		i = n;
+		while (i > 0)
+		{
+			((unsigned char *)dest)[i - 1] = ((unsigned char *)src)[i - 1];
+			i --;
+		}
 	}
 	return (dest);
 }
