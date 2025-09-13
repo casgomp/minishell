@@ -10,10 +10,9 @@ MKDIR           := mkdir -p
 
 # === DIRECTORIES ===
 # Object file directories
-OBJ_DIR_MAND    := obj/mandatory
-OBJ_DIR_BONUS   := obj/bonus
+OBJ_DIR    := obj
 # Library & Include directories
-LIBFT_DIR       := libft
+#LIBFT_DIR       := libft
 INC_DIR         := include
 # Source directories for vpath
 SRC_DIRS        := src
@@ -23,8 +22,7 @@ SRC_DIRS        := src
 
 # === FLAGS ===
 CFLAGS          := -Wall -Wextra -Werror -g3 -O0 -MD
-## CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/$(INC_DIR)
-CPPFLAGS        := -I$(INC_DIR)
+CPPFLAGS        := -I$(INC_DIR)  # -I$(LIBFT_DIR)/$(INC_DIR)
 ## LDFLAGS         := -L$(LIBFT_DIR)
 ## LDLIBS          := -lft
 ## BONUS_FLAG      := -DBONUS_PART=1
@@ -61,7 +59,6 @@ MANDATORY_SRCS	:= \
 	ft_strtrim.c \
 	ft_split.c \
 	ft_split_quotes.c \
-	ft_remove_quotes.c \
 	ft_itoa.c \
 	ft_itoa_base.c \
 	ft_strmapi.c \
@@ -100,11 +97,10 @@ MANDATORY_SRCS	+= \
 
 # === OBJECT FILES ===
 # Create separate object lists for each target
-OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(MANDATORY_SRCS:.c=.o))
-OBJS_BONUS      := $(addprefix $(OBJ_DIR_BONUS)/, $(BONUS_SRCS:.c=.o))
+OBJS  := $(addprefix $(OBJ_DIR)/, $(MANDATORY_SRCS:.c=.o))
 
 # Dependency files for header changes
-DEPS            := $(OBJS_MANDATORY:.o=.d) $(OBJS_BONUS:.o=.d)
+DEPS            := $(OBJS:.o=.d) $(OBJS_BONUS:.o=.d)
 
 # --- COLORS ---
 GREEN           := \033[0;32m
@@ -114,33 +110,22 @@ RESET           := \033[0m
 
 # === MAIN RULES ===
 ## .DEFAULT_GOAL   := all
-all: mandatory
+all: $(NAME)
 
 -include $(DEPS)
 
 # --- TARGETS ---
-mandatory: $(NAME)
 
-$(NAME): $(OBJS_MANDATORY)
+$(NAME): $(OBJS)
 	@printf "$(BLUE_BOLD)Linking MANDATORY library:$(RESET) $(NAME)\n"
-	@$(AR) $(NAME) $(OBJS_MANDATORY)
+	@$(AR) $(NAME) $(OBJS)
 	@printf "$(GREEN)✓ Mandatory project '$(NAME)' created successfully!$(RESET)\n"
 
-bonus: $(OBJS_MANDATORY) $(OBJS_BONUS)
-	@printf "$(BLUE_BOLD)Linking BONUS library:$(RESET) $(NAME)\n"
-	@$(AR) $(NAME) $(OBJS_BONUS)
-	@printf "$(GREEN)✓ Bonus project '$(NAME)' created successfully!$(RESET)\n"
-
 # --- COMPILATION RULES ---
-$(OBJ_DIR_MAND)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	@$(MKDIR) -p $(@D)
 	@printf "$(YELLOW)Compiling '$(NAME)' [MANDATORY]:$(RESET) $<\n"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
-
-$(OBJ_DIR_BONUS)/%.o: %.c
-	@$(MKDIR) -p $(@D)
-	@printf "$(YELLOW)Compiling '$(NAME)' [BONUS]:$(RESET) $<\n"
-	@$(CC) $(CPPFLAGS) $(CFLAGS) $(BONUS_FLAG) -c $< -o $@
 
 # --- CLEAN RULES ---
 clean:

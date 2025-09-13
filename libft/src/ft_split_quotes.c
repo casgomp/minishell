@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split_quotes.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 15:18:45 by raphha           ###   ########.fr       */
+/*   Updated: 2025/09/13 14:56:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,7 @@ static int	transform_prep(t_splprms *const ptsp)
 	return (1);
 }
 
-static char	**transform_list(t_splprms *const ptsp, char const *const s,
-							char const *const q, bool const rmq)
+static char	**transform_list(t_splprms *const ptsp, char const *const s)
 {
 	int		idx;
 	char	**splt;
@@ -81,8 +80,6 @@ static char	**transform_list(t_splprms *const ptsp, char const *const s,
 		splt[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
 		if (!splt[idx])
 			return (cleanup(ptsp), (char **) NULL);
-		if (rmq)
-			ft_rmquotes_expand(splt[idx], q, '\\');
 		++idx;
 		ptsp->tsl = ptsp->tsl->next;
 	}
@@ -94,7 +91,7 @@ static char	**transform_list(t_splprms *const ptsp, char const *const s,
 // (typically "\\"\\'") that will cancel the effect of the split char
 // in the section between the quote chars
 char	**ft_split_quotes(char const *const s, char const c,
-						char const *const q, bool const rmq)
+						char const *const q)
 {
 	t_splprms	tsp;
 	int			idx;
@@ -120,5 +117,5 @@ char	**ft_split_quotes(char const *const s, char const c,
 		if (!s[idx] || (!tsp.activeq && s[idx] == c))
 			tsp.tsl->len = idx - tsp.tsl->start;
 	}
-	return (transform_list(&tsp, s, q, rmq));
+	return (transform_list(&tsp, s));
 }
