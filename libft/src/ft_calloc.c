@@ -3,28 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 14:42:52 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 20:12:53 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:04:49 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:04:52 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stdlib.h>
+#include "ft_alloc.h"
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	size_t	numbytes;
-	void	*ptr;
+	void			*ptr;
+	unsigned int	i;
 
-	numbytes = nmemb * size;
-	if (size != 0 && numbytes / size != nmemb)
-		return (NULL);
-	ptr = malloc(numbytes);
-	if (ptr && numbytes > 0)
+	if (nmemb == 0 || size == 0)
 	{
-		while (numbytes--)
-			((char *)ptr)[numbytes] = '\0';
+		return (malloc(0));
+	}
+	if ((nmemb * size) > 2147483647)
+	{
+		return (NULL);
+	}
+	ptr = malloc(nmemb * size);
+	if (ptr == NULL)
+	{
+		return (NULL);
+	}
+	i = 0;
+	while (i < (nmemb * size))
+	{
+		((unsigned char *)ptr)[i] = 0;
+		i ++;
 	}
 	return (ptr);
 }

@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rh_fmtconv_xtra.h                                  :+:      :+:    :+:   */
+/*   ft_putchar_prnt.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/08 11:29:12 by rhaas             #+#    #+#             */
-/*   Updated: 2025/06/08 15:58:36 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:00:35 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:00:38 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_printf.h"
 
-#ifndef RH_FMTCONV_XTRA_H
-# define RH_FMTCONV_XTRA_H
-
-# include "rh_fmtspec.h"
-
-int	rh_convspec_invalidfs(const t_fmtspec *const fmtspec);
-int	rh_convspec_percent(void);
-
-#endif // RH_FMTCONV_XTRA_H
+int	ft_putchar_prnt(int c, int *count_chars)
+{
+	if (write(1, &c, 1) == -1)
+		return (-1);
+	(*count_chars)++;
+	return (0);
+}

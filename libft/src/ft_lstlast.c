@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstlast_bonus.c                                 :+:      :+:    :+:   */
+/*   ft_lstlast.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 16:17:17 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:16:17 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:56:25 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:56:28 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
+#include "ft_linked_list.h"
 
 t_list	*ft_lstlast(t_list *lst)
 {
-	if (lst)
-		while (lst->next)
-			lst = lst->next;
-	return (lst);
+	t_list	*current;
+
+	if (lst == NULL)
+	{
+		return (NULL);
+	}
+	current = lst;
+	while (current->next != NULL)
+	{
+		current = current->next;
+	}
+	return (current);
 }

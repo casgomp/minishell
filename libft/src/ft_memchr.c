@@ -3,27 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 11:46:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:51:47 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:03:23 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:03:25 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_memory.h"
 
 void	*ft_memchr(const void *s, int c, size_t n)
 {
-	const unsigned char	ch = c;
-	const unsigned char	*sc;
+	size_t	i;
 
-	sc = (const unsigned char *)s;
-	while (n--)
+	i = 0;
+	while (i < n)
 	{
-		if ((*sc) == ch)
-			return ((void *)sc);
-		else
-			++sc;
+		if (((unsigned char *)s)[i] == (unsigned char)c)
+		{
+			return ((void *)((unsigned char *)s + i));
+		}
+		i ++;
 	}
 	return (NULL);
 }

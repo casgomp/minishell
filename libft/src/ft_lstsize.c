@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstsize_bonus.c                                 :+:      :+:    :+:   */
+/*   ft_lstsize.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 16:13:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:13:55 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:55:52 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:55:54 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
+#include "ft_linked_list.h"
 
 int	ft_lstsize(t_list *lst)
 {
-	int	llen;
+	int		i;
+	t_list	*current;
 
-	llen = 0;
-	if (lst)
+	current = lst;
+	i = 0;
+	while (current != NULL)
 	{
-		llen = 1;
-		while (lst->next)
-		{
-			++llen;
-			lst = lst->next;
-		}
+		i ++;
+		current = current->next;
 	}
-	return (llen);
+	return (i);
 }

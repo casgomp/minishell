@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/11 10:59:58 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/15 15:45:14 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:07:19 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:07:22 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_function.h"
 
-void	ft_striteri(char *s, void (*f)(unsigned int, char*))
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
 {
-	unsigned int	idx;
+	unsigned int	i;
 
-	idx = 0;
-	while (s[idx])
+	i = 0;
+	while (s[i])
 	{
-		f(idx, &s[idx]);
-		++idx;
+		f(i, &s[i]);
+		i ++;
 	}
 }

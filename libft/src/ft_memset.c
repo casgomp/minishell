@@ -3,22 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 21:35:56 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:04:00 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:04:07 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:04:09 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_memory.h"
 
 void	*ft_memset(void *s, int c, size_t n)
 {
-	unsigned char		*pc;
-	const unsigned char	ch = c;
+	size_t	i;
 
-	pc = (unsigned char *)s;
-	while (n--)
-		*(pc++) = ch;
+	i = 0;
+	while (i < n)
+	{
+		((unsigned char *)s)[i] = c;
+		i ++;
+	}
 	return (s);
 }

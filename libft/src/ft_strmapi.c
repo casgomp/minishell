@@ -3,34 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strmapi.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/11 10:49:17 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/19 18:21:05 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:07:30 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:07:34 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "libft.h"
-
-#include <stddef.h>
-#include <stdlib.h>
+#include "ft_function.h"
+#include "ft_string.h"
 
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
-	unsigned int	idx;
-	char			*s2;
+	char	*ptr;
+	size_t	size;
+	size_t	i;
 
-	s2 = malloc((ft_strlen(s) + 1) * sizeof(char));
-	if (s2)
+	size = ft_strlen((const char *)s);
+	ptr = malloc(sizeof(char) * (size + 1));
+	if (ptr == NULL)
 	{
-		idx = 0;
-		while (s[idx])
-		{
-			s2[idx] = f(idx, s[idx]);
-			++idx;
-		}
-		s2[idx] = '\0';
-		return (s2);
+		return (NULL);
 	}
-	return ((char *) NULL);
+	i = 0;
+	while (i < size)
+	{
+		ptr[i] = f(i, s[i]);
+		i ++;
+	}
+	ptr[i] = '\0';
+	return (ptr);
 }

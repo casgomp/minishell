@@ -3,40 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 20:41:22 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 21:06:14 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:05:28 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:05:31 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_alloc.h"
+#include "ft_string.h"
 
-#include "libft.h"
-#include <stddef.h>
-
-static int	char_in_set(char const c, char const *set)
+static int	ft_in_set(char const c, char const *set)
 {
-	while (*set)
+	int	i;
+
+	i = 0;
+	while (set[i])
 	{
-		if (c == *set)
+		if (set[i] == c)
+		{
 			return (1);
-		++set;
+		}
+		i ++;
 	}
 	return (0);
 }
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	size_t			len;
 	unsigned int	start;
+	unsigned int	end;
+	int				i;
+	char			*ptr;
 
-	len = ft_strlen(s1);
+	if (s1 == NULL || set == NULL)
+		return (NULL);
+	if (s1[0] == '\0')
+		return (ft_strdup(""));
+	if (set[0] == '\0')
+		return (ft_strdup(s1));
 	start = 0;
-	while (char_in_set(s1[start], set))
-	{
-		++start;
-		--len;
-	}
-	while (len > 0 && char_in_set(s1[start + len - 1], set))
-		--len;
-	return (ft_substr(s1, start, len));
+	while (s1[start] && ft_in_set(s1[start], set))
+		start ++;
+	end = ft_strlen(s1);
+	while (end > start && ft_in_set(s1[end - 1], set))
+		end --;
+	ptr = malloc(sizeof(char const) * (end - start + 1));
+	if (ptr == NULL)
+		return (NULL);
+	i = 0;
+	while (start < end)
+		ptr[i++] = s1[start++];
+	ptr[i] = '\0';
+	return (ptr);
 }

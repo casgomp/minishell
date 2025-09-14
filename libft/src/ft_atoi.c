@@ -3,77 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 14:25:20 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 14:38:08 by raphha           ###   ########.fr       */
+/*   Created: 2025/07/24 12:01:19 by pecastro          #+#    #+#             */
+/*   Updated: 2025/08/21 14:49:21 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <limits.h>
-#include <stddef.h>
-#include "libft.h"
-
-static t_llong	ft_atoll_check_input_core(
-	const char *nptr, const int sign, t_ullong limit, int *psuccess)
-{
-	char const *const	nptr0 = nptr;
-	int					increment;
-	t_ullong			result;
-	int					overflow;
-
-	result = 0;
-	overflow = 1;
-	if (psuccess)
-		*psuccess = 0;
-	if (sign == -1)
-		++limit;
-	while ('0' <= (*nptr) && (*nptr) <= '9')
-	{
-		increment = (int)((*nptr) - '0');
-		if (psuccess && result > (limit - increment) / 10)
-			overflow = -1;
-		result = result * 10 + increment;
-		++nptr;
-	}
-	if (psuccess)
-		*psuccess = overflow * ((nptr - nptr0) + (sign != 1));
-	if (sign == -1)
-		result *= -1;
-	return (result);
-}
-
-t_llong	ft_atoll_check_input(const char *nptr, t_ullong limit, int *psuccess)
-{
-	int	sign;
-
-	sign = 1;
-	if (psuccess)
-		*psuccess = 0;
-	if (nptr && *nptr)
-	{
-		while (*nptr == ' ' || ('\t' <= *(nptr) && *(nptr) <= '\r'))
-			++nptr;
-		if (*(nptr) == '+')
-			sign = 2;
-		else if (*(nptr) == '-')
-			sign = -1;
-		if (sign != 1)
-			++nptr;
-		if (ft_isdigit(*nptr))
-		{
-			return (ft_atoll_check_input_core(nptr, sign, limit, psuccess));
-		}
-	}
-	return (0LL);
-}
+#include "ft_string.h"
 
 int	ft_atoi(const char *nptr)
 {
-	return ((int)ft_atoll_check_input(nptr, INT_MAX, (int *) NULL));
-}
+	unsigned int	i;
+	int				sign;
+	int				result;
 
-int	ft_atoll(const char *nptr)
-{
-	return (ft_atoll_check_input(nptr, LLONG_MAX, (int *) NULL));
+	sign = 1;
+	i = 0;
+	while (((nptr[i] >= '\t') && (nptr[i] <= '\r')) || (nptr[i] == ' '))
+		i++;
+	while (nptr[i] == '+' || nptr[i] == '-')
+	{
+		if (nptr[i] == '-')
+			sign = -sign;
+		i ++;
+	}
+	result = 0;
+	while (nptr[i] >= '0' && nptr[i] <= '9')
+	{
+		result = (result * 10) + (nptr[i] - '0');
+		i ++;
+	}
+	return (result * sign);
 }

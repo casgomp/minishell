@@ -3,23 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_toupper.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/10 10:53:29 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:27:58 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:59:33 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:59:35 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_ctype.h"
 
 int	ft_toupper(int c)
 {
-	int		delta;
-	char	ch;
-
-	ch = (char)c;
-	if (('a' <= ch) && (ch <= 'z'))
+	if (c >= 'a' && c <= 'z')
 	{
-		delta = 'a' - 'A';
-		c -= delta;
+		return (c - ('a' - 'A'));
 	}
 	return (c);
 }

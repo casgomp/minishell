@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 21:23:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:42:15 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 12:01:57 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 12:01:59 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
+#include "ft_string.h"
 
 size_t	ft_strlen(const char *s)
 {
-	size_t	n;
+	size_t	i;
 
-	n = 0;
-	while (*(s + n))
-		++n;
-	return (n);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		i ++;
+	}
+	return (i);
 }

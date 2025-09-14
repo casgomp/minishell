@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isprint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 21:09:54 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/09 22:57:27 by rhaas            ###   ########.fr       */
+/*   Created: 2025/07/24 11:59:15 by pecastro          #+#    #+#             */
+/*   Updated: 2025/07/24 11:59:18 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "ft_ctype.h"
 
 int	ft_isprint(int c)
 {
-	return (32 <= c && c <= 126);
+	if (c >= ' ' && c <= '~')
+	{
+		return (1);
+	}
+	return (0);
 }
