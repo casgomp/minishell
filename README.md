@@ -6,6 +6,9 @@
 + no commits directly on branch main, only via pull request and review!
 
 ## pull request check list
-+ rebase branch on main, so that in main we get a linear history
++ merge branch main into feature branch, so that all conflicts are resolved in the feature branch
 + test: norminette, make re, valgrind, regressions, ...?
 + generate a pull request from branch
+
+## checks
+[minishell eval sheet](https://wormav.github.io/42_eval/Cursus/Minishell/index.html)
