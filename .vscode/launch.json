@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": ["3", "800", "200", "200",
+		/* num_meals */ 4
+		],	
+    //   "stopAtEntry": true,
+      "externalConsole": false,
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/${workspaceFolderBasename}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+	  "preLaunchTask": "42 build with Makefile",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
