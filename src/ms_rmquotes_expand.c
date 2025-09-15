@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 20:04:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 20:40:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,7 @@ static int	set_tsstl(t_unqut_expd *pue, char *const pcstart)
 // (Only) if the quote uses the first char of 'q', escapes will be active
 // and shell parameter expansion will happen.
 // Most common values are: q="\"'" and esc='\\'
-char	*ms_rmquotes_expand(char const *const qutdstr,
-			char const *const q, char const esc)
+char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 {
 	int				idx;
 	char			*pc;
@@ -59,13 +58,13 @@ char	*ms_rmquotes_expand(char const *const qutdstr,
 	uedata = (t_unqut_expd){ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
 				(char *)NULL, '\0',
 				(t_strstart_len *)NULL, (t_strstart_len *)NULL, 0};
-	if (!(uedata.in && q && set_tsstl(&uedata, uedata.in))) 
+	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in))) 
 		return ((char *) NULL);
 	idx = 0;
 	while (uedata.in[idx])
 	{
 		pc = &(uedata.in[idx]);
-		if ((!uedata.actvq && ft_strchr(q, *pc))
+		if ((!uedata.actvq && ft_strchr(tqed.q, *pc))
 			|| (uedata.actvq && *pc == uedata.actvq))
 		{
 			if (!uedata.actvq)
@@ -75,27 +74,24 @@ char	*ms_rmquotes_expand(char const *const qutdstr,
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
 			continue;
 		}
-		else if (uedata.actvq == q[0] || !uedata.actvq)
+		else if (uedata.actvq == tqed.q[0] || !uedata.actvq)
 		{
-			if ((esc == *pc)
+			if ((tqed.esc == *pc)
 				&& ((!uedata.actvq) || (uedata.actvq == *(pc + 1))))
 			{
 				ft_strlcpy(pc, pc + 1, ft_strlen(pc));
-				// ++idx;
-				// ++(uedata.tsl->len);
 			}
-			else if ('$' == *pc/*  && *(pc + 1) && !ms_isbvc(*(pc + 1)) */)
+			else if (tqed.expnd == *pc)
 			{
 				int paramlen = 1; // including '$'
-				while (pc[paramlen] && ms_isbvc(pc[paramlen], 1 == paramlen) 
-			 			/* && pc[paramlen] != q[0] -> ist schon durch ms_isbvc abgedeckt*/)
+				while (pc[paramlen] && ms_isbvc(pc[paramlen], 1 == paramlen))
 					++paramlen;
 				if (paramlen > 1)
 				{
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
 					if (envvar/*  && *envvar */)
 					{
-						char *envval = getenv(envvar);
+						char *envval = tqed.dict(envvar);
 						if (envval)
 						{
 							set_tsstl(&uedata, envval);
@@ -124,7 +120,10 @@ char	*ms_rmquotes_expand(char const *const qutdstr,
 		ft_strlcpy(&(uedata.uestr[idx]), uedata.tsl->pcstart, uedata.tsl->len + 1);
 		idx += uedata.tsl->len;
 		uedata.tsl = uedata.tsl->next;
+		free(uedata.tsl_orig);
+		uedata.tsl_orig = uedata.tsl;
 	}
+	free(uedata.in);
 	return (uedata.uestr);
 }
 

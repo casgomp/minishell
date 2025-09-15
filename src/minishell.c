@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 20:02:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 20:38:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,27 @@
 int test_rhaas()
 {
 	char *tests[] = {
-		"a\"x\"b",
-		"a-$SHELL-b",
-		"a-$SHED3-b",
+	/*  0 */ "a\"x\"b",
+	/*  1 */ "\'a\"x\"b\'",
+	/*  2 */ "a-$SHELL-b",
+	/*  3 */ "a-\\$SHELL-b",		
+	/*  4 */ "a-'$SHELL'-b",
+	/*  5 */ "a-\\'$SHELL\\'-b",		
+	/*  6 */ "\"a-'$SHELL'-b\"",
+	/*  7 */ "a-$SHED3-b",
+	/*  8 */ "a-$SHELL-b-'$SHELL'-c-",
+	/*  9 */ "\"a-$SHELL-b-'$SHELL'-c-\"",
 		NULL,
 	};
 
+	char *tmp;
 	for (int i=0; tests[i]; ++i)
 	{
-		printf("Test %d:\n", i);
-		printf("OString: %s:\n", tests[i]);
-		printf("PString: %s:\n", 
-			ms_rmquotes_expand(tests[i], "\"\'", '\\'));
+		printf("Test %2d: %s\n", i, tests[i]);
+		tmp = ms_rmquotes_expand(tests[i], (t_qed){"\"\'", '\\', '$', getenv});
+		printf("   --> : %s\n", tmp);
+		if (tmp)
+			free(tmp);
 	}
 	return (1);
 }
