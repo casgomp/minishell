@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/13 16:16:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 16:08:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	ms_isspace(char const c)
 // (Only) if the quote uses the first char of 'q', escapes will be active
 // and shell parameter expansion will happen.
 // Most common values are: q="\"'" and esc='\\'
-void	ms_rmquotes_expand(char *const qutdstr,
+int	ms_rmquotes_expand(char *const qutdstr,
 			char const *const q, char const esc)
 {
 	int		idx;
@@ -32,7 +32,7 @@ void	ms_rmquotes_expand(char *const qutdstr,
 	char	actvq;
 
 	if (!(qutdstr && q)) 
-		return (void);
+		return (0);
 	idx = 0;
 	actvq = '\0';
 	while (qutdstr[idx])
@@ -46,14 +46,17 @@ void	ms_rmquotes_expand(char *const qutdstr,
 				actvq = '\0';
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
 		}
-		else if (actvq == q[0])
+		else if (esc == *pc)
 		{
- 			if (esc == *pc /* && actvq == q[0] */ && actvq == *(pc + 1))
+			 if ((actvq == q[0] && actvq == *(pc + 1)) || (!actvq))
 			{
 				ft_strlcpy(pc, pc + 1, ft_strlen(pc));
 				++idx;
 			}
-			else if ('$' == *pc/*  && *(pc + 1) && *(pc + 1) != q[0] */)
+		}
+		else if (actvq == q[0] || !actvq)
+		{
+			if ('$' == *pc/*  && *(pc + 1) && *(pc + 1) != q[0] */)
 			{
 				int expansionstrlen = 1;
 				while (pc[expansionstrlen] && pc[expansionstrlen] != q[0] && !ms_isspace(pc[expansionstrlen]))
@@ -77,6 +80,7 @@ void	ms_rmquotes_expand(char *const qutdstr,
 		else
 			++idx;
 	}
+	return (1);
 }
 
 void	ms_expand()
