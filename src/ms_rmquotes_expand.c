@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 21:09:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 21:21:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,19 @@
 #include <stdlib.h>
 
 // minishell_isAllowedBashVariableCharacter
+// https://thelinuxcode.com/bash-variable-name-rules-legal-illegal/
 bool	ms_isbvc(char const c, bool firstc)
 {
-	static char first_is_digit;
+	(void)firstc;
+	// static char first_is_digit;
 	if (firstc)
-	{
-		first_is_digit = '\0';
-		if (ft_isdigit(c))
-			first_is_digit = c;
-	}
-	else if (first_is_digit)
-		return (false);
+	// {
+	// 	first_is_digit = '\0';
+	 	if (ft_isdigit(c))
+	// 		first_is_digit = c;
+	// }
+	// else if (first_is_digit)
+	 	return (false);
 	return (ft_isalnum(c) || c == '_');
 }
 
@@ -95,25 +97,21 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					++paramlen;
 				if (paramlen > 1)
 				{
-					if (paramlen == 2 && ft_isdigit(pc[1]))
-					{
-						
-					}
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
-					if (envvar/*  && *envvar */)
+					if (envvar)
 					{
-						if (paramlen == 2 && ft_isdigit(*envvar))
-						{
-							int digit = (*envvar) - '0';
-							if (digit < argc)
-							{
-								free(envvar);
-								envvar = argv[digit];
-							}
-							else
-								envvar = "\0";
-						}
-						else
+						// if (paramlen == 2 && ft_isdigit(*envvar))
+						// {
+						// 	int digit = (*envvar) - '0';
+						// 	if (digit < argc)
+						// 	{
+						// 		free(envvar);
+						// 		envvar = argv[digit];
+						// 	}
+						// 	else
+						// 		envvar = "\0";
+						// }
+						// else
 						{
 							char *envval = tqed.dict(envvar);
 							if (envval)
