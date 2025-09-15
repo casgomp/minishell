@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 20:40:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 21:09:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,16 @@
 #include <stdlib.h>
 
 // minishell_isAllowedBashVariableCharacter
-int	ms_isbvc(char const c, bool firstc)
+bool	ms_isbvc(char const c, bool firstc)
 {
-	if (firstc && ft_isdigit(c))
+	static char first_is_digit;
+	if (firstc)
+	{
+		first_is_digit = '\0';
+		if (ft_isdigit(c))
+			first_is_digit = c;
+	}
+	else if (first_is_digit)
 		return (false);
 	return (ft_isalnum(c) || c == '_');
 }
@@ -88,16 +95,34 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					++paramlen;
 				if (paramlen > 1)
 				{
+					if (paramlen == 2 && ft_isdigit(pc[1]))
+					{
+						
+					}
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
 					if (envvar/*  && *envvar */)
 					{
-						char *envval = tqed.dict(envvar);
-						if (envval)
+						if (paramlen == 2 && ft_isdigit(*envvar))
 						{
-							set_tsstl(&uedata, envval);
-							uedata.tsl->len = ft_strlen(envval);
+							int digit = (*envvar) - '0';
+							if (digit < argc)
+							{
+								free(envvar);
+								envvar = argv[digit];
+							}
+							else
+								envvar = "\0";
 						}
-						free(envvar);
+						else
+						{
+							char *envval = tqed.dict(envvar);
+							if (envval)
+							{
+								set_tsstl(&uedata, envval);
+								uedata.tsl->len = ft_strlen(envval);
+							}
+							free(envvar);
+						}
 					}
 					idx += paramlen;
 					set_tsstl(&uedata, &(uedata.in[idx]));					
