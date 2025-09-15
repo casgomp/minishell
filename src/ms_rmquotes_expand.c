@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 21:21:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 21:37:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,12 @@
 // https://thelinuxcode.com/bash-variable-name-rules-legal-illegal/
 bool	ms_isbvc(char const c, bool firstc)
 {
-	(void)firstc;
-	// static char first_is_digit;
-	if (firstc)
-	// {
-	// 	first_is_digit = '\0';
-	 	if (ft_isdigit(c))
-	// 		first_is_digit = c;
-	// }
-	// else if (first_is_digit)
+	if (firstc && ft_isdigit(c))
 	 	return (false);
 	return (ft_isalnum(c) || c == '_');
 }
 
-static int	set_tsstl(t_unqut_expd *pue, char *const pcstart)
+static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 {
 	if (!(pue->tsl_orig) || (pue->tsl)->len)
 	{
@@ -48,7 +40,7 @@ static int	set_tsstl(t_unqut_expd *pue, char *const pcstart)
 			pue->tsl->next = malloc(sizeof(t_strstart_len));
 			pue->tsl = pue->tsl->next;
 		}
-		*(pue->tsl) = (t_strstart_len){pcstart, 0, (t_strstart_len *) NULL};
+		*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
 	}
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
@@ -60,14 +52,14 @@ static int	set_tsstl(t_unqut_expd *pue, char *const pcstart)
 // Most common values are: q="\"'" and esc='\\'
 char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 {
-	int				idx;
-	char			*pc;
-	t_unqut_expd	uedata;
+	int			idx;
+	char		*pc;
+	t_uedata	uedata;
 
-	uedata = (t_unqut_expd){ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
+	uedata = (t_uedata){ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
 				(char *)NULL, '\0',
 				(t_strstart_len *)NULL, (t_strstart_len *)NULL, 0};
-	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in))) 
+	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in, 0))) 
 		return ((char *) NULL);
 	idx = 0;
 	while (uedata.in[idx])
@@ -92,7 +84,7 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 			}
 			else if (tqed.expnd == *pc)
 			{
-				int paramlen = 1; // including '$'
+				int paramlen = 1; // including '$' !
 				while (pc[paramlen] && ms_isbvc(pc[paramlen], 1 == paramlen))
 					++paramlen;
 				if (paramlen > 1)
@@ -100,39 +92,19 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
 					if (envvar)
 					{
-						// if (paramlen == 2 && ft_isdigit(*envvar))
-						// {
-						// 	int digit = (*envvar) - '0';
-						// 	if (digit < argc)
-						// 	{
-						// 		free(envvar);
-						// 		envvar = argv[digit];
-						// 	}
-						// 	else
-						// 		envvar = "\0";
-						// }
-						// else
-						{
-							char *envval = tqed.dict(envvar);
-							if (envval)
-							{
-								set_tsstl(&uedata, envval);
-								uedata.tsl->len = ft_strlen(envval);
-							}
-							free(envvar);
-						}
+						char *envval = tqed.dict(envvar);
+						if (envval)
+							set_tsstl(&uedata, envval, ft_strlen(envval));
+						free(envvar);
 					}
 					idx += paramlen;
-					set_tsstl(&uedata, &(uedata.in[idx]));					
+					set_tsstl(&uedata, &(uedata.in[idx]), 0);					
 					continue;
 				}
 			}
 		}
-		// else
-		{
-			++idx;
-			++(uedata.tsl->len);
-		}
+		++idx;
+		++(uedata.tsl->len);
 	}
 	uedata.uestrlen += uedata.tsl->len;
 	uedata.uestr = malloc((uedata.uestrlen + 1) *sizeof(char));
