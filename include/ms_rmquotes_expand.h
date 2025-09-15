@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 20:14:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 21:33:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ typedef struct s_strstart_len
 	struct s_strstart_len	*next;
 }	t_strstart_len;
 
-typedef struct s_unqut_expd
+typedef struct s_unqut_expd_data
 {
 	char			*in;
 	char			*uestr;
@@ -30,7 +30,7 @@ typedef struct s_unqut_expd
 	t_strstart_len	*tsl_orig;
 	t_strstart_len	*tsl;
 	size_t			uestrlen;
-}	t_unqut_expd;
+}	t_uedata;
 
 typedef struct s_quotes_esc_dict
 {
