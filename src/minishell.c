@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/11 17:07:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/15 13:39:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,16 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-// cmv ./minishell 2> >(grep -v -B3 readline)
-
 int	main(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
 	char *in;
-	while ((in = readline("Hello, what?$ ")))
+	while ((in = readline("<fancy prompt>$ ")))
 	{
 		if (in && *in != ' ')
 			add_history(in);
-		if (in && !ft_strncmp(in, "quit", 5))
+		if (in && !ft_strncmp(in, "exit", 5))
 		{
 			free(in);
 			break;
@@ -39,6 +37,5 @@ int	main(int argc, char *argv[])
 	}
 	rl_clear_history();
 	clear_history();
-	in = malloc(3);
 	return (EXIT_SUCCESS);
 }
