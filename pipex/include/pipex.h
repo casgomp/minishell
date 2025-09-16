@@ -3,52 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 16:29:07 by pecastro          #+#    #+#             */
-/*   Updated: 2025/08/31 12:01:51 by pecastro         ###   ########.fr       */
+/*   Created: 2025/08/21 10:38:42 by rhaas             #+#    #+#             */
+/*   Updated: 2025/09/03 09:47:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include <errno.h>
-# include <stdio.h>
-# include <fcntl.h>
-# include <sys/wait.h>
-# include <unistd.h>
-# include "../lib/libft/include/libft.h"
-
-typedef struct s_pipex
+typedef struct s_fs
 {
-	char	*file[2];
-	char	**cmd[2];
-	char	*cmd_rel[2];
-	char	**complete_paths[2];
-	char	*path[2];
-	int		fd[2];
-	int		fd_f[2];
-	int		pid[2];
-}t_pipex;
+	int		stdin;
+	int		stdout;
+	char	*f1name;
+	char	*f2name;
+	int		file1;
+	int		file2;
+	int		pipefd[2];
+}	t_fds;
 
-extern char	**environ;
+int	run_cmd(char *args);
 
-//main
-int		main(int argc, char **argv);
-//ft_paths
-char	**ft_complete_paths(char *cmd);
-char	**ft_paths_from_environ(void);
-int		ft_access_paths(t_pipex *pipex);
-char	ft_contains_words(char *str);
-int		ft_size_arr(char **arr);
-//ft_processes
-int		ft_processes(t_pipex *pipex);
-int		ft_children(t_pipex *pipex);
-void	ft_process1(t_pipex *pipex);
-void	ft_process2(t_pipex *pipex);
-//ft_clean
-void	ft_clean_arr_partial(int index, char **arr);
-void	ft_clean_arr(char **arr);
-void	ft_free(int index, t_pipex *pipex);
-
-#endif
+#endif // PIPEX_H

@@ -1,45 +1,114 @@
-CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -O0 -Iinclude -Ilib/libft/include
-MAKEFLAGS += --no-print-directory
-NAME = pipex
+# === EXECUTABLE NAME ===
+NAME            := pipex
 
-SRC_DIR = src
-OBJ_DIR = objs
-LIBFT_DIR = lib/libft
-LIBFT_A = $(LIBFT_DIR)/libft.a
+# === CONFIGURATION ===
+CC              := cc
+RM              := rm -f
+MKDIR           := /usr/bin/mkdir -p
+MAKE			:= make -L
 
-SRCS = main.c \
-	   ft_paths.c \
-	   ft_processes.c \
-	   ft_clean.c
+# === DIRECTORIES ===
+# Object file directories
+OBJ_DIR_MAND    := obj/mandatory
+OBJ_DIR_BONUS   := obj/bonus
+# Library & Include directories
+LIBFT_DIR       := libft
+INC_DIR         := include
+# Source directories for vpath
+SRC_DIRS        := src src/utils
 
-OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
+# === LIBRARIES ===
+LIBFT			:= $(LIBFT_DIR)/libft.a
 
-vpath %.c $(SRC_DIR)
+# === FLAGS ===
+CFLAGS          := -Wall -Wextra -Werror -O3
+CFLAGS			+= -g3 -O0
+CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/$(INC_DIR)
+LDFLAGS         := -L$(LIBFT_DIR)
+LDLIBS          := -lft
+## BONUS_FLAG      := -DBONUS_PART=1
 
-all: $(NAME)
+# === SOURCE FILES ===
+# Use vpath to tell 'make' where to find source files
+vpath %.c $(SRC_DIRS)
 
-$(NAME): $(OBJS) $(LIBFT_A)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT_A) -o $(NAME)
+MANDATORY_SRCS	:= 	pipex.c \
+					pipex_cmd.c \
 
-$(LIBFT_A):
-	$(MAKE) -C $(LIBFT_DIR)
+BONUS_SRCS		:=  
 
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
+# === OBJECT FILES ===
+# Create separate object lists for each target
+OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(MANDATORY_SRCS:.c=.o))
+OBJS_BONUS      := $(addprefix $(OBJ_DIR_BONUS)/, $(BONUS_SRCS:.c=.o))
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Dependency files for header changes
+DEPS            := $(OBJS_MANDATORY:.o=.d) $(OBJS_BONUS:.o=.d)
 
+# --- COLORS ---
+GREEN           := \033[0;32m
+YELLOW          := \033[0;33m
+BLUE_BOLD       := \033[1;34m
+RESET           := \033[0m
+
+# === MAIN RULES ===
+## .DEFAULT_GOAL   := all
+all: mandatory
+
+-include $(DEPS)
+
+# --- TARGETS ---
+mandatory: $(NAME)
+
+$(NAME): $(OBJS_MANDATORY) $(LIBFT)
+	@printf "$(BLUE_BOLD)Linking '$(NAME)' MANDATORY executable:$(RESET) $(NAME)\n"
+	@$(CC) $(OBJS_MANDATORY) -o $(NAME) $(LDFLAGS) $(LDLIBS)
+	@printf "$(GREEN)✓ Mandatory project '$(NAME)' created successfully!$(RESET)\n"
+
+#bonus: $(OBJS_BONUS) $(LIBFT)
+#	@printf "$(BLUE_BOLD)Linking '$(NAME)' BONUS executable:$(RESET) $(NAME)\n"
+#	@$(CC) $(OBJS_BONUS) -o $(NAME) $(LDFLAGS) $(LDLIBS)
+#	@printf "$(GREEN)✓ Bonus project '$(NAME)' created successfully!$(RESET)\n"
+
+# --- COMPILATION RULES ---
+$(OBJ_DIR_MAND)/%.o: %.c
+	@$(MKDIR) -p $(@D)
+	@printf "$(YELLOW)Compiling '$(NAME)' [MANDATORY]:$(RESET) $<\n"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR_BONUS)/%.o: %.c
+	@$(MKDIR) -p $(@D)
+	@printf "$(YELLOW)Compiling '$(NAME)' [BONUS]:$(RESET) $<\n"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(BONUS_FLAG) -c $< -o $@
+
+# --- LIBRARY RULES ---
+$(LIBFT):
+	@printf "$(BLUE_BOLD)Calling make for $@...$(RESET)\n"
+	@$(MAKE) -s -C $(LIBFT_DIR)
+
+# --- CLEAN RULES ---
 clean:
-	@rm -rf $(OBJ_DIR)
-	@$(MAKE) -C $(LIBFT_DIR) clean
+	@printf "$(YELLOW)Cleaning project '$(NAME)' object files...$(RESET)\n"
+	@$(RM) -rf obj
+	@$(MAKE) -s -C $(LIBFT_DIR) clean
+	@printf "$(YELLOW)✓ Object files cleaned.\n$(RESET)"
 
 fclean: clean
-	@rm -f $(NAME)
-	@$(MAKE) -C $(LIBFT_DIR) fclean
+	@printf "$(GREEN)Cleaning '$(NAME)' libraries and executable...$(RESET)\n"
+	@$(RM) $(NAME)
+	@$(MAKE) -s -C $(LIBFT_DIR) fclean
+	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
-re: fclean all
+re:
+	@$(MAKE) fclean --no-print-directory
+	@$(MAKE) all --no-print-directory
 
-.PHONY: all clean fclean re
+# --- HELPER RULES ---
+norm:
+	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
+	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
+
+.PHONY: all bonus mandatory clean fclean re norm
+# $(LIBFT)
+# .SECONDARY:
+# .DELETE_ON_ERROR:
