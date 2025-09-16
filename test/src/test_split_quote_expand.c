@@ -6,13 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 15:25:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/16 16:05:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "minishell.h"
 #include "ms_rmquotes_expand.h"
-#include "libft.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,11 +33,12 @@ int test_quote_expand()
 	/* 10 */ {"\"a-$3SHELL-b-'$SHELL'-c-\"", ""},
 	/* 11 */ {"\"a-$<-b\"", ""},
 	/* 12 */ {"\"a-$A<-b\"", ""},
-		NULL,
+		// NULL,
 	};
 
 	char *tmp;
-	for (int i=0; tests[i]; ++i)
+	int len = sizeof(tests);
+	for (int i=0; i < len/* tests[i] */; ++i)
 	{
 		printf("Test %2d: %s\n", i, tests[i][0]);
 		tmp = ms_rmquotes_expand(tests[i][0], (t_qed){"\"\'", '\\', '$', getenv});
@@ -52,6 +51,8 @@ int test_quote_expand()
 
 int	main(int argc, char *argv[])
 {
+	(void)argc;
+	(void)argv;
 	test_quote_expand();
 	return (EXIT_SUCCESS);
 }
