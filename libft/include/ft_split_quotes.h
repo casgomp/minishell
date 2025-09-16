@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 14:42:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/16 15:41:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,5 @@ typedef struct s_quotes_esc_split
 int		set_tsl(t_splprms *const ptsp, int idx);
 char	**transform_list(t_splprms *const ptsp, char const *const s);
 void	cleanup(t_splprms *const ptsp);
+
 #endif

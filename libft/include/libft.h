@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 13:23:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/16 17:10:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 # define LIBFT_H
 
 # include "ft_printf.h"
-# include "get_next_line.h"
 # include "ft_split_quotes.h"
+# include "get_next_line.h"
 
 # include <stdbool.h>
 # include <stddef.h>
