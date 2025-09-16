@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 13:59:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/16 14:42:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ typedef struct s_splitparams
 
 typedef struct s_quotes_esc_split
 {
-	char splt;
-	char *multisplt;
-	char *q;
-	char esc;
+	char	splt;
+	char	*specialsplt;
+	char	*q;
+	char	esc;
 }	t_qes;
 
+int		set_tsl(t_splprms *const ptsp, int idx);
+char	**transform_list(t_splprms *const ptsp, char const *const s);
+void	cleanup(t_splprms *const ptsp);
 #endif
