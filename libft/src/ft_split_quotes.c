@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/13 14:56:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/16 14:00:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,31 +90,44 @@ static char	**transform_list(t_splprms *const ptsp, char const *const s)
 // Same as ft_split, but takes a string containing quote chars
 // (typically "\\"\\'") that will cancel the effect of the split char
 // in the section between the quote chars
-char	**ft_split_quotes(char const *const s, char const c,
-						char const *const q)
+char	**ft_split_quotes(char const *const s, t_qes const qes)
 {
 	t_splprms	tsp;
 	int			idx;
 
-	tsp = (t_splprms){(char **) NULL, (t_startlen *) NULL, NULL, 0, '\0'};
-	if (!(s && c))
+	tsp = (t_splprms){(char **) NULL, (t_startlen *) NULL, NULL, 0, '\0'/* , '\0' */};
+	if (!(s && qes.splt))
 		return (cleanup(&tsp), (char **) NULL);
 	idx = 0;
 	while (s[idx])
 	{
-		while (s[idx] && c == s[idx])
+		while (s[idx] && qes.splt == s[idx])
 			++idx;
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup(&tsp), (char **) NULL);
-		if (s[idx] && !tsp.activeq && ft_strchr(q, s[idx]))
-			tsp.activeq = s[idx++];
+		if (s[idx] && !tsp.activeq)
+		{
+			if (ft_strchr(qes.q, s[idx]))
+				tsp.activeq = s[idx++];
+			else if (ft_strchr(qes.multisplt, s[idx]))
+			{
+				while (s[idx + tsp.tsl->len] == s[idx])
+					++tsp.tsl->len;
+				idx += tsp.tsl->len;
+				if (s[idx] && !set_tsl(&tsp, idx))
+					return (cleanup(&tsp), (char **) NULL);
+			}
+		}
 		while (s[idx]
-			&& ((!tsp.activeq && !ft_strchr(q, s[idx]) && (s[idx] != c))
+			&& ((!tsp.activeq && !ft_strchr(qes.q, s[idx]) && (s[idx] != qes.splt) && !ft_strchr(qes.multisplt, s[idx]))
 				|| (tsp.activeq && s[idx] != tsp.activeq)))
-			idx += 1 + (s[idx] == '\\');
-		if (tsp.activeq && s[idx] == tsp.activeq && ++idx)
+			idx += 1 + (s[idx] == qes.esc);
+		if (tsp.activeq && s[idx] == tsp.activeq)
+		{
 			tsp.activeq = '\0';
-		if (!s[idx] || (!tsp.activeq && s[idx] == c))
+			++idx;
+		}
+		if (!s[idx] || (!tsp.activeq && (s[idx] == qes.splt || ft_strchr(qes.multisplt, s[idx]))))
 			tsp.tsl->len = idx - tsp.tsl->start;
 	}
 	return (transform_list(&tsp, s));

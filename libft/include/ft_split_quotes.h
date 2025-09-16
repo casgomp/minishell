@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split_quotes.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: raphha <raphha@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/12 17:18:57 by raphha           ###   ########.fr       */
+/*   Updated: 2025/09/16 13:59:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,13 @@ typedef struct s_splitparams
 	size_t		n_slelem;
 	char		activeq;
 }	t_splprms;
+
+typedef struct s_quotes_esc_split
+{
+	char splt;
+	char *multisplt;
+	char *q;
+	char esc;
+}	t_qes;
 
 #endif
