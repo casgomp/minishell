@@ -6,14 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 21:33:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 11:56:02 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_SPLIT_QUOTES_H
-# define FT_SPLIT_QUOTES_H
+#ifndef MS_RMQUOTES_EXPAND_H
+# define MS_RMQUOTES_EXPAND_H
 
-#include <stddef.h>
+# include <stddef.h>
 
 typedef struct s_strstart_len
 {
@@ -34,12 +34,12 @@ typedef struct s_unqut_expd_data
 
 typedef struct s_quotes_esc_dict
 {
-	char const *q;
-	char const esc;
-	char const expnd;
-	char *(*dict)(char const *const);
+	char const	*q;
+	char const	esc;
+	char const	expnd;
+	char		*(*dict)(char const *const);
 }	t_qed;
 
 char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed);
 
-#endif
+#endif // MS_RMQUOTES_EXPAND_H
