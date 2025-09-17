@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 17:33:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 17:48:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ int test_split()
 			continue;
 		}
 		tests[i].splt2 = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
-		// tests[i].splt2[0] = '\0';
 		sprintf(tests[i].splt2, "°");
 		int idx = 0;
 		while (tests[i].splt[idx])
