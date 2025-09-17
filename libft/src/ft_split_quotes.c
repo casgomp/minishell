@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 14:42:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 17:36:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@ static int	preproc_qesstr(char const *const s, int *const pidx,
 			while (s[*pidx + ptsp->tsl->len] == s[*pidx])
 				++(ptsp->tsl->len);
 			*pidx += ptsp->tsl->len;
-			if (s[*pidx] && !set_tsl(ptsp, *pidx))
-				return (0);
+			// if (s[*pidx] && !set_tsl(ptsp, *pidx))
+			// 	return (0);
+			return (2);
 		}
 	}
 	return (1);
@@ -84,6 +85,8 @@ char	**ft_split_quotes(char const *const s, t_qes const qes)
 			return (cleanup(&tsp), (char **) NULL);
 		if (!preproc_qesstr(s, &idx, &qes, &tsp))
 			return (cleanup(&tsp), (char **) NULL);
+		if (preproc_qesstr(s, &idx, &qes, &tsp) == 2)
+			continue ;
 		advance_qesstr(s, &idx, &qes, &tsp);
 		postproc_qesstr(s, &idx, &qes, &tsp);
 	}
