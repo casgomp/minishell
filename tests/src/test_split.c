@@ -6,57 +6,88 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 13:59:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 17:33:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ms_rmquotes_expand.h"
+#include "tests.h"
+#include "libft.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+
+typedef struct testcase
+{
+	char *in;
+	char **splt;
+	char *splt2;
+	char *shellout;
+}	t_tstcs;
 
 int test_split()
 {
-	char *tests[][2] = {
-	/*  0 */ {"\"a\\\"x\\\"b\"", "a\"x\"b"},
-	/*  1 */ {"\\\'a\\\"x\\\"b\\\'", "\'a\"x\"b\'"},
-	/*  2 */ {"a-$SHELL-b", ""},
-	/*  3 */ {"a-\\$SHELL-b", ""},	
-	/*  4 */ {"a-'$SHELL'-b", ""},
-	/*  5 */ {"a-\\'$SHELL\\'-b", ""},		
-	/*  6 */ {"\"a-'$SHELL'-b\"", ""},
-	/*  7 */ {"a-$SHED3-b", ""},
-	/*  8 */ {"a-$SHELL-b-'$SHELL'-c-", ""},
-	/*  9 */ {"\"a-$SHELL-b-'$SHELL'-c-\"", ""},
-	/* 10 */ {"\"a-$3SHELL-b-'$SHELL'-c-\"", ""},
-	/* 11 */ {"\"a-$<-b\"", ""},
-	/* 12 */ {"\"a-$A<-b\"", ""},
-		{NULL, NULL},
+	t_tstcs tests[] = {
+	/*  0 */ {.in="ein wort", },
+	/*  1 */ {.in="ein|wort", },
+	/*  2 */ {.in="ein||wort", },
+	/*  3 */ {.in="ein ||wort", },
+	/*  4 */ {.in="ein |wort", },
+	/*  5 */ {.in="ein |   wort", },
+	/*eof */ {.in=NULL},
 	};
 
-	for (int i=0; tests[i][0]; ++i)
+	t_qes qes = {.splt=' ',
+				.q="\"\'",
+				.esc='\0',
+				.specialsplt="|<>"};
+
+	for (int i=0; tests[i].in; ++i)
 	{
-		printf("Test %2d: %s\n", i, tests[i][0]);
-		// char *tmp = ms_rmquotes_expand(tests[i][0], (t_qed){"\"\'", '\\', '$', getenv});
-		char *tmp = "test";
-		printf("%8s %s\n", "--> :", tmp);
-		char cmdstr[64];
-		sprintf(cmdstr, "echo %s", tests[i][0]);
+		printf("Test %2d: %s\n", i, tests[i].in);
+
+		tests[i].splt = ft_split_quotes(tests[i].in, qes);
+		if (!tests[i].splt)
+		{
+			printf("%p\n", tests[i].splt);
+			continue;
+		}
+		tests[i].splt2 = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
+		// tests[i].splt2[0] = '\0';
+		sprintf(tests[i].splt2, "°");
+		int idx = 0;
+		while (tests[i].splt[idx])
+			sprintf(tests[i].splt2 + strlen(tests[i].splt2), "%s°", tests[i].splt[idx++]);
+		printf("%8s %s\n", "--> :", tests[i].splt2);
+
+		char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
+		sprintf(cmdstr, "shell_scripts/shell_split.sh %s", tests[i].in);
 		FILE *shell = popen(cmdstr, "r");
-		char *shellout = NULL;
+		tests[i].shellout = NULL;
 		size_t length = 0;
-		getline(&shellout, &length, shell);
-		printf("%8s %s", "echo :", shellout);
-		printf("%8s %s\n\n", "Status :",
-			(strncmp(tmp, shellout, strlen(tmp)) ? "### KO ###" : "OK"));
-		// if (tmp)
-		// 	free(tmp);
-		if (shellout)
-			free(shellout);
+		getline(&tests[i].shellout, &length, shell);
 		pclose(shell);
+		free (cmdstr);
+		printf("%8s %s\n", "echo :", tests[i].shellout);
+
+		printf("%8s %s\n\n", "Status :", test_result_str(tests[i].splt2, tests[i].shellout,0));
 	}
+
+	// Cleanup
+	for (int i=0; tests[i].in; ++i)
+	{
+		if (tests[i].splt)
+		{
+			char **splt = tests[i].splt;
+			while (*splt)
+				free (*(splt++));
+			free(tests[i].splt);
+		}
+		if (tests[i].splt2)
+			free(tests[i].splt2);
+		if (tests[i].shellout)
+			free(tests[i].shellout);
+	}
+
 	return (1);
 }
 
@@ -64,6 +95,7 @@ int	main(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
+	setbuf(stdout, NULL);
 	test_split();
 	return (EXIT_SUCCESS);
 }
