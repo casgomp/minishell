@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 17:48:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 18:05:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@ typedef struct testcase
 
 int test_split()
 {
+	bool nativeShellOut = false;	
 	t_tstcs tests[] = {
-	/*  0 */ {.in="ein wort", },
-	/*  1 */ {.in="ein|wort", },
-	/*  2 */ {.in="ein||wort", },
-	/*  3 */ {.in="ein ||wort", },
-	/*  4 */ {.in="ein |wort", },
-	/*  5 */ {.in="ein |   wort", },
+	/*  0 */ {.in="ein wort", .shellout="°ein°wort°"},
+	/*  1 */ {.in="ein|wort", .shellout="°ein°|°wort°"},
+	/*  2 */ {.in="ein||wort", .shellout="°ein°||°wort°"},
+	/*  3 */ {.in="ein ||wort", .shellout="°ein°||°wort°"},
+	/*  4 */ {.in="ein |wort", .shellout="°ein°|°wort°"},
+	/*  5 */ {.in="ein |   wort", .shellout="°ein°|°wort°"},
 	/*eof */ {.in=NULL},
 	};
 
@@ -58,15 +59,18 @@ int test_split()
 			sprintf(tests[i].splt2 + strlen(tests[i].splt2), "%s°", tests[i].splt[idx++]);
 		printf("%8s %s\n", "--> :", tests[i].splt2);
 
-		char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
-		sprintf(cmdstr, "shell_scripts/shell_split.sh %s", tests[i].in);
-		FILE *shell = popen(cmdstr, "r");
-		tests[i].shellout = NULL;
-		size_t length = 0;
-		getline(&tests[i].shellout, &length, shell);
-		pclose(shell);
-		free (cmdstr);
-		printf("%8s %s\n", "echo :", tests[i].shellout);
+		if (nativeShellOut)
+		{
+			char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
+			sprintf(cmdstr, "shell_scripts/shell_split.sh %s", tests[i].in);
+			FILE *shell = popen(cmdstr, "r");
+			tests[i].shellout = NULL;
+			size_t length = 0;
+			getline(&tests[i].shellout, &length, shell);
+			pclose(shell);
+			free (cmdstr);
+		}
+		printf("%8s %s\n", "expected :", tests[i].shellout);
 
 		printf("%8s %s\n\n", "Status :", test_result_str(tests[i].splt2, tests[i].shellout,0));
 	}
@@ -83,7 +87,7 @@ int test_split()
 		}
 		if (tests[i].splt2)
 			free(tests[i].splt2);
-		if (tests[i].shellout)
+		if (nativeShellOut && tests[i].shellout)
 			free(tests[i].shellout);
 	}
 
