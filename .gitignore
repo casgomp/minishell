@@ -33,3 +33,5 @@
 test/
 minishell
 pipex/
+/tests/test_*
+!/tests/test_*[.]*

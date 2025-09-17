@@ -3,7 +3,7 @@
 
 # === CONFIGURATION ===
 CC              := cc
-RM              := rm -f
+RM              := rm
 MKDIR           := /usr/bin/mkdir -p
 MAKE			:= make -L
 
@@ -30,12 +30,9 @@ LDLIBS          :=  -lft -lreadline
 # Use vpath to tell 'make' where to find source files
 vpath %.c $(SRC_DIRS)
 
-SRCFILES	:= 	test_split_quote_expand.c \
-				ms_rmquotes_expand.c
-
 # === OBJECT FILES ===
 # Create separate object lists for each target
-OBJFILES  := $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
+# OBJFILES  := $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
 
 # Dependency files for header changes
 DEPS            := $(OBJFILES:.o=.d) $(OBJS_BONUS:.o=.d)
@@ -48,16 +45,25 @@ RESET           := \033[0m
 
 # === MAIN RULES ===
 ## .DEFAULT_GOAL   := all
-all: test_split_quote_expand
+all:
+	@printf "$(YELLOW)Choose your test... (as param to Makefile)$(RESET)\n"
+	@printf "$(YELLOW)or simply run Debug session '(gdb) Run test program' from within code$(RESET)\n"
 
 -include $(DEPS)
 
-# --- TARGETS ---
+COMMON_RECIPE =\
+	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" ;\
+	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) ;\
+	printf "$(GREEN)✓ Test '$@' created successfully!$(RESET)\n" ;\
 
-test_split_quote_expand: test_split_quote_expand.o ms_rmquotes_expand.o $(LIBFT)
-	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n"
-	@$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
-	@printf "$(GREEN)✓ Test '$@' created successfully!$(RESET)\n"
+# --- TARGETS ---
+SRCFILES	:= test_quote_expand.c ms_rmquotes_expand.c
+test_quote_expand: $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o)) $(LIBFT)
+	$(COMMON_RECIPE)
+
+SRCFILES	:= test_split.c
+test_split: $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o)) $(LIBFT)
+	$(COMMON_RECIPE)
 
 # --- COMPILATION RULES ---
 $(OBJ_DIR)/%.o: %.c
@@ -79,13 +85,13 @@ clean:
 
 fclean: clean
 	@printf "$(GREEN)Cleaning libraries and executables...$(RESET)\n"
-	@$(RM) test_split_quote_expand
+	@$(RM) -i test_*
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
-re:
-	@$(MAKE) fclean --no-print-directory
-	@$(MAKE) all --no-print-directory
+# re:
+# 	@$(MAKE) fclean --no-print-directory
+# 	@$(MAKE) all --no-print-directory
 
 # --- HELPER RULES ---
 norm:
