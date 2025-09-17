@@ -9,7 +9,7 @@
 		"program": "${workspaceFolder}/tests/${fileBasenameNoExtension}",
 		"args": [],
 		"stopAtEntry": false,
-		"cwd": "${fileDirname}",
+		"cwd": "${fileDirname}/../",
 		"environment": [],
 		"externalConsole": false,
 		"MIMode": "gdb",

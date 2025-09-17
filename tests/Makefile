@@ -32,10 +32,10 @@ vpath %.c $(SRC_DIRS)
 
 # === OBJECT FILES ===
 # Create separate object lists for each target
-# OBJFILES  := $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
+OBJFILES  := $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
 
 # Dependency files for header changes
-DEPS            := $(OBJFILES:.o=.d) $(OBJS_BONUS:.o=.d)
+DEPS            := $(OBJFILES:.o=.d)
 
 # --- COLORS ---
 GREEN           := \033[0;32m
@@ -56,13 +56,20 @@ COMMON_RECIPE =\
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) ;\
 	printf "$(GREEN)✓ Test '$@' created successfully!$(RESET)\n" ;\
 
+OBJFILES = $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
+COMMON_DEPS = $(OBJFILES) $(LIBFT)
+COMMON_INC = $(OBJFILES:.o=.d)
+#$(info $$var is [${OBJFILES:.o=.d}])
+
 # --- TARGETS ---
 SRCFILES	:= test_quote_expand.c ms_rmquotes_expand.c
-test_quote_expand: $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o)) $(LIBFT)
+-include $(COMMON_INC)
+test_quote_expand: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
 SRCFILES	:= test_split.c
-test_split: $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o)) $(LIBFT)
+-include $(COMMON_INC)
+test_split: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
 # --- COMPILATION RULES ---

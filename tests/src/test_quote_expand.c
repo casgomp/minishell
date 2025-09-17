@@ -1,62 +1,75 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_split_quote_expand.c                          :+:      :+:    :+:   */
+/*   test_quote_expand.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 13:24:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/17 17:23:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "tests.h"
 #include "ms_rmquotes_expand.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+
+typedef struct testcase
+{
+	char *in;
+	char *out;
+	char *shellout;
+}	t_tstcs;
 
 int test_quote_expand()
 {
-	char *tests[][2] = {
-	/*  0 */ {"\"a\\\"x\\\"b\"", "a\"x\"b"},
-	/*  1 */ {"\\\'a\\\"x\\\"b\\\'", "\'a\"x\"b\'"},
-	/*  2 */ {"a-$SHELL-b", ""},
-	/*  3 */ {"a-\\$SHELL-b", ""},	
-	/*  4 */ {"a-'$SHELL'-b", ""},
-	/*  5 */ {"a-\\'$SHELL\\'-b", ""},		
-	/*  6 */ {"\"a-'$SHELL'-b\"", ""},
-	/*  7 */ {"a-$SHED3-b", ""},
-	/*  8 */ {"a-$SHELL-b-'$SHELL'-c-", ""},
-	/*  9 */ {"\"a-$SHELL-b-'$SHELL'-c-\"", ""},
-	/* 10 */ {"\"a-$3SHELL-b-'$SHELL'-c-\"", ""},
-	/* 11 */ {"\"a-$<-b\"", ""},
-	/* 12 */ {"\"a-$A<-b\"", ""},
-		{NULL, NULL},
+	t_tstcs tests[] = {
+	/*  0 */ {.in="\"a\\\"x\\\"b\"", },
+	/*  1 */ {.in="\\\'a\\\"x\\\"b\\\'", },
+	/*  2 */ {.in="a-$SHELL-b", },
+	/*  3 */ {.in="a-\\$SHELL-b", },	
+	/*  4 */ {.in="a-'$SHELL'-b", },
+	/*  5 */ {.in="a-\\'$SHELL\\'-b", },		
+	/*  6 */ {.in="\"a-'$SHELL'-b\"", },
+	/*  7 */ {.in="a-$SHED3-b", },
+	/*  8 */ {.in="a-$SHELL-b-'$SHELL'-c-", },
+	/*  9 */ {.in="\"a-$SHELL-b-'$SHELL'-c-\"", },
+	/* 10 */ {.in="\"a-$3SHELL-b-'$SHELL'-c-\"", },
+	/* 11 */ {.in="\"a-$<-b\"", },
+	/* 12 */ {.in="\"a-$A<-b\"", },
+	/*eof */ {.in=NULL},
 	};
 
-	char *tmp;
-	for (int i=0; tests[i][0]; ++i)
+	for (int i=0; tests[i].in; ++i)
 	{
-		printf("Test %2d: %s\n", i, tests[i][0]);
-		tmp = ms_rmquotes_expand(tests[i][0], (t_qed){"\"\'", '\\', '$', getenv});
-		printf("%8s %s\n", "--> :", tmp);
-		char cmdstr[64];
-		sprintf(cmdstr, "echo %s", tests[i][0]);
+		printf("Test %2d: %s\n", i, tests[i].in);
+
+		tests[i].out = ms_rmquotes_expand(tests[i].in, (t_qed){"\"\'", '\\', '$', getenv});
+		printf("%8s %s\n", "--> :", tests[i].out);
+
+		char cmdstr[128];
+		sprintf(cmdstr, "echo -n %s", tests[i].in);
 		FILE *shell = popen(cmdstr, "r");
-		char *shellout = NULL;
+		tests[i].shellout = NULL;
 		size_t length = 0;
-		getline(&shellout, &length, shell);
-		printf("%8s %s", "echo :", shellout);
-		printf("%8s %s\n\n", "Status :",
-			(strncmp(tmp, shellout, strlen(tmp)) ? "### KO ###" : "OK"));
-		if (tmp)
-			free(tmp);
-		if (shellout)
-			free(shellout);
+		getline(&tests[i].shellout, &length, shell);
 		pclose(shell);
+		printf("%8s %s\n", "echo :", tests[i].shellout);
+
+		printf("%8s %s\n\n", "Status :", test_result_str(tests[i].out, tests[i].shellout, 1));
 	}
+
+	// Cleanup
+	for (int i=0; tests[i].in; ++i)
+	{
+		if (tests[i].out)
+			free(tests[i].out);
+		if (tests[i].shellout)
+			free(tests[i].shellout);
+	}
+	
 	return (1);
 }
 
