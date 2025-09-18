@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ftprintf_fmtconv_xtra.c                            :+:      :+:    :+:   */
+/*   ft_printf_fmtconv_xtra.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 11:34:28 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 17:12:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 19:54:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ftprintf_intern.h"
+#include "ft_printf_intern.h"
 
 #include <stdlib.h>
 
@@ -24,10 +24,6 @@ static int	rh_print_invfmtstr(const char **pfmt, int invalid_fmtstr_len,
 
 int	rh_convspec_percent(t_bytecount_fd *const pbc)
 {
-	// t_bytecount_fd	bc;
-
-	// *pbc = (t_bytecount_fd){0, 0};
-	// try_write(&bc, "%", 1);
 	try_write(pbc, "%", 1);
 	return (1);
 }
@@ -95,9 +91,6 @@ static int	rh_print_invfmtstr(
 	int invalid_fmtstr_len,
 	t_bytecount_fd *const pbc)
 {
-	// t_bytecount_fd			bc;
-
-	// bc = (t_bytecount_fd){0, 0};
 	try_write(pbc, (*pfmt), invalid_fmtstr_len);
 	(*pfmt) += invalid_fmtstr_len;
 	return (1);

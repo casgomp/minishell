@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rh_printf_intern.h                                 :+:      :+:    :+:   */
+/*   ft_printf_intern.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 13:40:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 19:51:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RH_PRINTF_INTERN_H
-# define RH_PRINTF_INTERN_H
+#ifndef FT_PRINTF_INTERN_H
+# define FT_PRINTF_INTERN_H
 
 # include <stdarg.h>
 # include <stddef.h>
@@ -53,15 +53,15 @@ typedef struct s_bytecount_fd
 
 int		rh_set_formatspec(const char **pfmt, t_fmtspec *fmtspec);
 int		rh_actflx(t_fsflag flag, const t_fmtspec *const fmtspec);
-int		rh_convspec_c(va_list *valst, const t_fmtspec *const fmtspec,
+int		rh_convspec_c(va_list valst, const t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
-int		rh_convspec_s(va_list *valst, const t_fmtspec *const fmtspec,
+int		rh_convspec_s(va_list valst, const t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
-int		rh_convspec_p(va_list *valst, t_fmtspec *const fmtspec,
+int		rh_convspec_p(va_list valst, t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
-int		rh_convspec_diu(va_list *valst, const t_fmtspec *const fmtspec,
+int		rh_convspec_diu(va_list valst, const t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
-int		rh_convspec_x(va_list *valst, t_fmtspec *const fmtspec,
+int		rh_convspec_x(va_list valst, t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
 int		rh_convspec_invalidfs(const t_fmtspec *const fmtspec,
 			t_bytecount_fd *const pbc);
@@ -87,4 +87,4 @@ int		try_write(
 			t_bytecount_fd *const pbc,
 			const char *const str, const size_t len);
 
-#endif //RH_PRINTF_INTERN_H
+#endif //FT_PRINTF_INTERN_H

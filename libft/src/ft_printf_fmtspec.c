@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 16:46:18 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 18:19:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 19:50:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ftprintf_intern.h"
+#include "ft_printf_intern.h"
 
 static void	rh_init_formatspec(t_fmtspec *fmtspec);
 static void	rh_set_formatflags(const char c, t_fmtspec *fmtspec);
