@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 18:05:29 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 16:54:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int test_split()
 	/*  3 */ {.in="ein ||wort", .shellout="°ein°||°wort°"},
 	/*  4 */ {.in="ein |wort", .shellout="°ein°|°wort°"},
 	/*  5 */ {.in="ein |   wort", .shellout="°ein°|°wort°"},
+	/*  6 */ {.in="ein | | wort", .shellout="°ein°|°|°wort°"},
 	/*eof */ {.in=NULL},
 	};
 
