@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rh_fmtspec.c                                :+:      :+:    :+:   */
+/*   ftprintf_fmtspec.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 16:46:18 by rhaas             #+#    #+#             */
-/*   Updated: 2025/06/06 19:06:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 17:12:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "rh_printf_intern.h"
+#include "ftprintf_intern.h"
 
 static void	rh_init_formatspec(t_fmtspec *fmtspec);
 static void	rh_set_formatflags(const char c, t_fmtspec *fmtspec);

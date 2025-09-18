@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rh_fmtconv_std.c                                   :+:      :+:    :+:   */
+/*   ftprintf_fmtconv_std.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 16:57:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 13:40:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 17:12:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "rh_printf_intern.h"
+#include "ftprintf_intern.h"
 
 #include <stdlib.h>
 

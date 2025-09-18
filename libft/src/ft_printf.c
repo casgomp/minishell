@@ -6,14 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 13:40:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 17:12:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
 #include "libft.h"
-#include "rh_printf_intern.h"
+#include "ftprintf_intern.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
