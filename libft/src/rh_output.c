@@ -49,12 +49,15 @@ static void	rh_set_outstr_fmtspec(
 int	rh_write_outstr(
 				const char *const str,
 				const t_fmtspec *const fmtspec,
-				const char signc)
+				const char signc,
+				t_bytecount_fd *const pbc)
 {
 	t_outstr_fmtspec	outfmtspec;
-	t_bytecount			bc;
+	int					initialtotal;
+	// t_bytecount_fd			bc;
 
-	bc = (t_bytecount){0, 0};
+	// bc = (t_bytecount_fd){0, 0};
+	initialtotal = pbc->total;
 	if (fmtspec->convspec == 'c')
 		outfmtspec.strlen = 1;
 	else
@@ -62,55 +65,59 @@ int	rh_write_outstr(
 	if (outfmtspec.strlen > (size_t)INT_MAX)
 		return (-1);
 	rh_set_outstr_fmtspec(&outfmtspec, fmtspec, signc);
-	bc.lastwrite = padding_left(fmtspec, &outfmtspec);
-	if (!bytecount_eval(&bc))
-		return (bc.total);
-	if (!try_write(&bc, str, outfmtspec.strlen))
-		return (bc.total);
-	bc.lastwrite = padding_right(bc.total, fmtspec);
-	bytecount_eval(&bc);
-	return (bc.total);
+	if (!padding_left(fmtspec, &outfmtspec, pbc))
+	// if (!bytecount_eval(pbc))
+		return (0);
+	if (!try_write(pbc, str, outfmtspec.strlen))
+		return (0);
+	padding_right(pbc->total - initialtotal, fmtspec, pbc);
+	// bytecount_eval(pbc);
+	return (1);
 }
 
 int	padding_left(
 	const t_fmtspec *const pfmtspec,
-	t_outstr_fmtspec *poutfs)
+	t_outstr_fmtspec *poutfs,
+	t_bytecount_fd *const pbc)
 {
-	t_bytecount			bc;
+	// t_bytecount_fd			bc;
 
-	bc = (t_bytecount){0, 0};
+	// bc = (t_bytecount_fd){0, 0};
 	if (!rh_actflx(lftjust, pfmtspec))
 	{
 		while ((poutfs->fieldwidth--) > (poutfs->strlen + (poutfs->signc != 0)
 				+ 2 * (poutfs->hex != NULL) + poutfs->zeropadsize))
 		{
-			if (!try_write(&bc, " ", 1))
-				return (bc.total);
+			if (!try_write(pbc, " ", 1))
+				return (0);
 		}
 	}
-	if (!try_write(&bc, &poutfs->signc, (poutfs->signc != 0)))
-		return (bc.total);
-	if (!try_write(&bc, poutfs->hex, 2 * (poutfs->hex != (char *) NULL)))
-		return (bc.total);
+	if (!try_write(pbc, &poutfs->signc, (poutfs->signc != 0)))
+		return (0);
+	if (!try_write(pbc, poutfs->hex, 2 * (poutfs->hex != (char *) NULL)))
+		return (0);
 	while (poutfs->zeropadsize--)
-		if (!try_write(&bc, "0", 1))
-			return (bc.total);
-	return (bc.total);
+		if (!try_write(pbc, "0", 1))
+			return (0);
+	return (1);
 }
 
-int	padding_right(const int outlen_sofar, const t_fmtspec *const pfmtspec)
+int	padding_right(
+	const int outlen_sofar,
+	const t_fmtspec *const pfmtspec,
+	t_bytecount_fd *const pbc)
 {
 	int			remaining_fieldwidth;
-	t_bytecount	bc;
+	// t_bytecount_fd	bc;
 
-	bc = (t_bytecount){0, 0};
+	// bc = (t_bytecount_fd){0, 0};
 	remaining_fieldwidth = pfmtspec->fieldwidth - outlen_sofar;
 	while (remaining_fieldwidth-- > 0)
 	{
-		if (!try_write(&bc, " ", 1))
-			return (bc.total);
+		if (!try_write(pbc, " ", 1))
+			return (0);
 	}
-	return (bc.total);
+	return (1);
 }
 
 char	rh_signchar(const int n, const t_fmtspec *const pfmtspec)

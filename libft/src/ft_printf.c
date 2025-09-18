@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 11:31:24 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 13:40:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,28 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-static int	rh_print_fmtstr(t_bytecount *const bcp, const char **pfmt);
-static int	rh_print_arg(t_bytecount *const bcp, const char **pfmt,
+static int	rh_print_fmtstr(t_bytecount_fd *const pbc, const char **pfmt);
+static int	rh_print_arg(t_bytecount_fd *const pbc, const char **pfmt,
 				va_list *valst);
+int	ft_xprintf(const int fd, const char *fmt, ...);
 
 int	ft_printf(const char *fmt, ...)
 {
-	va_list		valst;
-	t_bytecount	bc;
+	va_list	args;
+	int		retval;
+	
+	va_start(args, fmt);
+	retval = ft_xprintf(1, fmt, args);
+    va_end(args);
+	return (retval);
+}
 
-	bc = (t_bytecount){0, 0};
+int	ft_xprintf(const int fd, const char *fmt, ...)
+{
+	va_list		valst;
+	t_bytecount_fd	bc;
+
+	bc = (t_bytecount_fd){.lastwrite=0, .total=0, .fd=fd};
 	va_start(valst, fmt);
 	while (*fmt)
 	{
@@ -41,7 +53,7 @@ int	ft_printf(const char *fmt, ...)
 	return (bc.total);
 }
 
-static int	rh_print_fmtstr(t_bytecount *const bcp, const char **pfmt)
+static int	rh_print_fmtstr(t_bytecount_fd *const pbc, const char **pfmt)
 {
 	const char *const	startpos = *pfmt;
 	size_t				outstrlen;
@@ -49,29 +61,29 @@ static int	rh_print_fmtstr(t_bytecount *const bcp, const char **pfmt)
 	while ((**pfmt) && (**pfmt) != '%')
 		++(*pfmt);
 	outstrlen = (*pfmt) - startpos;
-	return (try_write(bcp, startpos, outstrlen));
+	return (try_write(pbc, startpos, outstrlen));
 }
 
-static int	rh_print_arg(t_bytecount *const bcp, const char **pfmt,
+static int	rh_print_arg(t_bytecount_fd *const pbc, const char **pfmt,
 				va_list *valst)
 {
 	t_fmtspec	fmtspec;
 
 	rh_set_formatspec(pfmt, &fmtspec);
 	if (!fmtspec.is_valid)
-		bcp->lastwrite = (rh_convspec_invalidfs(&fmtspec));
+		/* pbc->lastwrite = ( */rh_convspec_invalidfs(&fmtspec, pbc)/* ) */;
 	else if (fmtspec.convspec == 'c')
-		bcp->lastwrite = (rh_convspec_c(valst, &fmtspec));
+		/* pbc->lastwrite = ( */rh_convspec_c(valst, &fmtspec, pbc)/* ) */;
 	else if (fmtspec.convspec == 's')
-		bcp->lastwrite = (rh_convspec_s(valst, &fmtspec));
+		pbc->lastwrite = (rh_convspec_s(valst, &fmtspec, pbc));
 	else if (fmtspec.convspec == 'p')
-		bcp->lastwrite = (rh_convspec_p(valst, &fmtspec));
+		pbc->lastwrite = (rh_convspec_p(valst, &fmtspec, pbc));
 	else if (ft_strchr("diu", fmtspec.convspec))
-		bcp->lastwrite = (rh_convspec_diu(valst, &fmtspec));
+		pbc->lastwrite = (rh_convspec_diu(valst, &fmtspec, pbc));
 	else if (ft_tolower(fmtspec.convspec) == 'x')
-		bcp->lastwrite = (rh_convspec_x(valst, &fmtspec));
+		pbc->lastwrite = (rh_convspec_x(valst, &fmtspec, pbc));
 	else if (fmtspec.convspec == '%')
-		bcp->lastwrite = (rh_convspec_percent());
-	bytecount_eval(bcp);
-	return (0 <= bcp->total);
+		/* bcp->lastwrite = ( */rh_convspec_percent(pbc)/* ) */;
+	// bytecount_eval(bcp);
+	return (0 <= pbc->total);
 }

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 11:35:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 13:40:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,35 +44,47 @@ typedef struct s_outstr_fmtspec
 	char	signc;
 }				t_outstr_fmtspec;
 
-typedef struct s_bytecount
+typedef struct s_bytecount_fd
 {
 	int	lastwrite;
 	int	total;
-}				t_bytecount;
+	int	fd;
+}				t_bytecount_fd;
 
 int		rh_set_formatspec(const char **pfmt, t_fmtspec *fmtspec);
 int		rh_actflx(t_fsflag flag, const t_fmtspec *const fmtspec);
-int		rh_convspec_c(va_list *valst, const t_fmtspec *const fmtspec);
-int		rh_convspec_s(va_list *valst, const t_fmtspec *const fmtspec);
-int		rh_convspec_p(va_list *valst, t_fmtspec *const fmtspec);
-int		rh_convspec_diu(va_list *valst, const t_fmtspec *const fmtspec);
-int		rh_convspec_x(va_list *valst, t_fmtspec *const fmtspec);
-int		rh_convspec_invalidfs(const t_fmtspec *const fmtspec);
-int		rh_convspec_percent(void);
+int		rh_convspec_c(va_list *valst, const t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_s(va_list *valst, const t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_p(va_list *valst, t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_diu(va_list *valst, const t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_x(va_list *valst, t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_invalidfs(const t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
+int		rh_convspec_percent(t_bytecount_fd *const pbc);
 
 int		rh_write_outstr(
 			const char *const str,
 			const t_fmtspec *const fmtspec,
-			const char signc);
+			const char signc,
+			t_bytecount_fd *const pbc);
 int		padding_left(
 			const t_fmtspec *const fmtspec,
-			t_outstr_fmtspec *poutfs);
-int		padding_right(const int outlen_sofar, const t_fmtspec *const fmtspec);
+			t_outstr_fmtspec *poutfs,
+			t_bytecount_fd *const pbc);
+int		padding_right(
+			const int outlen_sofar,
+			const t_fmtspec *const fmtspec,
+			t_bytecount_fd *const pbc);
 char	rh_signchar(const int n, const t_fmtspec *const fmtspec);
 
-int		bytecount_eval(t_bytecount *const bcp);
+int		bytecount_eval(t_bytecount_fd *const bcp);
 int		try_write(
-			t_bytecount *const pbc,
+			t_bytecount_fd *const pbc,
 			const char *const str, const size_t len);
 
 #endif //RH_PRINTF_INTERN_H

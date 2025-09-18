@@ -14,7 +14,7 @@
 
 #include "unistd.h"
 
-int	bytecount_eval(t_bytecount *const bcp)
+int	bytecount_eval(t_bytecount_fd *const bcp)
 {
 	if (0 <= bcp->lastwrite)
 	{
@@ -28,9 +28,9 @@ int	bytecount_eval(t_bytecount *const bcp)
 	return (0);
 }
 
-int	try_write(t_bytecount *const pbc, const char *const str, const size_t len)
+int	try_write(t_bytecount_fd *const pbc, const char *const str, const size_t len)
 {
-	pbc->lastwrite = write(1, str, len);
+	pbc->lastwrite = write(pbc->fd, str, len);
 	if (!bytecount_eval(pbc))
 		return (0);
 	return (1);
