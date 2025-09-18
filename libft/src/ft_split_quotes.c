@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 17:49:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 11:45:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ft_split_quotes.h"
+#include "rh_split_quotes_intern.h"
 
 #include <stdlib.h>
 

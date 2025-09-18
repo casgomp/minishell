@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/16 13:23:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 11:45:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include "ft_printf.h"
 # include "get_next_line.h"
-# include "ft_split_quotes.h"
 
 # include <stdbool.h>
 # include <stddef.h>
@@ -52,8 +51,6 @@ char	*ft_strdup(const char *s);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strtrim(char const *s1, char const *set);
-char	**ft_split(char const *s, char c);
-char	**ft_split_quotes(char const *const s, t_qes const qes);
 char	*ft_itoa(int n);
 char	*ft_itoa_base(int n, const char *const base, int issigned);
 char	*ft_ptrtoa_base(intptr_t ptrval, const char *const base, int issigned);
@@ -64,6 +61,15 @@ void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 
+typedef struct s_quotes_esc_split
+{
+	char	splt;
+	char	*specialsplt;
+	char	*q;
+	char	esc;
+}	t_qes;
+char	**ft_split(char const *s, char c);
+char	**ft_split_quotes(char const *const s, t_qes const qes);
 typedef struct s_list
 {
 	void			*content;
