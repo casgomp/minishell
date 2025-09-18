@@ -10,10 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rh_output.h"
-
 #include "libft.h"
-#include "rh_write.h"
+#include "rh_printf_intern.h"
 
 #include <limits.h>
 

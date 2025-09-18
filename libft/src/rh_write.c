@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rh_write.h"
+#include "rh_printf_intern.h"
+
 #include "unistd.h"
 
 int	bytecount_eval(t_bytecount *const bcp)

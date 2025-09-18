@@ -6,14 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 16:57:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/07/02 15:34:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 11:32:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rh_fmtconv_std.h"
-
 #include "libft.h"
-#include "rh_output.h"
+#include "rh_printf_intern.h"
 
 #include <stdlib.h>
 

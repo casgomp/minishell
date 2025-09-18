@@ -10,9 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rh_fmtspec.h"
-
 #include "libft.h"
+#include "rh_printf_intern.h"
 
 static void	rh_init_formatspec(t_fmtspec *fmtspec);
 static void	rh_set_formatflags(const char c, t_fmtspec *fmtspec);
