@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 17:12:05 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/18 18:40:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ int	ft_printf(const char *fmt, ...)
 	int		retval;
 	
 	va_start(args, fmt);
-	retval = ft_xprintf(1, fmt, args);
+	retval = ft_fdprintf(1, fmt, args);
     va_end(args);
 	return (retval);
 }
 
-int	ft_xprintf(const int fd, const char *fmt, ...)
+int	ft_fdprintf(const int fd, const char *fmt, ...)
 {
 	va_list		valst;
 	t_bytecount_fd	bc;

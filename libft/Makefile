@@ -74,11 +74,11 @@ MANDATORY_SRCS	:= \
 # ft_printf
 MANDATORY_SRCS	+= \
 	ft_printf.c \
-	ftprintf_fmtconv_std.c \
-	ftprintf_output.c \
-	ftprintf_fmtspec.c \
-	ftprintf_write.c \
-	ftprintf_fmtconv_xtra.c
+	ft_printf_fmtconv_std.c \
+	ft_printf_output.c \
+	ft_printf_fmtspec.c \
+	ft_printf_write.c \
+	ft_printf_fmtconv_xtra.c
 
 # get_next_line
 MANDATORY_SRCS	+= \
