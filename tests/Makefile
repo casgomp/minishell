@@ -72,6 +72,11 @@ SRCFILES	:= test_split.c
 test_split: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
+SRCFILES	:= test_interactive.c
+-include $(COMMON_INC)
+test_interactive: $(COMMON_DEPS)
+	$(COMMON_RECIPE)
+
 # --- COMPILATION RULES ---
 $(OBJ_DIR)/%.o: %.c
 	@$(MKDIR) -p $(@D)

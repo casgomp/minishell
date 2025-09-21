@@ -6,13 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 16:54:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/21 18:59:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tests.h"
 #include "libft.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -22,19 +23,22 @@ typedef struct testcase
 	char **splt;
 	char *splt2;
 	char *shellout;
+	bool native;
 }	t_tstcs;
 
 int test_split()
 {
-	bool nativeShellOut = false;	
 	t_tstcs tests[] = {
-	/*  0 */ {.in="ein wort", .shellout="°ein°wort°"},
+	/*  0 */ {.in="ein wort", .shellout=NULL},
 	/*  1 */ {.in="ein|wort", .shellout="°ein°|°wort°"},
 	/*  2 */ {.in="ein||wort", .shellout="°ein°||°wort°"},
 	/*  3 */ {.in="ein ||wort", .shellout="°ein°||°wort°"},
 	/*  4 */ {.in="ein |wort", .shellout="°ein°|°wort°"},
 	/*  5 */ {.in="ein |   wort", .shellout="°ein°|°wort°"},
-	/*  6 */ {.in="ein | | wort", .shellout="°ein°|°|°wort°"},
+	/*  6 */ {.in="ein >>   wort", .shellout="°ein°>>°wort°"},
+	/*  7 */ {.in="ein | | wort", .shellout="°ein°|°|°wort°"},
+	/*  8 */ {.in="'ein wort' ohne \"hh\"", .shellout="°'ein wort'°ohne°\"hh\"°"},
+	/*  9 */ {.in="'ein wort' ohne \"hh\"", .shellout=NULL},
 	/*eof */ {.in=NULL},
 	};
 
@@ -47,6 +51,7 @@ int test_split()
 	{
 		printf("Test %2d: %s\n", i, tests[i].in);
 
+		tests[i].native = (tests[i].shellout == NULL);
 		tests[i].splt = ft_split_quotes(tests[i].in, qes);
 		if (!tests[i].splt)
 		{
@@ -60,7 +65,7 @@ int test_split()
 			sprintf(tests[i].splt2 + strlen(tests[i].splt2), "%s°", tests[i].splt[idx++]);
 		printf("%8s %s\n", "--> :", tests[i].splt2);
 
-		if (nativeShellOut)
+		if (tests[i].native)
 		{
 			char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
 			sprintf(cmdstr, "shell_scripts/shell_split.sh %s", tests[i].in);
@@ -88,7 +93,7 @@ int test_split()
 		}
 		if (tests[i].splt2)
 			free(tests[i].splt2);
-		if (nativeShellOut && tests[i].shellout)
+		if (tests[i].native && tests[i].shellout)
 			free(tests[i].shellout);
 	}
 

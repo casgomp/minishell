@@ -7,7 +7,9 @@
 		"request": "launch",
 		// "program": "${fileDirname}/../${fileBasenameNoExtension}",
 		"program": "${workspaceFolder}/tests/${fileBasenameNoExtension}",
-		"args": [],
+		"args": [
+			// "<test_input", // for non-interactive shell debugging: attach test_input file to stdin (fd=0)
+		],
 		"stopAtEntry": false,
 		"cwd": "${fileDirname}/../",
 		"environment": [],
