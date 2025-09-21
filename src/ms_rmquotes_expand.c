@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 11:58:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/21 21:02:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 			pue->tsl->next = malloc(sizeof(t_strstart_len));
 			pue->tsl = pue->tsl->next;
 		}
-		*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
 	}
+	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};	
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
 
