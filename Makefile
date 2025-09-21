@@ -12,7 +12,7 @@ MAKE			:= make -L
 OBJ_DIR_MAND    := obj/mandatory
 OBJ_DIR_BONUS   := obj/bonus
 # Library & Include directories
-LIBFT_DIR       := ../../gr42/libft
+LIBFT_DIR       := libft
 INC_DIR         := include
 # Source directories for vpath
 SRC_DIRS        := src src/utils
