@@ -6,12 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/21 18:59:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 17:40:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tests.h"
 #include "libft.h"
+#include "ms_rmquotes_expand.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -38,7 +39,7 @@ int test_split()
 	/*  6 */ {.in="ein >>   wort", .shellout="°ein°>>°wort°"},
 	/*  7 */ {.in="ein | | wort", .shellout="°ein°|°|°wort°"},
 	/*  8 */ {.in="'ein wort' ohne \"hh\"", .shellout="°'ein wort'°ohne°\"hh\"°"},
-	/*  9 */ {.in="'ein wort' ohne \"hh\"", .shellout=NULL},
+	/*  9 */ {.in="\'ein wort\' ohne \"hh\"", .shellout=NULL},
 	/*eof */ {.in=NULL},
 	};
 
@@ -49,7 +50,7 @@ int test_split()
 
 	for (int i=0; tests[i].in; ++i)
 	{
-		printf("Test %2d: %s\n", i, tests[i].in);
+		printf("Test %2d   : %s\n", i, tests[i].in);
 
 		tests[i].native = (tests[i].shellout == NULL);
 		tests[i].splt = ft_split_quotes(tests[i].in, qes);
@@ -63,11 +64,14 @@ int test_split()
 		int idx = 0;
 		while (tests[i].splt[idx])
 			sprintf(tests[i].splt2 + strlen(tests[i].splt2), "%s°", tests[i].splt[idx++]);
-		printf("%8s %s\n", "--> :", tests[i].splt2);
+		printf("%11s %s\n", "--> :", tests[i].splt2);
 
 		if (tests[i].native)
 		{
-			char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
+			tests[i].splt2 = ms_rmquotes_expand(tests[i].splt2,
+									(t_qed){.dict=NULL, .esc='\\', .expnd='\0', .q="\"\'"});
+
+									char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));
 			sprintf(cmdstr, "shell_scripts/shell_split.sh %s", tests[i].in);
 			FILE *shell = popen(cmdstr, "r");
 			tests[i].shellout = NULL;
@@ -76,9 +80,9 @@ int test_split()
 			pclose(shell);
 			free (cmdstr);
 		}
-		printf("%8s %s\n", "expected :", tests[i].shellout);
+		printf("%11s %s\n", "expected :", tests[i].shellout);
 
-		printf("%8s %s\n\n", "Status :", test_result_str(tests[i].splt2, tests[i].shellout,0));
+		printf("%11s %s\n\n", "Status :", test_result_str(tests[i].splt2, tests[i].shellout,0));
 	}
 
 	// Cleanup

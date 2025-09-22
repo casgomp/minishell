@@ -67,7 +67,7 @@ SRCFILES	:= test_quote_expand.c ms_rmquotes_expand.c
 test_quote_expand: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
-SRCFILES	:= test_split.c
+SRCFILES	:= test_split.c ms_rmquotes_expand.c
 -include $(COMMON_INC)
 test_split: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
