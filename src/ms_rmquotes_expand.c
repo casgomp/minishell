@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/21 19:35:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 20:19:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 bool	ms_isbvc(char const c, bool firstc)
 {
 	if (firstc && ft_isdigit(c))
-	 	return (false);
+		return (false);
 	return (ft_isalnum(c) || c == '_');
 }
 
@@ -41,8 +41,13 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 			pue->tsl = pue->tsl->next;
 		}
 	}
-	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};	
+	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
 	return (pue->tsl != (t_strstart_len *) NULL);
+}
+
+char	*ms_dict(char const *const key)
+{
+	return (getenv(key));
 }
 
 // Removes one level of quotes from the quoted string 'qutdstr'
@@ -52,14 +57,15 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 // Most common values are: q="\"'" and esc='\\'
 char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 {
+	// @rapha: This fun should be moved to libft!
 	int			idx;
 	char		*pc;
 	t_uedata	uedata;
 
 	uedata = (t_uedata){ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
-				(char *)NULL, '\0',
-				(t_strstart_len *)NULL, (t_strstart_len *)NULL, 0};
-	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in, 0))) 
+		(char *) NULL, '\0',
+		(t_strstart_len *) NULL, (t_strstart_len *) NULL, 0};
+	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in, 0)))
 		return ((char *) NULL);
 	idx = 0;
 	while (uedata.in[idx])
@@ -73,7 +79,7 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 			else if (uedata.actvq)
 				uedata.actvq = '\0';
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
-			continue;
+			continue ;
 		}
 		else if (uedata.actvq == tqed.q[0] || !uedata.actvq)
 		{
@@ -99,7 +105,7 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					}
 					idx += paramlen;
 					set_tsstl(&uedata, &(uedata.in[idx]), 0);					
-					continue;
+					continue ;
 				}
 			}
 		}
@@ -121,6 +127,3 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 	free(uedata.in);
 	return (uedata.uestr);
 }
-
-void	ms_expand()
-{};

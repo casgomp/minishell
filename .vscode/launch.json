@@ -33,8 +33,7 @@
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
-      "args": ["3", "800", "200", "200",
-		/* num_meals */ 4
+      "args": [
 		],	
     //   "stopAtEntry": true,
       "externalConsole": false,
