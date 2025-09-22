@@ -30,5 +30,8 @@
 *.exe
 *.out
 *.app
+test/
 minishell
-.vscode/
+pipex/
+/tests/test_*
+!/tests/test_*[.]*
