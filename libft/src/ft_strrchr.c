@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 11:23:52 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/16 16:21:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 16:36:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 char	*ft_strrchr(const char *s, int c)
 {
-	char	ch;
-	char	*sc;
+	char const	ch = c;
+	char		*sc;
 
-	ch = (char)c;
+	if (!s)
+		return ((char *) NULL);
 	sc = (char *) NULL;
 	while (*s)
 	{

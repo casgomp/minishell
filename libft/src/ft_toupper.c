@@ -6,20 +6,16 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 10:53:29 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:27:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 16:36:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 int	ft_toupper(int c)
 {
-	int		delta;
-	char	ch;
+	static int const	delta = 'a' - 'A';
+	char const			ch = c;
 
-	ch = (char)c;
 	if (('a' <= ch) && (ch <= 'z'))
-	{
-		delta = 'a' - 'A';
 		c -= delta;
-	}
 	return (c);
 }

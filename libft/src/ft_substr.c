@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 20:13:13 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/02 17:38:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 16:21:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,12 @@
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	const size_t	slen = ft_strlen(s);
-	char			*sub;
+	size_t	slen;
+	char	*sub;
 
+	if (!s)
+		return ((char *) NULL);
+	slen = ft_strlen(s);
 	if (start >= slen)
 		len = 0;
 	else if (len > slen - start)
