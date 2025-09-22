@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 21:37:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/21 21:02:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 bool	ms_isbvc(char const c, bool firstc)
 {
 	if (firstc && ft_isdigit(c))
-	 	return (false);
+		return (false);
 	return (ft_isalnum(c) || c == '_');
 }
 
@@ -40,8 +40,8 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 			pue->tsl->next = malloc(sizeof(t_strstart_len));
 			pue->tsl = pue->tsl->next;
 		}
-		*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
 	}
+	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};	
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
 
@@ -57,9 +57,9 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 	t_uedata	uedata;
 
 	uedata = (t_uedata){ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
-				(char *)NULL, '\0',
-				(t_strstart_len *)NULL, (t_strstart_len *)NULL, 0};
-	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in, 0))) 
+		(char *) NULL, '\0',
+		(t_strstart_len *) NULL, (t_strstart_len *) NULL, 0};
+	if (!(uedata.in && tqed.q && set_tsstl(&uedata, uedata.in, 0)))
 		return ((char *) NULL);
 	idx = 0;
 	while (uedata.in[idx])
@@ -73,7 +73,7 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 			else if (uedata.actvq)
 				uedata.actvq = '\0';
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
-			continue;
+			continue ;
 		}
 		else if (uedata.actvq == tqed.q[0] || !uedata.actvq)
 		{

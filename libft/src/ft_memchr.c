@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 11:46:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:51:47 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 13:16:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 void	*ft_memchr(const void *s, int c, size_t n)
 {
-	const unsigned char	ch = c;
-	const unsigned char	*sc;
+	const unsigned char	ch = (const unsigned char)c;
+	const unsigned char	*sc = (const unsigned char *)s;
 
-	sc = (const unsigned char *)s;
 	while (n--)
 	{
 		if ((*sc) == ch)

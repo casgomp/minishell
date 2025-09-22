@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 21:08:22 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/04 17:36:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 16:44:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static size_t	section_count(char const *s, const char c)
 	size_t	cnt;
 
 	cnt = 0;
+	if (!s)
+		return (0);
 	while (*s)
 	{
 		if (*s && c != *s)
@@ -51,6 +53,8 @@ char	**ft_split(char const *s, char c)
 	const size_t	subs = section_count(s, c);
 	size_t			idx;
 
+	if (!s)
+		return ((char **) NULL);
 	split = (char **)malloc((subs + 1) * sizeof(char *));
 	if (!split)
 		return ((char **) NULL);

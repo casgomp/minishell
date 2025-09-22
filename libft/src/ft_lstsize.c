@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstsize_bonus.c                                 :+:      :+:    :+:   */
+/*   ft_lstsize.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 16:13:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 21:13:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 13:08:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,10 @@ int	ft_lstsize(t_list *lst)
 	int	llen;
 
 	llen = 0;
-	if (lst)
+	while (lst)
 	{
-		llen = 1;
-		while (lst->next)
-		{
-			++llen;
-			lst = lst->next;
-		}
+		++llen;
+		lst = lst->next;
 	}
 	return (llen);
 }
