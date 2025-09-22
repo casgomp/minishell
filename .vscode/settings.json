@@ -89,7 +89,9 @@
 	"fractals.h": "c",
 	"stdint.h": "c",
 	"stat.h": "c",
-	"readline.h": "c"
+	"readline.h": "c",
+	"ft_linked_list.h": "c",
+	"ft_memory.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "ms-vscode.cpptools",

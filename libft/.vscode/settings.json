@@ -1,0 +1,6 @@
+{
+	"files.associations": {
+		"ft_printf.h": "c",
+		"rh_printf_intern.h": "c"
+	}
+}

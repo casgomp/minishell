@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+test/
 minishell
 pipex/
 tests/
