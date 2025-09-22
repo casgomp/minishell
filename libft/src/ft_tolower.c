@@ -6,20 +6,16 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 10:52:44 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:19:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 16:36:28 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 int	ft_tolower(int c)
 {
-	int		delta;
-	char	ch;
+	static int const	delta = 'a' - 'A';
+	char const			ch = c;
 
-	ch = (char)c;
 	if (('A' <= ch) && (ch <= 'Z'))
-	{
-		delta = 'a' - 'A';
 		c += delta;
-	}
 	return (c);
 }

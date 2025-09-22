@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 22:19:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/21 19:46:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 13:31:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	unsigned char		*local_dest;
 	const unsigned char	*local_src;
 
+	if (dest == src || n == 0)
+		return (dest);
 	if (dest || src)
 	{
 		local_dest = dest;

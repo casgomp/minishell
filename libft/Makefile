@@ -116,7 +116,6 @@ all: $(NAME)
 -include $(DEPS)
 
 # --- TARGETS ---
-
 $(NAME): $(OBJS)
 	@printf "$(BLUE_BOLD)Linking MANDATORY library:$(RESET) $(NAME)\n"
 	@$(AR) $(NAME) $(OBJS)

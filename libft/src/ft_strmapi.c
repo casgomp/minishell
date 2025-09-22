@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 10:49:17 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/19 18:21:05 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/22 15:56:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 	unsigned int	idx;
 	char			*s2;
 
+	if (!(s && f))
+		return ((char *) NULL);
 	s2 = malloc((ft_strlen(s) + 1) * sizeof(char));
 	if (s2)
 	{
