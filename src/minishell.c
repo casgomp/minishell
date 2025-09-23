@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 20:40:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 10:15:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ int	main(int argc, char *argv[])
 	while (true)
 	{
 		get_cmdline_add_history(&cd, &in);
-		if (cd.exit)
-			break;
 		process_cmdline(&cd, in);
 		free(in);
+		if (cd.exit)
+			break;
 	}
 	ms_cleanup(&cd);
 	return (EXIT_SUCCESS);
