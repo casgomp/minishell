@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 17:52:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 13:34:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <stdbool.h>
 # include <stddef.h>
 # include <inttypes.h>
+
+typedef long long int			t_llong;
+typedef unsigned long long int	t_ullong;
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -41,20 +44,18 @@ int		ft_strcmp(const char *s1, const char *s2);
 void	*ft_memchr(const void *s, int c, size_t n);
 int		ft_memcmp(const void *s1, const void *s2, size_t n);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
-int		ft_atoi(const char *nptr);
 
-typedef long long int			t_llong;
-typedef unsigned long long int	t_ullong;
+int		ft_atoi(const char *nptr);
 t_llong	ft_atoll_check_input(const char *nptr, t_ullong limit, int *success);
+char	*ft_itoa(int n);
+char	*ft_itoa_base(int n, const char *const base, bool issigned);
+char	*ft_lltoa_base(t_llong val, const char *const base, bool issigned);
+
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strdup(const char *s);
-
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strtrim(char const *s1, char const *set);
-char	*ft_itoa(int n);
-char	*ft_itoa_base(int n, const char *const base, int issigned);
-char	*ft_ptrtoa_base(intptr_t ptrval, const char *const base, int issigned);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
 void	ft_putchar_fd(char c, int fd);
@@ -64,7 +65,7 @@ void	ft_putnbr_fd(int n, int fd);
 
 typedef struct s_quotes_esc_split
 {
-	char	splt;
+	char	*splt;
 	char	*specialsplt;
 	char	*q;
 	char	esc;

@@ -6,10 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 20:19:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 13:33:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 #include "ms_rmquotes_expand.h"
 #include "libft.h"
 
@@ -45,9 +46,12 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
 
-char	*ms_dict(char const *const key)
+char	*ms_dict(char const *const key, t_cd *pcd)
 {
-	return (getenv(key));
+	if (!ft_strcmp(key, "?"))
+		return (ft_itoa(pcd->exit_status));
+	else
+		return (getenv(key));
 }
 
 // Removes one level of quotes from the quoted string 'qutdstr'
@@ -98,7 +102,7 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
 					if (envvar)
 					{
-						char *envval = tqed.dict(envvar);
+						char *envval = tqed.dict(envvar, tqed.data);
 						if (envval)
 							set_tsstl(&uedata, envval, ft_strlen(envval));
 						free(envvar);
