@@ -6,10 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/21 21:02:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 13:26:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 #include "ms_rmquotes_expand.h"
 #include "libft.h"
 
@@ -41,8 +42,16 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 			pue->tsl = pue->tsl->next;
 		}
 	}
-	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};	
+	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
 	return (pue->tsl != (t_strstart_len *) NULL);
+}
+
+char	*ms_dict(char const *const key, t_cd *pcd)
+{
+	if (!ft_strcmp(key, "?"))
+		return (ft_itoa(pcd->exit_status));
+	else
+		return (getenv(key));
 }
 
 // Removes one level of quotes from the quoted string 'qutdstr'
@@ -52,6 +61,7 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 // Most common values are: q="\"'" and esc='\\'
 char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 {
+	// @rapha: This fun should be moved to libft!
 	int			idx;
 	char		*pc;
 	t_uedata	uedata;
@@ -92,14 +102,14 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 					char *envvar = ft_substr(pc, 1, paramlen - 1);
 					if (envvar)
 					{
-						char *envval = tqed.dict(envvar);
+						char *envval = tqed.dict(envvar, tqed.data);
 						if (envval)
 							set_tsstl(&uedata, envval, ft_strlen(envval));
 						free(envvar);
 					}
 					idx += paramlen;
 					set_tsstl(&uedata, &(uedata.in[idx]), 0);					
-					continue;
+					continue ;
 				}
 			}
 		}
@@ -121,6 +131,3 @@ char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed)
 	free(uedata.in);
 	return (uedata.uestr);
 }
-
-void	ms_expand()
-{};
