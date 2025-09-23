@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ms_rmquotes_expand.c                               :+:      :+:    :+:   */
+/*   ms_rmquotes_expand.c_2                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 16:39:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 16:59:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ static void	qed_cleanup(t_uedata *const puedata);
 char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed)
 {
 	int			idx;
+	int			ret;
 	char		*pc;
 	t_uedata	uedata;
 
@@ -120,10 +121,10 @@ char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed)
 		pc = &(uedata.instr[idx]);
 		if (ms_toggle_quote(pc, &tqed, &uedata))
 			continue ;
-		*pc = ms_escape_expand(pc, &idx, &tqed, &uedata);
-		if (*pc == 1)
+		ret = ms_escape_expand(pc, &idx, &tqed, &uedata);
+		if (ret == 1)
 			continue ;
-		else if (*pc == -1)
+		else if (ret == -1)
 			return (qed_cleanup(&uedata), (char *) NULL);
 		++idx;
 		++(uedata.tsl->len);
