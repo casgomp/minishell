@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 11:14:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 12:41:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	ft_putnbr_fd(int n, int fd);
 
 typedef struct s_quotes_esc_split
 {
-	char	splt;
+	char	*splt;
 	char	*specialsplt;
 	char	*q;
 	char	esc;
