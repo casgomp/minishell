@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 13:34:10 by rhaas            ###   ########.fr       */
+/*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
+/*   Updated: 2025/09/23 16:44:54 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ typedef struct s_strstart_len
 
 typedef struct s_unqut_expd_data
 {
-	char			*in;
-	char			*uestr;
+	char			*instr;
 	char			actvq;
 	t_strstart_len	*tsl_orig;
 	t_strstart_len	*tsl;
+	char			*uestr;
 	size_t			uestrlen;
 }	t_uedata;
 
@@ -41,6 +41,6 @@ typedef struct s_quotes_esc_dict
 	char	*(*dict)(char const *const, void *data);
 }	t_qed;
 
-char	*ms_rmquotes_expand(char const *const qutdstr, t_qed tqed);
+char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed);
 
 #endif // MS_RMQUOTES_EXPAND_H
