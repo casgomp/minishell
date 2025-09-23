@@ -6,17 +6,19 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 21:58:48 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/30 14:42:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 11:24:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
 #include <limits.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-static size_t	num_digits(intptr_t nbr, const size_t baselength)
+static size_t	num_digits(t_llong nbr, const size_t baselength)
 {
 	size_t	len;
 
@@ -30,41 +32,41 @@ static size_t	num_digits(intptr_t nbr, const size_t baselength)
 	return (len);
 }
 
-static uintptr_t	uiabs(const intptr_t n, int *sign)
+static t_ullong	ullong_abs(const t_llong n, int *sign)
 {
-	uintptr_t	nb;
+	t_ullong	nb;
 
-	nb = (uintptr_t)n;
+	nb = (t_ullong)n;
 	*sign = 0;
 	if (n < 0)
 	{
 		*sign = -1;
-		if (n > INTPTR_MIN)
+		if (n > LLONG_MIN)
 			nb = -1 * n;
 	}
 	return (nb);
 }
 
-char	*ft_itoa_base(int n, const char *const base, int issigned)
+char	*ft_itoa_base(int n, const char *const base, bool issigned)
 {
 	if (issigned)
-		return (ft_ptrtoa_base((signed int)n, base, issigned));
+		return (ft_lltoa_base((signed int)n, base, issigned));
 	else
-		return (ft_ptrtoa_base((unsigned int)n, base, issigned));
+		return (ft_lltoa_base((unsigned int)n, base, issigned));
 }
 
-char	*ft_ptrtoa_base(intptr_t ptrval, const char *const base, int issigned)
+char	*ft_lltoa_base(t_llong val, const char *const base, bool issigned)
 {
 	char			*numstr;
 	int				sign;
-	uintptr_t		nb;
+	t_ullong		nb;
 	size_t			slen;
 	const size_t	baselen = ft_strlen(base);
 
 	sign = 0;
-	nb = (uintptr_t)ptrval;
+	nb = (t_ullong)val;
 	if (issigned)
-		nb = uiabs(ptrval, &sign);
+		nb = ullong_abs(val, &sign);
 	slen = num_digits(nb, baselen) - sign;
 	numstr = malloc((slen + 1) * sizeof(char));
 	if (!numstr)

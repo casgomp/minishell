@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 11:45:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 12:52:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 	}
 	if (!s[*pidx]
 		|| (!ptsp->activeq
-			&& (s[*pidx] == pqes->splt
+			&& (ft_strchr(pqes->splt, s[*pidx])
 				|| ft_strchr(pqes->specialsplt, s[*pidx]))))
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 }
@@ -52,8 +52,9 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 									t_qes const *const pqes, t_splprms *ptsp)
 {
 	while (s[*pidx]
-		&& ((!ptsp->activeq && !ft_strchr(pqes->q, s[*pidx])
-				&& (s[*pidx] != pqes->splt)
+		&& ((!ptsp->activeq
+				&& !ft_strchr(pqes->q, s[*pidx])
+				&& !ft_strchr(pqes->splt, s[*pidx])
 				&& !ft_strchr(pqes->specialsplt, s[*pidx]))
 			|| (ptsp->activeq && s[*pidx] != ptsp->activeq)))
 	{
@@ -77,7 +78,7 @@ char	**ft_split_quotes(char const *const s, t_qes const qes)
 	idx = 0;
 	while (s[idx])
 	{
-		while (s[idx] && qes.splt == s[idx])
+		while (s[idx] && ft_strchr(qes.splt, s[idx]))
 			++idx;
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup(&tsp), (char **) NULL);
