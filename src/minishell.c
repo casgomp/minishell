@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 10:15:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 13:56:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,12 @@
 
 int ms_init(t_cd *pcd)
 {
+	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
-	pcd->default_qes = (t_qes){.splt = ' ', .specialsplt="", .q="\"\'", .esc='\\'};
-	pcd->default_qed = (t_qed){.dict=&ms_dict, .esc='\0', .expnd='$', .q="\"\'"};
+	pcd->fdscript = -1;
+	pcd->exit = false;
+	pcd->default_qes = (t_qes){.splt = " \t", .specialsplt="", .q="\"\'", .esc='\\'};
+	pcd->default_qed = (t_qed){.dict=&ms_dict, .data=pcd, .esc='\0', .expnd='$', .q="\"\'"};
 	return (1);
 }
 

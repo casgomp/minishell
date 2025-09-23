@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 13:33:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 13:57:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,20 @@
 
 // minishell_isAllowedBashVariableCharacter
 // https://thelinuxcode.com/bash-variable-name-rules-legal-illegal/
-bool	ms_isbvc(char const c, bool firstc)
+bool	ms_isbvc(char const c, bool isfirstc)
 {
-	if (firstc && ft_isdigit(c))
+	static char firstc;
+	static char const *const special = "?";
+	
+	if (isfirstc)
+	{ 
+		firstc = c;
+		if (ft_isdigit(c))
+			return (false);
+		if (ft_strchr(special, c))
+			return (true);
+	}
+	else if (ft_strchr(special, firstc))
 		return (false);
 	return (ft_isalnum(c) || c == '_');
 }
@@ -46,8 +57,10 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
 
-char	*ms_dict(char const *const key, t_cd *pcd)
+char	*ms_dict(char const *const key, void *data)
 {
+	t_cd	*pcd = (t_cd *)data;
+	
 	if (!ft_strcmp(key, "?"))
 		return (ft_itoa(pcd->exit_status));
 	else
