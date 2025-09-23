@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 20:41:02 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 16:46:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 	--args;
 	while (*(++args) && ret >= 0)
 	{
-		arg = ms_rmquotes_expand(*args, pcd->default_qed);
+		arg = ms_rmqts_esc_xpnd(*args, pcd->default_qed);
 		ret = ft_printf("%s ", arg);
 		free(arg);
 	}
