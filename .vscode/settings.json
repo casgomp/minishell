@@ -94,7 +94,9 @@
 	"ms_rmquotes_expand.h": "c",
 	"stdlib.h": "c",
 	"stdbool.h": "c",
-	"minishell.h": "c"
+	"minishell.h": "c",
+	"rh_split_qed_intern.h": "c",
+	"rh_utils.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "ms-vscode.cpptools",
