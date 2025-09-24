@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 09:14:05 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 15:57:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,24 @@
 #include <readline/readline.h>
 #include <unistd.h>
 
-int ms_init(t_cd *pcd)
+int	ms_init(t_cd *pcd)
 {
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
 	pcd->exit = false;
-	pcd->default_qes = (t_qes){.splt = " \t", .specialsplt="", .q="\"\'", .esc='\\'};
-	pcd->default_qed = (t_qed){.dict=&ms_dict, .dict_data=pcd, .esc='\0', .expnd='$', .q="\"\'"};
+	pcd->default_qes = (t_qes){.q = "\"\'", .esc = '\\',
+		.splt = " \t", .specialsplt = ""};
+	pcd->default_qed = (t_qed){.q = "\"\'", .esc = '\0', .expnd = '$',
+		.dict = &ms_dict, .dict_data = pcd,
+		.validchar = &ms_isvalidvarchar, .validchar_data = (bool *) NULL};
 	return (1);
 }
 
 int	ms_cleanup(t_cd *pcd)
 {
+	// if (pcd->default_qed.validchar_data)
+	// 	free(pcd->default_qed.validchar_data);
 	rl_clear_history();
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
@@ -48,7 +53,7 @@ int	main(int argc, char *argv[])
 		process_cmdline(&cd, in);
 		free(in);
 		if (cd.exit)
-			break;
+			break ;
 	}
 	ms_cleanup(&cd);
 	return (EXIT_SUCCESS);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 09:40:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 15:32:24 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,9 @@ typedef struct s_quotes_esc_dict
 	char	esc;
 	char	expnd;
 	void	*dict_data;
-	char	*(*dict)(char const *const, void *dict_data);
+	char	*(*dict)(char const *const key, void *dict_data);
+	void	*validchar_data;
+	bool	(*validchar)(char const c, void *validchar_data);
 }	t_qed;
 
 char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed);
