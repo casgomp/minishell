@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:37:27 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/04 17:07:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 14:00:51 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ static int	check_dup(int fd, int fdnew, char const *const src)
 
 static int	reset_stdiofds(t_fds const fds)
 {
-	dup2(fds.stdin, 0);
-	dup2(fds.stdout, 1);
+	dup2(fds.stdin, STDIN_FILENO);
+	dup2(fds.stdout, STDOUT_FILENO);
 	close(fds.stdin);
 	close(fds.stdout);
 	return (1);
@@ -40,8 +40,8 @@ static int	reset_stdiofds(t_fds const fds)
 static void	setup_fds(t_fds *const pfds,
 	char **const argv)
 {
-	pfds->stdin = dup(0);
-	pfds->stdout = dup(1);
+	pfds->stdin = dup(STDIN_FILENO);
+	pfds->stdout = dup(STDOUT_FILENO);
 	pfds->f1name = argv[1];
 	pfds->f2name = argv[4];
 	pfds->file1 = open(pfds->f1name, O_RDONLY);
@@ -62,14 +62,14 @@ int	main(int argc, char *argv[])
 		return (ft_printf("Usage: %s: file1 cmd1 cmd2 file2\n", argv[0]),
 			EXIT_FAILURE);
 	setup_fds(&fds, argv);
-	if (!check_dup(fds.file1, 0, fds.f1name))
+	if (!check_dup(fds.file1, STDIN_FILENO, fds.f1name))
 		close(fds.pipefd[1]);
-	else if (check_dup(fds.pipefd[1], 1, "pipe"))
-		run_cmd(argv[2]);
-	if (!check_dup(fds.pipefd[0], 0, "pipe"))
+	else if (check_dup(fds.pipefd[1], STDOUT_FILENO, "pipe"))
+		run_cmd(argv[2], &fds);
+	if (!check_dup(fds.pipefd[0], STDIN_FILENO, "pipe"))
 		close (fds.file2);
-	else if (check_dup(fds.file2, 1, fds.f2name)
-		&& run_cmd(argv[3]))
+	else if (check_dup(fds.file2, STDOUT_FILENO, fds.f2name)
+		&& run_cmd(argv[3], &fds))
 		return (reset_stdiofds(fds), EXIT_SUCCESS);
 	return (reset_stdiofds(fds), EXIT_FAILURE);
 }

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 10:38:42 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/03 09:47:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 12:54:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,6 @@ typedef struct s_fs
 	int		pipefd[2];
 }	t_fds;
 
-int	run_cmd(char *args);
+int	run_cmd(char *args, t_fds *const pfds);
 
 #endif // PIPEX_H
