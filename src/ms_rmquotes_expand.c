@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 17:01:38 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 10:17:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 	return (pue->tsl != (t_strstart_len *) NULL);
 }
 
-char	*ms_dict(char const *const key, void *data)
+char	*ms_dict(char const *const key, void *dict_data)
 {
-	t_cd *const	pcd = (t_cd *)data;
+	t_cd *const	pcd = (t_cd *)dict_data;
 
 	if (!ft_strcmp(key, "?"))
 		return (ft_itoa(pcd->exit_status));
@@ -95,7 +95,7 @@ static int	ms_expand(char *const pc, int *const pidx,
 static int	ms_escape_expand(char *const pc, int *const pidx,
 				t_qed const *const ptqed, t_uedata *const puedata);
 static char	*ms_compose_uestr(t_uedata *const puedata);
-static void	qed_cleanup(t_uedata *const puedata);
+static void	uedata_cleanup(t_uedata *const puedata);
 
 // Removes one level of quotes from the quoted string 'qutdstr'
 // Different quote chars can be specified in the C-string 'q'
@@ -114,7 +114,7 @@ char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed)
 	uedata = (t_uedata){ft_substr(qutdstr, 0, ft_strlen(qutdstr)), '\0',
 		(t_strstart_len *) NULL, (t_strstart_len *) NULL, (char *) NULL, 0};
 	if (!(uedata.instr && tqed.q && set_tsstl(&uedata, uedata.instr, 0)))
-		return (qed_cleanup(&uedata), (char *) NULL);
+		return (uedata_cleanup(&uedata), (char *) NULL);
 	idx = 0;
 	while (uedata.instr[idx])
 	{
@@ -125,12 +125,33 @@ char	*ms_rmqts_esc_xpnd(char const *const qutdstr, t_qed tqed)
 		if (ret == 1)
 			continue ;
 		else if (ret == -1)
-			return (qed_cleanup(&uedata), (char *) NULL);
+			return (uedata_cleanup(&uedata), (char *) NULL);
 		++idx;
 		++(uedata.tsl->len);
 	}
 	uedata.uestrlen += uedata.tsl->len;
 	return (ms_compose_uestr(&uedata));
+}
+
+char	**ms_split_rmqed(char const *const to_split,
+			t_qes const qes, t_qed tqed)
+{
+	char	**const split = ft_split_quotes(to_split, qes);
+	char	*substr;
+	int		idx;
+
+	if (split)
+	{
+		idx = 0;
+		while (split[idx])
+		{
+			substr = ms_rmqts_esc_xpnd(split[idx], tqed);
+			free(split[idx]);
+			split[idx] = substr;
+			++idx;
+		}
+	}
+	return (split);
 }
 
 // returns...
@@ -165,7 +186,7 @@ static int	ms_expand(char *const pc, int *const pidx,
 		envvar = ft_substr(pc, 1, paramlen - 1);
 		if (envvar)
 		{
-			envval = ptqed->dict(envvar, ptqed->data);
+			envval = ptqed->dict(envvar, ptqed->dict_data);
 			if (envval)
 				set_tsstl(puedata, envval, ft_strlen(envval));
 			free(envvar);
@@ -203,8 +224,10 @@ static int	ms_escape_expand(char *const pc, int *const pidx,
 // Because puedata->tsl_orig is initialised to zero, it's safe to run
 //  this function even if nothing ever has been malloc'd
 // Also puedata->tsl_orig is implicitly zero at the end of the fun in any case
-static void	qed_cleanup(t_uedata *const puedata)
+static void	uedata_cleanup(t_uedata *const puedata)
 {
+	if (puedata->instr)
+		free(puedata->instr);
 	puedata->tsl = puedata->tsl_orig;
 	while (puedata->tsl_orig)
 	{

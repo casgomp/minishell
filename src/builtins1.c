@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 16:46:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 14:13:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,10 @@
 
 #include <stdlib.h>
 
-static int	msbi_echo(t_cd *pcd, char **args)
+static int	msbi_echo(char **args)
 {
 	int		ret;
 	bool	newline;
-	char	*arg;
 
 	ret = 0;
 	newline = true;
@@ -27,9 +26,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 	--args;
 	while (*(++args) && ret >= 0)
 	{
-		arg = ms_rmqts_esc_xpnd(*args, pcd->default_qed);
-		ret = ft_printf("%s ", arg);
-		free(arg);
+		ret = ft_printf("%s ", *args);
 	}
 	if (ret > 0)
 		ret = ft_printf("%c", '\b');
@@ -49,7 +46,7 @@ static int	msbi_exit(t_cd *pcd)
 int	ms_builtins(t_cd *pcd, char **const args)
 {
 	if (!ft_strcmp(args[0], "echo"))
-		return (msbi_echo(pcd, args));
+		return (msbi_echo(args));
 	else if (!ft_strcmp(args[0], "exit"))
 		return (msbi_exit(pcd));
 	else

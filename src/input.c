@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 16:46:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 14:16:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,29 @@
 
 int process_cmdline(t_cd *pcd, char const *const in)
 {
-	char **const split = ft_split_quotes(in, pcd->default_qes);
+	char **const cmdln_tokens = ms_split_rmqed(in, pcd->default_qes, pcd->default_qed);
 
-	if (split && *split)
+	if (cmdln_tokens && *cmdln_tokens)
 	{
-		if (ms_builtins(pcd, split))
-			return (1);
+		// loop over pipe sections
+		{
+			// do io redirect
+			// stdin from file, heredoc or pipe
+			// stdout to file trunc|append or pipe
+			// compose cmdln_tokens array for current command
+
+			char **args = cmdln_tokens;
+			//function run cmd(subset_args)
+			{
+				if (ms_builtins(pcd, args))
+					return (ms_free_nullterm_array(cmdln_tokens), 1);
+				else
+					// run extern executable using fork and exec...
+					;
+			}
+		}
 	}
-	return (0);
+	return (/* ms_free_nullterm_array(split), necessary? */ 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
