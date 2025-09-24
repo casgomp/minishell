@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 17:05:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:24:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,15 @@
 
 # include "ft_printf.h"
 # include "get_next_line.h"
+# include "rh_split_qed.h"
+# include "rh_utils.h"
 
 # include <stdbool.h>
 # include <stddef.h>
 # include <inttypes.h>
+
+typedef long long int			t_llong;
+typedef unsigned long long int	t_ullong;
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -41,42 +46,31 @@ int		ft_strcmp(const char *s1, const char *s2);
 void	*ft_memchr(const void *s, int c, size_t n);
 int		ft_memcmp(const void *s1, const void *s2, size_t n);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
-int		ft_atoi(const char *nptr);
 
-typedef long long int			t_llong;
-typedef unsigned long long int	t_ullong;
+int		ft_atoi(const char *nptr);
 t_llong	ft_atoll_check_input(const char *nptr, t_ullong limit, int *success);
+char	*ft_itoa(int n);
+char	*ft_itoa_base(int n, const char *const base, bool issigned);
+char	*ft_lltoa_base(t_llong val, const char *const base, bool issigned);
+
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strdup(const char *s);
-
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strtrim(char const *s1, char const *set);
-char	*ft_itoa(int n);
-char	*ft_itoa_base(int n, const char *const base, int issigned);
-char	*ft_ptrtoa_base(intptr_t ptrval, const char *const base, int issigned);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
 void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
-
-typedef struct s_quotes_esc_split
-{
-	char	splt;
-	char	*specialsplt;
-	char	*q;
-	char	esc;
-}	t_qes;
 char	**ft_split(char const *s, char c);
-char	**ft_split_quotes(char const *const s, t_qes const qes);
+
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
 }	t_list;
-
 t_list	*ft_lstnew(void *content);
 void	ft_lstadd_front(t_list **lst, t_list *new);
 int		ft_lstsize(t_list *lst);

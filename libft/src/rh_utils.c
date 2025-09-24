@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   rh_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 12:03:14 by pecastro          #+#    #+#             */
-/*   Updated: 2025/07/24 12:03:16 by pecastro         ###   ########.fr       */
+/*   Created: 2025/09/24 17:00:02 by rhaas             #+#    #+#             */
+/*   Updated: 2025/09/24 17:00:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "ft_memory.h"
 
-void	ft_bzero(void *s, size_t n)
+#include <stdlib.h>
+
+int	rh_free_simple_array(void **arr)
 {
-	size_t	i;
+	void	**elem;
 
-	i = 0;
-	while (i < n)
+	if (arr)
 	{
-		((unsigned char *)s)[i] = '\0';
-		i ++;
+		elem = arr;
+		while (*elem)
+			free(*(elem++));
+		free(arr);
+		arr = (void **) NULL;
 	}
+	return (1);
 }

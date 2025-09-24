@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isascii.c                                       :+:      :+:    :+:   */
+/*   rh_utils.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pecastro <pecastro@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 11:57:26 by pecastro          #+#    #+#             */
-/*   Updated: 2025/07/24 11:57:29 by pecastro         ###   ########.fr       */
+/*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
+/*   Updated: 2025/09/24 17:11:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "ft_ctype.h"
 
-int	ft_isascii(int c)
-{
-	if (c >= 0 && c <= 127)
-	{
-		return (1);
-	}
-	return (0);
-}
+#ifndef RH_UTILS_H
+# define RH_UTILS_H
+
+int	rh_free_simple_array(void **arr);
+
+#endif // RH_UTILS_H
