@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 14:16:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 14:28:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int process_cmdline(t_cd *pcd, char const *const in)
 			}
 		}
 	}
-	return (/* ms_free_nullterm_array(split), necessary? */ 0);
+	return (ms_free_nullterm_array(cmdln_tokens)/*necessary?*/, 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
