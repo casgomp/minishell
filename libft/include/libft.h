@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/23 13:34:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:01:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "ft_printf.h"
 # include "get_next_line.h"
+# include "rh_split_qed.h"
+# include "rh_utils.h"
 
 # include <stdbool.h>
 # include <stddef.h>
@@ -62,22 +64,13 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
-
-typedef struct s_quotes_esc_split
-{
-	char	*splt;
-	char	*specialsplt;
-	char	*q;
-	char	esc;
-}	t_qes;
 char	**ft_split(char const *s, char c);
-char	**ft_split_quotes(char const *const s, t_qes const qes);
+
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
 }	t_list;
-
 t_list	*ft_lstnew(void *content);
 void	ft_lstadd_front(t_list **lst, t_list *new);
 int		ft_lstsize(t_list *lst);

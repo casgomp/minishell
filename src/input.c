@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 14:28:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:11:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "libft.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@
 
 int process_cmdline(t_cd *pcd, char const *const in)
 {
-	char **const cmdln_tokens = ms_split_rmqed(in, pcd->default_qes, pcd->default_qed);
+	char **const cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 
 	if (cmdln_tokens && *cmdln_tokens)
 	{
@@ -36,14 +37,14 @@ int process_cmdline(t_cd *pcd, char const *const in)
 			//function run cmd(subset_args)
 			{
 				if (ms_builtins(pcd, args))
-					return (ms_free_nullterm_array(cmdln_tokens), 1);
+					return (rh_free_simple_array((void **)cmdln_tokens), 1);
 				else
 					// run extern executable using fork and exec...
 					;
 			}
 		}
 	}
-	return (ms_free_nullterm_array(cmdln_tokens)/*necessary?*/, 0);
+	return (rh_free_simple_array((void **)cmdln_tokens)/*necessary?*/, 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
@@ -74,18 +75,18 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 
 int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 {
-	char		*prompt;
+	char		**pprompt;
 	size_t		cmdln_len;
 
 	if (!pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		prompt = ms_rmqts_esc_xpnd("$USER@minishell$ ", pcd->default_qed);
-		if (prompt)
+		pprompt = rh_split_rmqed("$USER@minishell$ ", pcd->default_sqed);
+		if (pprompt && *pprompt)
 		{
-			*pcmdline = readline(prompt);
-			free (prompt);
+			*pcmdline = readline(*pprompt);
+			free (*pprompt);
 			if (*pcmdline)
 				add_history(*pcmdline);
 		}

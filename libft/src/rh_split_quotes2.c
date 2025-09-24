@@ -6,16 +6,16 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 14:22:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 16:18:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "rh_split_quotes_intern.h"
+#include "rh_split_qed_intern.h"
 
 #include <stdlib.h>
 
-void	cleanup(t_splprms *const ptsp)
+void	cleanup_splt(t_splprms *const ptsp)
 {
 	size_t		idx;
 	t_startlen	*tmp;
@@ -72,17 +72,17 @@ char	**transform_list(t_splprms *const ptsp, char const *const s)
 	char	**splt;
 
 	if (!transform_prep(ptsp))
-		return (cleanup(ptsp), (char **) NULL);
+		return (cleanup_splt(ptsp), (char **) NULL);
 	splt = ptsp->split;
 	idx = 0;
 	while (ptsp->tsl)
 	{
 		splt[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
 		if (!splt[idx])
-			return (cleanup(ptsp), (char **) NULL);
+			return (cleanup_splt(ptsp), (char **) NULL);
 		++idx;
 		ptsp->tsl = ptsp->tsl->next;
 	}
 	ptsp->split = (char **) NULL;
-	return (cleanup(ptsp), splt);
+	return (cleanup_splt(ptsp), splt);
 }

@@ -6,11 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 15:57:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:18:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "ms_rmquotes_expand.h"
+#include "libft.h"
 
 #include <stdlib.h>
 #include <readline/readline.h>
@@ -22,18 +24,15 @@ int	ms_init(t_cd *pcd)
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
 	pcd->exit = false;
-	pcd->default_qes = (t_qes){.q = "\"\'", .esc = '\\',
-		.splt = " \t", .specialsplt = ""};
-	pcd->default_qed = (t_qed){.q = "\"\'", .esc = '\0', .expnd = '$',
-		.dict = &ms_dict, .dict_data = pcd,
+	pcd->default_sqed = (t_sqed){.q = "\"\'", .esc = '\\',
+		.splt = " \t", .specialsplt = "",
+		.expnd = '$', .dict = &ms_dict, .dict_data = pcd,
 		.validchar = &ms_isvalidvarchar, .validchar_data = (bool *) NULL};
 	return (1);
 }
 
 int	ms_cleanup(t_cd *pcd)
 {
-	// if (pcd->default_qed.validchar_data)
-	// 	free(pcd->default_qed.validchar_data);
 	rl_clear_history();
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
