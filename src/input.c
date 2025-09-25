@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 19:44:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 20:04:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,15 @@ int process_cmdline(t_cd *pcd, char const *const in)
 				else
 				{
 					// run extern executable using fork and exec...
+
+					// Dummy
+					char **tmp = rh_split_rmqed("$SHELL", pcd->default_sqed);
 					ft_printf("%s: %s: Command not found Dummy Error...\n ...until a better solution ;)\n",
-						*rh_split_rmqed("$SHELL", pcd->default_sqed), args[0]);
-					return (rh_free_simple_array((void **)cmdln_tokens), 0);
+						tmp[0], args[0]);
+					return (
+						rh_free_simple_array((void **)tmp),
+						rh_free_simple_array((void **)cmdln_tokens),
+						0);
 				}
 			}
 			else
@@ -95,7 +101,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		if (pprompt && *pprompt)
 		{
 			*pcmdline = readline(*pprompt);
-			free (*pprompt);
+			rh_free_simple_array((void **)pprompt);
 			if (*pcmdline)
 				add_history(*pcmdline);
 		}
