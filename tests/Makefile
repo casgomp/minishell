@@ -49,8 +49,6 @@ all:
 	@printf "$(YELLOW)Choose your test... (as param to Makefile)$(RESET)\n"
 	@printf "$(YELLOW)or simply run Debug session '(gdb) Run test program' from within code$(RESET)\n"
 
--include $(DEPS)
-
 COMMON_RECIPE =\
 	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" ;\
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) ;\
@@ -75,6 +73,11 @@ test_split: $(COMMON_DEPS)
 SRCFILES	:= test_interactive.c
 -include $(COMMON_INC)
 test_interactive: $(COMMON_DEPS)
+	$(COMMON_RECIPE)
+
+SRCFILES	:= test_environment.c
+-include $(COMMON_INC)
+test_environment: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
 # --- COMPILATION RULES ---
@@ -109,6 +112,9 @@ fclean: clean
 norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
 	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
+
+# clang:
+# 	clang-format -i 
 
 .PHONY: all clean fclean re norm
 # $(LIBFT)
