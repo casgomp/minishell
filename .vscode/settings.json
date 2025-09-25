@@ -96,7 +96,9 @@
 	"stdbool.h": "c",
 	"minishell.h": "c",
 	"rh_split_qed_intern.h": "c",
-	"rh_utils.h": "c"
+	"rh_utils.h": "c",
+	"fcntl.h": "c",
+	"history.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "ms-vscode.cpptools",
