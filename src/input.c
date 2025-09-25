@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 20:04:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 20:16:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int process_cmdline(t_cd *pcd, char const *const in)
+int	process_cmdline(t_cd *pcd, char const *const in)
 {
-	char **const cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
+	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 
 	if (cmdln_tokens && *cmdln_tokens)
 	{
@@ -33,7 +33,7 @@ int process_cmdline(t_cd *pcd, char const *const in)
 			// stdout to file trunc|append or pipe
 			// compose cmdln_tokens array for current command
 
-			char **args = cmdln_tokens;
+			char **const	args = cmdln_tokens;
 			//function run cmd(subset_args)
 			if (args && args[0])
 			{
@@ -59,7 +59,7 @@ int process_cmdline(t_cd *pcd, char const *const in)
 			}
 		}
 	}
-	return (rh_free_simple_array((void **)cmdln_tokens)/*necessary?*/, 0);
+	return (rh_free_simple_array((void **) cmdln_tokens), 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
