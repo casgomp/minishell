@@ -6,15 +6,16 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 14:13:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 19:50:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+#include <limits.h>
 #include <stdlib.h>
 
-static int	msbi_echo(char **args)
+static int	msbi_echo(t_cd *pcd, char **args)
 {
 	int		ret;
 	bool	newline;
@@ -30,13 +31,24 @@ static int	msbi_echo(char **args)
 	}
 	if (ret > 0)
 		ret = ft_printf("%c", '\b');
-	if (newline && ret > 0)
+	if (newline && ret >= 0)
 		ret = ft_printf("%c", '\n');
-	return (ret > 0);
+	pcd->exit_status = 0;
+	return (ret >= 0);
 }
 
-static int	msbi_exit(t_cd *pcd)
+static int	msbi_exit(t_cd *pcd, char **args)
 {
+	int success;
+
+	if (args[1])
+	{
+		pcd->exit_status = ft_atoll_check_input(args[1], INT_MAX, &success);
+		if (success < (int)ft_strlen(args[1]))
+			ft_printf("Dummy str: bash: exit: 82949672970920399492: numeric argument required");
+		else
+			pcd->exit_status %= 256;
+	}
 	if (pcd->interactive)
 		ft_printf("exit\n");
 	pcd->exit = true;
@@ -46,9 +58,9 @@ static int	msbi_exit(t_cd *pcd)
 int	ms_builtins(t_cd *pcd, char **const args)
 {
 	if (!ft_strcmp(args[0], "echo"))
-		return (msbi_echo(args));
+		return (msbi_echo(pcd, args));
 	else if (!ft_strcmp(args[0], "exit"))
-		return (msbi_exit(pcd));
+		return (msbi_exit(pcd, args));
 	else
 		return (0);
 }
