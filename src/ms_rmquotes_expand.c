@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 16:49:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 11:32:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ bool	ms_isvalidvarchar(char const c, void *validchar_data)
 	static char const *const	special = "?";
 	bool *const					isfirstc = (bool *)validchar_data;
 
-	if (isfirstc)
+	if (*isfirstc)
 	{
 		firstc = c;
 		*isfirstc = false;
