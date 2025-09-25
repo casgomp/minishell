@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 14:53:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 19:39:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 int	ms_init(t_cd *pcd)
 {
+	// set envvar 'SHELL' to sth like 'minishell' here in init
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
@@ -55,5 +56,5 @@ int	main(int argc, char *argv[])
 			break ;
 	}
 	ms_cleanup(&cd);
-	return (EXIT_SUCCESS);
+	return (cd.exit_status);
 }

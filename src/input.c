@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:11:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 19:44:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,21 @@ int process_cmdline(t_cd *pcd, char const *const in)
 
 			char **args = cmdln_tokens;
 			//function run cmd(subset_args)
+			if (args && args[0])
 			{
 				if (ms_builtins(pcd, args))
 					return (rh_free_simple_array((void **)cmdln_tokens), 1);
 				else
+				{
 					// run extern executable using fork and exec...
-					;
+					ft_printf("%s: %s: Command not found Dummy Error...\n ...until a better solution ;)\n",
+						*rh_split_rmqed("$SHELL", pcd->default_sqed), args[0]);
+					return (rh_free_simple_array((void **)cmdln_tokens), 0);
+				}
+			}
+			else
+			{
+				// handle empty command string??
 			}
 		}
 	}
