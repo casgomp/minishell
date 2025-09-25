@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/22 17:40:09 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:36:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int test_split()
 	/*eof */ {.in=NULL},
 	};
 
-	t_qes qes = {.splt=' ',
+	t_qes qes = {.splt=" \t",
 				.q="\"\'",
 				.esc='\0',
 				.specialsplt="|<>"};
@@ -53,7 +53,7 @@ int test_split()
 		printf("Test %2d   : %s\n", i, tests[i].in);
 
 		tests[i].native = (tests[i].shellout == NULL);
-		tests[i].splt = ft_split_quotes(tests[i].in, qes);
+		tests[i].splt = rh_split_quotes(tests[i].in, qes);
 		if (!tests[i].splt)
 		{
 			printf("%p\n", tests[i].splt);
@@ -68,7 +68,7 @@ int test_split()
 
 		if (tests[i].native)
 		{
-			tests[i].splt2 = ms_rmquotes_expand(tests[i].splt2,
+			tests[i].splt2 = rh_rmqed(tests[i].splt2,
 									(t_qed){.dict=NULL, .esc='\\', .expnd='\0', .q="\"\'"});
 
 									char *cmdstr = malloc((256 + ft_strlen(tests[i].in))*(sizeof(char)));

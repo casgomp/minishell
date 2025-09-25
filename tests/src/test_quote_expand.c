@@ -6,12 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/17 17:23:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/24 17:34:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tests.h"
 #include "ms_rmquotes_expand.h"
+#include "libft.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,7 +47,10 @@ int test_quote_expand()
 	{
 		printf("Test %2d: %s\n", i, tests[i].in);
 
-		tests[i].out = ms_rmquotes_expand(tests[i].in, (t_qed){"\"\'", '\\', '$', getenv});
+		bool firstchar;
+		tests[i].out = rh_rmqed(tests[i].in,
+			(t_qed){.q="\"\'", .esc='\\', .expnd='$', .dict=ms_dict, .dict_data=NULL,
+				.validchar=ms_isvalidvarchar, .validchar_data=&firstchar });
 		printf("%8s %s\n", "--> :", tests[i].out);
 
 		char cmdstr[128];
