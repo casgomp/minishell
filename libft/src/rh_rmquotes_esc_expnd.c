@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:06:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/25 18:24:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 static char	*compose_uestr(t_uedata *const puedata);
-static int	escape(char *const pc, t_uedata *const puedata);
+static int	escape(char *const pc, int *const pidx, t_uedata *const puedata);
 static int	expand(char *const pc, int *const pidx,
 				t_qed const *const pqed, t_uedata *const puedata);
 static int	escape_expand(char *const pc, int *const pidx,
@@ -51,9 +51,9 @@ char	*rh_rmqed(char const *const qutdstr, t_qed tqed)
 		if (toggle_quote(pc, &tqed, &uedata))
 			continue ;
 		ret = escape_expand(pc, &idx, &tqed, &uedata);
-		if (ret == 1)
+		if (ret > 0)
 			continue ;
-		else if (ret == -1)
+		else if (ret < 0)
 			return (cleanup_uedata(&uedata), (char *) NULL);
 		++idx;
 		++(uedata.tsl->len);
@@ -90,21 +90,30 @@ char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
 
 // returns...
 //  1 if escape did happen
-//  0 else
-static int	escape(char *const pc, t_uedata *const puedata)
+//  0 if not
+// -1 on invalid input or strlcpy error
+static int	escape(char *const pc, int *const pidx, t_uedata *const puedata)
 {
+	size_t	pclength;
+
+	if (!(pc && puedata))
+		return (-1);
 	if ((!puedata->actvq) || (puedata->actvq == *(pc + 1)))
 	{
-		ft_strlcpy(pc, pc + 1, ft_strlen(pc));
+		pclength = ft_strlen(pc);
+		if (ft_strlcpy(pc, pc + 1, pclength) != (pclength - 1))
+			return (-1);
+		++(*pidx);
+		++(puedata->tsl->len);
 		return (1);
 	}
 	return (0);
 }
 
 // returns...
-//  1 if expansion did happen
+//  2 if expansion did happen
 //  0 if expansion did not happen
-// -1 if set_tsstl failed after expansion happened
+// -2 if set_tsstl failed after expansion happened
 static int	expand(char *const pc, int *const pidx,
 	t_qed const *const pqed, t_uedata *const puedata)
 {
@@ -129,15 +138,13 @@ static int	expand(char *const pc, int *const pidx,
 		}
 		*pidx += paramlen;
 		if (!set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
-			return (-1);
-		return (1);
+			return (-2);
+		return (2);
 	}
 	return (0);
 }
 
-//  1 if expansion did happen
-//  0 if expansion did not happen or escape happened
-// -1 if set_tsstl failed after expansion happened
+// returns the return values of escape resp. expand
 static int	escape_expand(char *const pc, int *const pidx,
 				t_qed const *const pqed, t_uedata *const puedata)
 {
@@ -145,8 +152,7 @@ static int	escape_expand(char *const pc, int *const pidx,
 	{
 		if (pqed->esc == *pc)
 		{
-			escape(pc, puedata);
-			return (0);
+			return(escape(pc, pidx, puedata));
 		}
 		else if (pqed->expnd == *pc)
 		{
