@@ -48,6 +48,11 @@ RESET           := \033[0m
 all:
 	@printf "$(YELLOW)Choose your test... (as param to Makefile)$(RESET)\n"
 	@printf "$(YELLOW)or simply run Debug session '(gdb) Run test program' from within code$(RESET)\n"
+	@make $(shell find . -regex './src/test_.+\.c' -print0 | xargs -0 basename -s .c)
+
+test:
+	@find . -regex './test_[^.]+' -execdir '{}' \; | tee test_results.txt | grep -B4 -P '# KO #' 1>&2; echo 0
+	@less test_results.txt
 
 COMMON_RECIPE =\
 	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" ;\
@@ -104,9 +109,9 @@ fclean: clean
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
-# re:
-# 	@$(MAKE) fclean --no-print-directory
-# 	@$(MAKE) all --no-print-directory
+re:
+	@$(MAKE) fclean --no-print-directory
+	@$(MAKE) all --no-print-directory
 
 # --- HELPER RULES ---
 norm:

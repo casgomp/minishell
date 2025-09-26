@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 13:01:15 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 11:50:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 int test_environment() {
   char *envval = getenv("SHELL");
+  (void)envval;
   envval = getenv("DOES_NOT_EXIST"); // returns nullptr because var does not exist
   envval = getenv("42");             // returns nullptr (because there never are any envvars starting with a digit)
   envval = getenv("");               // returns nullptr
