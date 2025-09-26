@@ -148,7 +148,7 @@ re:
 norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
 #	@norminette -R CheckForbiddenSourceHeader $(INC_DIR) $(SRC_DIRS)
-	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) $(SRC_DIRS) | grep Error"
+	watch -n1 "norminette -R CheckForbiddenSourceHeader $(INC_DIR) $(SRC_DIRS) | grep Error"
 
 .PHONY: all bonus mandatory clean fclean re norm
 # .SECONDARY:
