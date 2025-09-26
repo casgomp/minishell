@@ -50,7 +50,7 @@ all:
 	@printf "$(YELLOW)or simply run Debug session '(gdb) Run test program' from within code$(RESET)\n"
 	@make $(shell find . -regex './src/test_.+\.c' -print0 | xargs -0 basename -s .c)
 
-test:
+run_tests:
 	@find . -regex './test_[^.]+' -execdir '{}' \; | tee test_results.txt | grep -B4 -P '# KO #' 1>&2; echo 0
 	@less test_results.txt
 

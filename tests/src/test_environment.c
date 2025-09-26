@@ -21,8 +21,9 @@ int test_environment() {
   char *envval = getenv("SHELL");
   (void)envval;
   envval = getenv("DOES_NOT_EXIST"); // returns nullptr because var does not exist
-  envval = getenv("42");             // returns nullptr (because there never are any envvars starting with a digit)
-  envval = getenv("");               // returns nullptr
+  envval = getenv(
+      "42"); // returns nullptr (because there never are any envvars starting with a digit)
+  envval = getenv(""); // returns nullptr
   // envval = getenv(NULL); // segfault
   return (1);
 }

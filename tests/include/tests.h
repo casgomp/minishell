@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 15:21:09 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 13:42:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 14:36:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ typedef struct testcase {
   char shellcmd[128];
   char *shellout;
   char info[128];
-//   bool native;
 } t_tstcs;
 
-bool generate_testoutput(
-	t_tstcs tests[], char esc,
-	int (*processtestcase)(t_tstcs *testcase, void *data), void *data)
-{
-	bool native;
-	
-  printf("Test suite: %s\n", __func__);
+bool generate_testoutput(char const *const testsuite, t_tstcs tests[],
+                         int (*processtestcase)(t_tstcs *testcase, void *data), void *data) {
+  bool native;
+
+  printf("\n################################################################################\n"
+         "# Test suite: %s\n"
+         "################################################################################\n",
+         testsuite);
   for (int i = 0; tests[i].in; ++i) {
     native = (tests[i].shellout == NULL);
 
@@ -60,14 +60,11 @@ bool generate_testoutput(
       pclose(shell);
     }
     printf("%11s %s\n", "info :", tests[i].info);
-	printf("%11s %s\n", "msout :", tests[i].minishout);
+    printf("%11s %s\n", "msout :", tests[i].minishout);
     printf("%11s %s\n", "bashout :", tests[i].shellout);
-    printf("%11s %s\n\n", "Status :",
-		test_result_str(tests[i].minishout, tests[i].shellout, esc == '\\'));
-  }
+    printf("%11s %s\n", "Status :", test_result_str(tests[i].minishout, tests[i].shellout, 1));
 
-  // Cleanup
-  for (int i = 0; tests[i].in; ++i) {
+    // Cleanup
     if (tests[i].minishout)
       free(tests[i].minishout);
     if (native && tests[i].shellout)
