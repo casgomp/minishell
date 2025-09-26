@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:11:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 09:34:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ int process_cmdline(t_cd *pcd, char const *const in)
 				if (ms_builtins(pcd, args))
 					return (rh_free_simple_array((void **)cmdln_tokens), 1);
 				else
+				{
 					// run extern executable using fork and exec...
 					;
+				}
 			}
 		}
 	}

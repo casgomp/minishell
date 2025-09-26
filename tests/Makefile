@@ -113,8 +113,8 @@ norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
 	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
 
-# clang:
-# 	clang-format -i 
+clang-fmt:
+	clang-format -i src/test_*.c include/test*.h
 
 .PHONY: all clean fclean re norm
 # $(LIBFT)
