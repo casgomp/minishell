@@ -1,0 +1,3 @@
+echo "244 $SHELL "'$USER'
+echo "'''$USER"''\'
+

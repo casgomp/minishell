@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 14:39:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 18:43:28 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ int test_quote_expand() {
       /* 11 */ {.in = "\"a-$3SHELL-b-'$SHELL'-c-\"", .shellout = NULL},
       /* 12 */ {.in = "\"a-$<-b\"", .shellout = NULL},
       /* 13 */ {.in = "\"a-$A<-b\"", .shellout = NULL},
+	  /* 14 */ {.in = "\"'''$USER\"''\\'", .shellout = NULL},
       /*eof */ {.in = NULL},
   };
 
