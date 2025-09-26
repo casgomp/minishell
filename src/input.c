@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 14:43:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 15:04:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,27 +64,28 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 {
-	pcd->fdscript = -1;
 	if (argc == 2)
 	{
+		pcd->interactive = false;
+		if (pcd->fdscript >= 0)
+			close(pcd->fdscript);
 		pcd->fdscript = open(argv[1], O_RDONLY);
 		if (pcd->fdscript == -1)
 		{
 			perror(argv[1]);
-			exit (127);
+			ms_builtins(pcd, (char* []){"exit", "127"});
 		}
 		else if (dup2(pcd->fdscript, 0) == -1)
 		{
 			perror(argv[1]);
-			exit (9);
+			ms_builtins(pcd, (char* []){"exit", "9"});
 		}
 	}
 	else if (argc > 2)
 	{
 		ft_printf("usage: minishell [scriptfile]\n");
-		exit (7);
+		ms_builtins(pcd, (char* []){"exit", "7"});
 	}
-	pcd->interactive = isatty(0);
 	return (1);
 }
 
