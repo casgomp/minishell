@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split_quotes.c                                  :+:      :+:    :+:   */
+/*   rh_split_quotes.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 16:25:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 10:41:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 				&& !ft_strchr(pqes->specialsplt, s[*pidx]))
 			|| (ptsp->activeq && s[*pidx] != ptsp->activeq)))
 	{
-		if (s[*pidx] == pqes->esc && s[*pidx] == pqes->q[0])
+		if (s[*pidx] == pqes->esc && s[*pidx + 1] == pqes->q[0])
 			++(*pidx);
 		++(*pidx);
 	}
