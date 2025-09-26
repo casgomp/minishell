@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 23:03:52 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 17:58:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 19:21:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t dsize)
 {
-	size_t	i;
-	size_t const originalsrclen = ft_strlen(src);
+	size_t			i;
+	size_t const	originalsrclen = ft_strlen(src);
 
 	if (dsize > 0)
 	{
