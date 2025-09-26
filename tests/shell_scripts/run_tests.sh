@@ -7,7 +7,7 @@ find . -name infile |
 		MSRET=$?
 		<$file bash >bashout
 		BRET=$?
-		diff --text msout bashout >/dev/null
+		diff --text msout bashout > diffout
 		DRET=$?
 		printf "retvals: msh=%d, bsh=%d, diff=%d\n" $MSRET $BRET $DRET
 		[[ $DRET == 0 ]] && echo diff ok || echo diff fail
