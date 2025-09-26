@@ -48,8 +48,11 @@ RESET           := \033[0m
 all:
 	@printf "$(YELLOW)Choose your test... (as param to Makefile)$(RESET)\n"
 	@printf "$(YELLOW)or simply run Debug session '(gdb) Run test program' from within code$(RESET)\n"
+	@make $(shell find . -regex './src/test_.+\.c' -print0 | xargs -0 basename -s .c)
 
--include $(DEPS)
+run_tests:
+	@find . -regex './test_[^.]+' -execdir '{}' \; | tee test_results.txt | grep -B4 -P '# KO #' 1>&2; echo 0
+	@less test_results.txt
 
 COMMON_RECIPE =\
 	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" ;\
@@ -77,6 +80,11 @@ SRCFILES	:= test_interactive.c
 test_interactive: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
+SRCFILES	:= test_environment.c
+-include $(COMMON_INC)
+test_environment: $(COMMON_DEPS)
+	$(COMMON_RECIPE)
+
 # --- COMPILATION RULES ---
 $(OBJ_DIR)/%.o: %.c
 	@$(MKDIR) -p $(@D)
@@ -101,14 +109,17 @@ fclean: clean
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
-# re:
-# 	@$(MAKE) fclean --no-print-directory
-# 	@$(MAKE) all --no-print-directory
+re:
+	@$(MAKE) fclean --no-print-directory
+	@$(MAKE) all --no-print-directory
 
 # --- HELPER RULES ---
 norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
 	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
+
+clang-fmt:
+	clang-format -i src/test_*.c include/test*.h
 
 .PHONY: all clean fclean re norm
 # $(LIBFT)

@@ -6,81 +6,71 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 15:36:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 14:39:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tests.h"
-#include "ms_rmquotes_expand.h"
 #include "libft.h"
+#include "ms_rmquotes_expand.h"
+#include "tests.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-typedef struct testcase
-{
-	char *in;
-	char *out;
-	char *shellout;
-}	t_tstcs;
+typedef struct data {
+  t_qed qed;
+} t_data;
 
-int test_quote_expand()
-{
-	t_tstcs tests[] = {
-	/*  0 */ {.in="\"a\\\"x\\\"b\"", },
-	/*  1 */ {.in="\\\'a\\\"x\\\"b\\\'", },
-	/*  2 */ {.in="a-$SHELL-b", },
-	/*  3 */ {.in="a-\\$SHELL-b", },	
-	/*  4 */ {.in="a-'$SHELL'-b", },
-	/*  5 */ {.in="a-\\'$SHELL\\'-b", },		
-	/*  6 */ {.in="\"a-'$SHELL'-b\"", },
-	/*  7 */ {.in="a-$SHED3-b", },
-	/*  8 */ {.in="a-$SHELL-b-'$SHELL'-c-", },
-	/*  9 */ {.in="\"a-$SHELL-b-'$SHELL'-c-\"", },
-	/* 10 */ {.in="\"a-$3SHELL-b-'$SHELL'-c-\"", },
-	/* 11 */ {.in="\"a-$<-b\"", },
-	/* 12 */ {.in="\"a-$A<-b\"", },
-	/*eof */ {.in=NULL},
-	};
+int process_tstcs(t_tstcs *test_case, void *data) {
+  t_data *ptdata = (t_data *)data;
 
-	for (int i=0; tests[i].in; ++i)
-	{
-		printf("Test %2d: %s\n", i, tests[i].in);
-
-		bool firstchar;
-		tests[i].out = rh_rmqed(tests[i].in,
-			(t_qed){.q="\"\'", .esc='\\', .expnd='$', .dict=ms_dict, .dict_data=NULL,
-				.validchar=ms_isvalidvarchar, .validchar_data=&firstchar });
-		printf("%8s %s\n", "--> :", tests[i].out);
-
-		char cmdstr[128];
-		sprintf(cmdstr, "echo -n %s", tests[i].in);
-		FILE *shell = popen(cmdstr, "r");
-		tests[i].shellout = NULL;
-		size_t length = 0;
-		getline(&tests[i].shellout, &length, shell);
-		pclose(shell);
-		printf("%8s %s\n", "echo :", tests[i].shellout);
-
-		printf("%8s %s\n\n", "Status :", test_result_str(tests[i].out, tests[i].shellout, 1));
-	}
-
-	// Cleanup
-	for (int i=0; tests[i].in; ++i)
-	{
-		if (tests[i].out)
-			free(tests[i].out);
-		if (tests[i].shellout)
-			free(tests[i].shellout);
-	}
-	
-	return (1);
+  sprintf(test_case->info, "esc = '%c'", ptdata->qed.esc ? ptdata->qed.esc : '0');
+  test_case->minishout = rh_rmqed(test_case->in, ptdata->qed);
+  sprintf(test_case->shellcmd, "echo -n %s", test_case->in);
+  return (1);
 }
 
-int	main(int argc, char *argv[])
-{
-	(void)argc;
-	(void)argv;
-	test_quote_expand();
-	return (EXIT_SUCCESS);
+int test_quote_expand() {
+  t_tstcs tests[] = {
+      /*  0 */ {.in = "\"a\\\"x\\\"b\"", .shellout = NULL},
+      /*  1 */ {.in = "\"ax\\\"b\"", .shellout = NULL},
+      /*  2 */ {.in = "\\\'a\\\"x\\\"b\\\'", .shellout = NULL},
+      /*  3 */ {.in = "a-$SHELL-b", .shellout = NULL},
+      /*  4 */ {.in = "a-\\$SHELL-b", .shellout = NULL},
+      /*  5 */ {.in = "a-'$SHELL'-b", .shellout = NULL},
+      /*  6 */ {.in = "a-\\'$SHELL\\'-b", .shellout = NULL},
+      /*  7 */ {.in = "\"a-'$SHELL'-b\"", .shellout = NULL},
+      /*  8 */ {.in = "a-$SHED3-b", .shellout = NULL},
+      /*  9 */ {.in = "a-$SHELL-b-'$SHELL'-c-", .shellout = NULL},
+      /* 10 */ {.in = "\"a-$SHELL-b-'$SHELL'-c-\"", .shellout = NULL},
+      /* 11 */ {.in = "\"a-$3SHELL-b-'$SHELL'-c-\"", .shellout = NULL},
+      /* 12 */ {.in = "\"a-$<-b\"", .shellout = NULL},
+      /* 13 */ {.in = "\"a-$A<-b\"", .shellout = NULL},
+      /*eof */ {.in = NULL},
+  };
+
+  bool firstchar;
+  t_qed qed = (t_qed){.q = "\"\'",
+                      .esc = '\\',
+                      .expnd = '$',
+                      .dict = ms_dict,
+                      .dict_data = NULL,
+                      .validchar = ms_isvalidvarchar,
+                      .validchar_data = &firstchar};
+  t_data tdata = (t_data){.qed = qed};
+
+  char test_suite[128];
+  sprintf(test_suite, "Test suite: %s", __func__);
+
+  generate_testoutput(test_suite, tests, &process_tstcs, &tdata);
+
+  return (1);
+}
+
+int main(int argc, char *argv[]) {
+  (void)argc;
+  (void)argv;
+  setbuf(stdout, NULL);
+  test_quote_expand();
+  return (EXIT_SUCCESS);
 }

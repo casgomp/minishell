@@ -10,26 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tests.h"
 #include "libft.h"
+#include "tests.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-int test_interactive()
-{
-	int a = isatty(0);
-	char *n = ttyname(0);
-	ft_printf("Stdin fd 0 is %sa tty: %s\n", a?"":"not ", n);
-	return (1);
+int test_interactive() {
+  int a = isatty(0);
+  char *n = ttyname(0);
+  ft_printf("Stdin fd 0 is %sa tty: %s\n", a ? "" : "not ", n);
+  return (1);
 }
 
-int	main(int argc, char *argv[])
-{
-	(void)argc;
-	(void)argv;
-	setbuf(stdout, NULL);
-	test_interactive();
-	return (EXIT_SUCCESS);
+int main(int argc, char *argv[]) {
+  (void)argc;
+  (void)argv;
+  setbuf(stdout, NULL);
+  test_interactive();
+  return (EXIT_SUCCESS);
 }
