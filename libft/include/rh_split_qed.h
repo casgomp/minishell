@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:06:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 20:21:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,29 @@
 
 # include <stdbool.h>
 
+// q		: string of quote characters, default "\"'"
+// esc		: escape char, default '\'
+// blank	: string of blanks, separating tokens, default " \t"
+// metachr	: string of metacharacters that also separate tokens (as blanks do)
+// 			  but are not removed from token list
+// 			  because they have additional meaning, default
 typedef struct s_quotes_esc_split
 {
 	char	*q;
 	char	esc;
-	char	*splt;
-	char	*specialsplt;
+	char	*blank;
+	char	*metachr;
 }	t_qes;
 char	**rh_split_quotes(char const *const s, t_qes const qes);
 
+// q and esc: see above, same as for t_qes
+// expnd	: char introducing (parameter) expansion
+// dict		: func (ptr) that does the param expansion operation
+// 			  takes a param name and returns a value str
+// 			  additional data can be passed to that func using dict_data
+// validchar: func (ptr) that checks one by one if a char is a valid part of
+// 			  a parameter name. Takes a char and returns (bool)valid/not valid
+// 			  additional data can be passed to that func using validchar_data
 typedef struct s_quotes_esc_dict
 {
 	char	*q;
@@ -40,8 +54,8 @@ typedef struct s_split_quotes_esc_dict
 {
 	char	*q;
 	char	esc;
-	char	*splt;
-	char	*specialsplt;
+	char	*blank;
+	char	*metachr;
 
 	char	expnd;
 	void	*dict_data;
