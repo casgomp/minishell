@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 14:39:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 19:47:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int test_split() {
       /*eof */ {.in = NULL},
   };
 
-  t_qes qes = {.splt = " \t", .q = "\"\'", .esc = '\\', .specialsplt = "|<>"};
+  t_qes qes = {.splt = " \t", .q = "\"\'", .esc = '\\', .specialsplt = "|&;()<> \t\n"};
   t_data tdata = (t_data){.qes = qes};
 
   char test_suite[128];
