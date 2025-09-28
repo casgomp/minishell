@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 19:25:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 20:05:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
 {
 	char **const	split = rh_split_quotes(to_split,
 			(t_qes){.q = sqed.q, .esc = sqed.esc,
-			.splt = sqed.splt, .specialsplt = sqed.specialsplt});
+			.blank = sqed.blank, .metachr = sqed.metachr});
 	char			*substr;
 	int				idx;
 
