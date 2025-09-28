@@ -58,8 +58,6 @@ MANDATORY_SRCS	:= \
 	ft_strjoin.c \
 	ft_strtrim.c \
 	ft_split.c \
-	ft_split_quotes.c \
-	ft_split_quotes2.c \
 	ft_itoa.c \
 	ft_itoa_base.c \
 	ft_strmapi.c \
@@ -70,6 +68,10 @@ MANDATORY_SRCS	:= \
 	ft_putnbr_fd.c \
 	ft_strdup.c \
 	ft_calloc.c \
+	rh_split_quotes.c \
+	rh_split_quotes2.c \
+	rh_rmquotes_esc_expnd.c \
+	rh_utils.c \
 
 # ft_printf
 MANDATORY_SRCS	+= \

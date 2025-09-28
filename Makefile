@@ -33,6 +33,9 @@ LDLIBS          :=  -lft -lreadline
 vpath %.c $(SRC_DIRS)
 
 MANDATORY_SRCS	:= 	minishell.c \
+					builtins1.c \
+					input.c \
+					ms_rmquotes_expand.c \
 					utils.c \
 
 BONUS_SRCS		:=  

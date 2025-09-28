@@ -1,16 +1,46 @@
 {
   "version": "0.2.0",
   "configurations": [
+	{
+		"name": "(gdb) Run test program",
+		"type": "cppdbg",
+		"request": "launch",
+		// "program": "${fileDirname}/../${fileBasenameNoExtension}",
+		"program": "${workspaceFolder}/tests/${fileBasenameNoExtension}",
+		"args": [
+			// "<test_input", // for non-interactive shell debugging: attach test_input file to stdin (fd=0)
+		],
+		"stopAtEntry": false,
+		"cwd": "${fileDirname}/../",
+		// "environment": [{ "name": "SHELLY", "value": "whatever" }],
+		"externalConsole": false,
+		"MIMode": "gdb",
+		"preLaunchTask": "42 build test with Makefile",		
+		"setupCommands": [
+			{
+				"description": "Automatische Strukturierung und Einrückung für gdb aktivieren",
+				"text": "-enable-pretty-printing",
+				"ignoreFailures": true
+			},
+			{
+				"description": "Disassemblierungsvariante auf Intel festlegen",
+				"text": "-gdb-set disassembly-flavor intel",
+				"ignoreFailures": true
+			}
+		]
+	},
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
-      "args": ["3", "800", "200", "200",
-		/* num_meals */ 4
+      "args": [
+			// "nonexist",
+			// "<<", "eof"	doesn"t work
 		],	
     //   "stopAtEntry": true,
       "externalConsole": false,
       "cwd": "${workspaceFolder}",
+	//   "environment": [{ "name": "SHELL", "value": "whatever" }, { "name": "42", "value": "forty2" }],
       "program": "${workspaceFolder}/${workspaceFolderBasename}",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",

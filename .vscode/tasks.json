@@ -17,6 +17,24 @@
 			],
 			"group": "build",
 			"detail": "compiler: /usr/bin/cc"
+		},
+		{
+			"type": "cppbuild",
+			"label": "42 build test with Makefile",
+			"command": "/usr/bin/make",
+			"args": [
+				"${fileBasenameNoExtension}",
+				// "re",
+				""
+			],
+			"options": {
+    			"cwd": "${workspaceFolder}/tests/"
+  			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /usr/bin/cc"
 		}		
 	]
 }

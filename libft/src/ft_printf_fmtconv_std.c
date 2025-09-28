@@ -6,13 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 16:57:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/18 19:50:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/23 11:12:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf_intern.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 int	rh_convspec_c(
@@ -55,7 +56,7 @@ int	rh_convspec_p(va_list valst, t_fmtspec *const fmtspec,
 	}
 	else
 	{
-		s = ft_ptrtoa_base(ptrval, "0123456789abcdef", 0);
+		s = ft_lltoa_base(ptrval, "0123456789abcdef", false);
 		if (!s)
 			return (0);
 	}
@@ -101,7 +102,7 @@ int	rh_convspec_x(va_list valst, t_fmtspec *const fmtspec,
 		base = "0123456789ABCDEF";
 	else
 		base = "0123456789abcdef";
-	s = ft_itoa_base(ui, base, 0);
+	s = ft_itoa_base(ui, base, false);
 	if (!s)
 		return (0);
 	retval = rh_write_outstr(s, fmtspec, '\0', pbc);
