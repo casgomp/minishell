@@ -6,36 +6,53 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/15 13:27:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/29 13:23:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "ms_rmquotes_expand.h"
 #include "libft.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <readline/readline.h>
-#include <readline/history.h>
+#include <unistd.h>
+
+int	ms_init(t_cd *pcd)
+{
+	// set envvar 'SHELL' to sth like 'minishell' here in init
+	pcd->exit_status = 42;
+	pcd->interactive = isatty(0);
+	pcd->fdscript = -1;
+	pcd->exit = false;
+	pcd->default_sqed = (t_sqed){.q = "\"\'", .esc = '\\',
+		.blank = " \t", .metachr = "|<>",
+		.expnd = '$', .dict = &ms_dict, .dict_data = pcd,
+		.validchar = &ms_isvalidvarchar, .validchar_data = (bool *) NULL};
+	return (1);
+}
+
+int	ms_cleanup(t_cd *pcd)
+{
+	rl_clear_history();
+	if (pcd->fdscript != -1)
+		close(pcd->fdscript);
+	return (1);
+}
 
 int	main(int argc, char *argv[])
 {
-	(void)argc;
-	(void)argv;
-	char *in;
-	while ((in = readline("<fancy prompt>$ ")))
+	char	*in;
+	t_cd	cd;
+
+	ms_init(&cd);
+	setup_stdin(&cd, argc, argv);
+	while (true && !cd.exit)
 	{
-		if (in && *in != ' ')
-			add_history(in);
-		if (in && !ft_strncmp(in, "exit", 5))
-		{
-			free(in);
-			break;
-		}
-		printf("Test io: %s\n", in);
+		get_cmdline_add_history(&cd, &in);
+		process_cmdline(&cd, in);
 		free(in);
 	}
-	rl_clear_history();
-	clear_history();
-	return (EXIT_SUCCESS);
+	ms_cleanup(&cd);
+	return (cd.exit_status);
 }

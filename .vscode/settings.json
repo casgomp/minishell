@@ -89,7 +89,16 @@
 	"fractals.h": "c",
 	"stdint.h": "c",
 	"stat.h": "c",
-	"readline.h": "c"
+	"readline.h": "c",
+	"ft_split_quotes.h": "c",
+	"ms_rmquotes_expand.h": "c",
+	"stdlib.h": "c",
+	"stdbool.h": "c",
+	"minishell.h": "c",
+	"rh_split_qed_intern.h": "c",
+	"rh_utils.h": "c",
+	"fcntl.h": "c",
+	"history.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "ms-vscode.cpptools",
