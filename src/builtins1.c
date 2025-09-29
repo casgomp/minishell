@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 19:16:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/29 18:01:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 	--args;
 	while (*(++args) && ret >= 0)
 	{
-		ret = ft_printf("%s%s", *args, *(args+1)?" ":"");
+		ret = ft_printf("%s", *args);
 		if (ret >= 0 && *(args + 1))
 			ret = ft_printf("%c", ' ');
 	}
