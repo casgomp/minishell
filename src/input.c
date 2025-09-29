@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 15:04:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 18:59:06 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,44 @@
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
+	//new vars for redirections/pipes
+	t_fds	pfds; //struct similar to pipex
+	char	**p_seg; //pipeline segments
+	int		p_cnt; //pipe count
+	int		i;
 
+	/*
+	int i = 0;
+	while (cmdln_tokens[i])
+	{
+		printf("process_cmdline: cmdln_tokens[%i] = %s\n", i, cmdln_tokens[i]);
+		i ++;
+	}*/
+	
 	if (cmdln_tokens && *cmdln_tokens)
 	{
-		// loop over pipe sections
+		// First thing for safety, dup stdin and stdout and store them in struct.
+		pfds.stdin = dup(STDIN_FILENO);
+		pfds.stdout = dup(STDOUT_FILENO);
+		// Then, loop over pipe sections:
+		// Find every segment of the pipeline (i.e. separated by control operator)
+		p_cnt = 0;
+		i = 0;
+		while (cmdln_tokens[i])
+		{
+			if (ft_strchr(cmdln_tokens[i++], '|'))
+				p_cnt ++;
+		}
+		p_seg = malloc(sizeof(char *) * (p_cnt + 2));
+		//what if instead of creating char *segment[], Create char *
+		//i = 0;
+		//while (cmdln_tokens[i])
+		//	p_seg[i++] = ft_strdup(cmdln_tokens[i])
+
+		// and put each segment into a separate array of strings.
+		// Open files 
+		// Then 
+
 		{
 			// do io redirect
 			// stdin from file, heredoc or pipe

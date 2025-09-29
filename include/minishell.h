@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:14:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 16:01:05 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ typedef struct s_minishell_core_data
 	bool	exit;
 	t_sqed	default_sqed;
 }	t_cd;
+
+typedef struct s_fs
+{
+	int	stdin;
+	int	stdout;
+}	t_fds;
 
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		ms_builtins(t_cd *pcd, char **const args);
