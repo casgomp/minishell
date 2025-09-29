@@ -6,7 +6,7 @@
 		"type": "cppdbg",
 		"request": "launch",
 		// "program": "${fileDirname}/../${fileBasenameNoExtension}",
-		"program": "${workspaceFolder}/tests/${fileBasenameNoExtension}",
+		"program": "${workspaceFolder}/tests/bin_tests/${fileBasenameNoExtension}",
 		"args": [
 			// "<test_input", // for non-interactive shell debugging: attach test_input file to stdin (fd=0)
 		],
