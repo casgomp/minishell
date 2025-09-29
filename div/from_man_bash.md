@@ -1,0 +1,6 @@
+### Important sections of man bash
++ SIMPLE COMMAND EXPANSION
++ COMMAND EXECUTION
++ EXPANSION
+
+#### EXPANSION
