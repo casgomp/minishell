@@ -1,0 +1,2 @@
+echo -n -e "$SHELL\t\n"
+echo
