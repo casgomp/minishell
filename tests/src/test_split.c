@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/28 20:25:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/29 17:43:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int process_tstcs(t_tstcs *test_case, void *data) {
     test_case->minishout =
         rh_rmqed(test_case->minishout,
                  (t_qed){.dict = NULL, .esc = '\\', .expnd = '\0', .q = ptdata->qes.q});
-  sprintf(test_case->shellcmd, "shell_scripts/shell_split.sh %s", test_case->in);
+  sprintf(test_case->shellcmd, "../shell_scripts/shell_split.sh %s", test_case->in);
   return (1);
 }
 
