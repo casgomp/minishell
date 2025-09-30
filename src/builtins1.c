@@ -6,13 +6,15 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/29 19:58:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 19:15:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+#include <errno.h>
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -20,7 +22,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 {
 	int		ret;
 	bool	newline;
-		
+
 	ret = 0;
 	newline = true;
 	while (*(++args) && !ft_strcmp(*args, "-n"))
@@ -46,8 +48,11 @@ static int	msbi_exit(t_cd *pcd, char **args)
 	{
 		pcd->exit_status = ft_atoll_check_input(args[1], INT_MAX, &success);
 		if (success < (int)ft_strlen(args[1]))
+		{
 			ft_printf("Dummy str: bash: exit: 82949672970920399492: "
-				"numeric argument required");
+						"numeric argument required");
+			pcd->exit_status = 1;
+		}
 		else
 			pcd->exit_status %= 256;
 	}
@@ -57,47 +62,59 @@ static int	msbi_exit(t_cd *pcd, char **args)
 	return (1);
 }
 
-static int	msbi_cd(/* t_cd *pcd, */ char **args)
+static void	msbi_perror(char const *const errstr, int errnum)
 {
-	// more stuff to be done (set env vars OLDPWD etc) see man cd
-	char	*cwd;
+	ft_fdprintf(2, "%s: ", getenv("SHELL"));
+	errno = errnum;
+	if (errstr)
+		perror(errstr);
+}
+
+static int	msbi_cd(char **args)
+{
+	char	buf[1024];
 	char	*path;
-	int		ret;
 
 	if (!args)
 		return (1);
-	if (!args[1] || !ft_strcmp(args[1], "--"))
+	if (!args[1])
 		path = ft_strdup(getenv("HOME"));
-	else if (!ft_strcmp(args[1], "-"))
-		path = ft_strdup(getenv("OLDPWD"));
-	else if (args[1][0] == '/')
-		path = ft_strdup(args[1]);
+	else if (args[2])
+		return (msbi_perror(__func__, E2BIG), 1);
 	else
+		path = ft_strdup(args[1]);
+	if (path && !(!ft_strcmp(path, "")))
 	{
-		cwd = getcwd((char *) NULL, 0);
-		if (!cwd)
-			return (1);
-		path = ft_strjoin(cwd, "/");
-		path = ft_strjoin(path, args[1]);
-		free(cwd);
+		if (chdir(path) == -1)
+		{
+			*buf = '\0';
+			ft_strlcat(buf, path, 1024);
+			ft_strlcat(buf, ": ", 1024);
+			ft_strlcat(buf, __func__, 1024);
+			return (free(path), msbi_perror(buf, errno), 1);
+		}
 	}
-	if (path && ft_strcmp(path, ""))
-	{
-		ret = chdir(path);
-		return(free(path), ret);
-	}
-	return (-1);
+	return (0);
 }
 
 // returns the shell exit status
 static int	msbi_pwd(/*t_cd *pcd , char **args */)
 {
-	char	*const cwd = getcwd((char *) NULL, 0);
-
+	char *const cwd = getcwd((char *)NULL, 0);
 	if (!cwd)
 		return (1);
 	ft_printf("%s\n", cwd);
 	free(cwd);
+	return (0);
+}
+
+static int	msbi_env(t_cd const *const pcd)
+{
+	char 	**env2;
+		
+	env2 = pcd->env;	
+	while (*env2)
+		ft_printf("%s\n", *(env2++));
 	return (0);
 }
 
@@ -107,6 +124,8 @@ int	ms_builtins(t_cd *pcd, char **const args)
 		pcd->exit_status = (msbi_cd(/* pcd, */ args));
 	else if (!ft_strcmp(args[0], "echo"))
 		pcd->exit_status = (msbi_echo(pcd, args));
+	else if (!ft_strcmp(args[0], "env"))
+		pcd->exit_status = (msbi_env(pcd));
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msbi_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
