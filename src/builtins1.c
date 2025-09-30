@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 16:37:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 19:15:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,11 @@ static int	msbi_exit(t_cd *pcd, char **args)
 	{
 		pcd->exit_status = ft_atoll_check_input(args[1], INT_MAX, &success);
 		if (success < (int)ft_strlen(args[1]))
+		{
 			ft_printf("Dummy str: bash: exit: 82949672970920399492: "
 						"numeric argument required");
+			pcd->exit_status = 1;
+		}
 		else
 			pcd->exit_status %= 256;
 	}
@@ -58,6 +61,7 @@ static int	msbi_exit(t_cd *pcd, char **args)
 	pcd->exit = true;
 	return (1);
 }
+
 static void	msbi_perror(char const *const errstr, int errnum)
 {
 	ft_fdprintf(2, "%s: ", getenv("SHELL"));
@@ -104,12 +108,24 @@ static int	msbi_pwd(/*t_cd *pcd , char **args */)
 	return (0);
 }
 
+static int	msbi_env(t_cd const *const pcd)
+{
+	char 	**env2;
+		
+	env2 = pcd->env;	
+	while (*env2)
+		ft_printf("%s\n", *(env2++));
+	return (0);
+}
+
 int	ms_builtins(t_cd *pcd, char **const args)
 {
 	if (!ft_strcmp(args[0], "cd"))
 		pcd->exit_status = (msbi_cd(/* pcd, */ args));
 	else if (!ft_strcmp(args[0], "echo"))
 		pcd->exit_status = (msbi_echo(pcd, args));
+	else if (!ft_strcmp(args[0], "env"))
+		pcd->exit_status = (msbi_env(pcd));
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msbi_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
