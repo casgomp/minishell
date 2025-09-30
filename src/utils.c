@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 19:14:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 19:20:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,21 +38,17 @@ char	**check_cpy_env(char **oldenv, size_t *pexternenvsz, bool free_oldenv)
 	if (!oldenv)
 		return ((char **) NULL);
 	envsz = envsize(oldenv);
-	newenv = oldenv;
-	if (envsz >= (*pexternenvsz - 1))
-	{
-		newenv = malloc((envsz + xtraspace) * sizeof(char *));
-		if (!newenv)
-			return (*pexternenvsz = 0, (char **) NULL);
-		*pexternenvsz += xtraspace;
-	}
-	else
-		free_oldenv = false;
+	if (envsz < (*pexternenvsz))
+		return (oldenv);
+	newenv = malloc((envsz + xtraspace) * sizeof(char *));
+	if (!newenv)
+		return (*pexternenvsz = 0, (char **) NULL);
+	*pexternenvsz += xtraspace;
 	envelem = newenv;
 	while (*oldenv)
 		*(envelem++) = *(oldenv++);
 	*envelem = (char *) NULL;
 	if (free_oldenv)
-		rh_free_simple_array(oldenv);
+		rh_free_simple_array((void **)oldenv);
 	return (newenv);
 }
