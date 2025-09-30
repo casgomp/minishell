@@ -98,10 +98,14 @@
 	"rh_split_qed_intern.h": "c",
 	"rh_utils.h": "c",
 	"fcntl.h": "c",
-	"history.h": "c"
+	"history.h": "c",
+	"stdio.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
-"editor.defaultFormatter": "ms-vscode.cpptools",
+"editor.defaultFormatter": "keyhr.42-c-format",
 "editor.insertSpaces": false,
-"editor.detectIndentation": false
+"editor.detectIndentation": false,
+"[c]": {
+	"editor.defaultFormatter": "keyhr.42-c-format"
+}
 }
