@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 16:17:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 16:37:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,37 +68,29 @@ static void	msbi_perror(char const *const errstr, int errnum)
 
 static int	msbi_cd(char **args)
 {
-	char	*cwd;
+	char	buf[1024];
 	char	*path;
-	// int		ret;
 
 	if (!args)
 		return (1);
-	// ret = 1;		
 	if (!args[1])
 		path = ft_strdup(getenv("HOME"));
 	else if (args[2])
 		return (msbi_perror(__func__, E2BIG), 1);
-	else if (args[1][0] == '/')
-		path = ft_strdup(args[1]);
 	else
-	{
-		cwd = getcwd((char *)NULL, 0);
-		path = ft_strjoin(cwd, "/");
-		free (cwd);
-		cwd = path;
-		path = ft_strjoin(cwd, args[1]);
-		free(cwd);
-	}
-	if (path && ft_strcmp(path, ""))
+		path = ft_strdup(args[1]);
+	if (path && !(!ft_strcmp(path, "")))
 	{
 		if (chdir(path) == -1)
 		{
-			path = ft_strjoin(args[1], ": ");
-			return (msbi_perror(__func__, errno), 1);
+			*buf = '\0';
+			ft_strlcat(buf, path, 1024);
+			ft_strlcat(buf, ": ", 1024);
+			ft_strlcat(buf, __func__, 1024);
+			return (free(path), msbi_perror(buf, errno), 1);
 		}
 	}
-	return (free(path), 0);
+	return (0);
 }
 
 // returns the shell exit status
