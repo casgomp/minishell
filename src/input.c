@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 15:04:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/01 12:42:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 
 	if (cmdln_tokens && *cmdln_tokens)
 	{
+		if (cmdln_tokens[0][0] == '#')
+			return (rh_free_simple_array((void **) cmdln_tokens), pcd->exit_status = 0, 1);
 		// loop over pipe sections
 		{
 			// do io redirect
@@ -59,7 +61,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			}
 		}
 	}
-	return (rh_free_simple_array((void **) cmdln_tokens), 0);
+	// If comdln is empty, don't change the last exit status
+	return (rh_free_simple_array((void **) cmdln_tokens), /* pcd->exit_status = 0, */ 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
