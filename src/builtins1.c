@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 19:15:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/01 12:14:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static int	msbi_echo(t_cd *pcd, char **args)
+static int	msbi_echo(char **args)
 {
 	int		ret;
 	bool	newline;
@@ -36,8 +36,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 	}
 	if (newline && ret >= 0)
 		ret = ft_printf("%c", '\n');
-	pcd->exit_status = 0;
-	return (ret >= 0);
+	return (ret < 0);
 }
 
 static int	msbi_exit(t_cd *pcd, char **args)
@@ -50,16 +49,14 @@ static int	msbi_exit(t_cd *pcd, char **args)
 		if (success < (int)ft_strlen(args[1]))
 		{
 			ft_printf("Dummy str: bash: exit: 82949672970920399492: "
-						"numeric argument required");
-			pcd->exit_status = 1;
+						"numeric argument required\n");
+			return (1);
 		}
-		else
-			pcd->exit_status %= 256;
 	}
 	if (pcd->interactive)
 		ft_printf("exit\n");
 	pcd->exit = true;
-	return (1);
+	return (pcd->exit_status %= 256);
 }
 
 static void	msbi_perror(char const *const errstr, int errnum)
@@ -121,15 +118,15 @@ static int	msbi_env(t_cd const *const pcd)
 int	ms_builtins(t_cd *pcd, char **const args)
 {
 	if (!ft_strcmp(args[0], "cd"))
-		pcd->exit_status = (msbi_cd(/* pcd, */ args));
+		pcd->exit_status = (msbi_cd(args));
 	else if (!ft_strcmp(args[0], "echo"))
-		pcd->exit_status = (msbi_echo(pcd, args));
+		pcd->exit_status = (msbi_echo(args));
 	else if (!ft_strcmp(args[0], "env"))
 		pcd->exit_status = (msbi_env(pcd));
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msbi_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
-		pcd->exit_status = (msbi_pwd(/*pcd , args */));
+		pcd->exit_status = (msbi_pwd());
 	else
 		return (false);
 	return (true);
