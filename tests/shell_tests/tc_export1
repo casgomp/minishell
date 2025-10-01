@@ -1,0 +1,6 @@
+export A=A A=B B=C
+unset A B
+export ""
+export A=A ""
+export A=A "" A=B
+unset A B
