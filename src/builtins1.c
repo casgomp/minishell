@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 17:21:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/01 17:36:25 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "ms_rmquotes_expand.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -121,6 +122,9 @@ static int	msbi_export(t_cd *pcd, char **args)
 	char	**env;
 	char	*pc;
 	size_t	sublen;
+	size_t	idx;
+	bool	isfirstchar;
+	int		ret;
 	
 //errors (exit val $?==1)
 // + not an identifier if var name has not allowed chars
@@ -129,6 +133,7 @@ static int	msbi_export(t_cd *pcd, char **args)
 		return (1);
 	if (!args[1])
 		return (msbi_env());
+	ret = 0;
 	while (*(++args))
 	{
 		env = environ;
@@ -136,11 +141,26 @@ static int	msbi_export(t_cd *pcd, char **args)
 		if (!(pc && (**args)))
 		{
 			if (!(**args))
+			{
 				ft_fdprintf(STDERR_FILENO, "%s: not valid in this context\n", __func__);
+				ret = 1;
+			}
 			continue;
 		}
-		sublen = pc - *args + 1;
-		while (*env && ft_strncmp(*args, *env, sublen))
+		sublen = pc - *args;
+		idx = 0;
+		isfirstchar = true;
+		while (idx < sublen && ms_isvalidvarchar(*args[idx], &isfirstchar))
+				++idx;
+		if (idx < sublen)
+		{
+			pc = ft_substr(*args, 0, sublen);
+			ft_fdprintf(STDERR_FILENO, "%s: not an identifier: %s\n", __func__, pc);
+			free(pc);
+			ret = 1;
+			continue;
+		}
+		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
 		if (*env)
 		{
@@ -154,7 +174,7 @@ static int	msbi_export(t_cd *pcd, char **args)
 			environ[pcd->envsize] = (char *) NULL;
 		}
 	}
-	return (0);
+	return (ret);
 }
 
 // // unset with no options
