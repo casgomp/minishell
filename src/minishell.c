@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 19:19:38 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/30 19:51:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	ms_cleanup(t_cd *pcd)
 	rl_clear_history();
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
+	// clear env if ptr changed!
 	return (1);
 }
 
