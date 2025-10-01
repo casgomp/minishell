@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 12:14:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/01 17:13:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,15 +105,63 @@ static int	msbi_pwd(/*t_cd *pcd , char **args */)
 	return (0);
 }
 
-static int	msbi_env(t_cd const *const pcd)
+static int	msbi_env(/* t_cd const *const pcd */)
 {
 	char 	**env2;
 		
-	env2 = pcd->env;	
+	env2 = environ;	
 	while (*env2)
 		ft_printf("%s\n", *(env2++));
 	return (0);
 }
+
+// export with no options
+static int	msbi_export(t_cd *pcd, char **args)
+{
+	char	**env;
+	char	*pc;
+	size_t	sublen;
+	
+//errors (exit val $?==1)
+// + not an identifier if var name has not allowed chars
+// + export "" gives export: not valid in this context:
+	if (!(args && args[0]))
+		return (1);
+	if (!args[1])
+		return (msbi_env());
+	while (*(++args))
+	{
+		env = environ;
+		pc = ft_strchr(*args, '=');
+		if (!(pc && (**args)))
+		{
+			if (!(**args))
+				ft_fdprintf(STDERR_FILENO, "%s: not valid in this context\n", __func__);
+			continue;
+		}
+		sublen = pc - *args + 1;
+		while (*env && ft_strncmp(*args, *env, sublen))
+			++env;
+		if (*env)
+		{
+			free(*env);
+			*env = ft_strdup(*args);
+		}
+		else
+		{
+			pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), true);
+			environ[pcd->envsize++] = ft_strdup(*args);
+			environ[pcd->envsize] = (char *) NULL;
+		}
+	}
+	return (0);
+}
+
+// // unset with no options
+// static int	msbi_unset()
+// {
+// 	return (1);
+// }
 
 int	ms_builtins(t_cd *pcd, char **const args)
 {
@@ -122,9 +170,11 @@ int	ms_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "echo"))
 		pcd->exit_status = (msbi_echo(args));
 	else if (!ft_strcmp(args[0], "env"))
-		pcd->exit_status = (msbi_env(pcd));
+		pcd->exit_status = (msbi_env(/* pcd */));
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msbi_exit(pcd, args));
+	else if (!ft_strcmp(args[0], "export"))
+		pcd->exit_status = (msbi_export(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
 		pcd->exit_status = (msbi_pwd());
 	else
