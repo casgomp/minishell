@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/02 09:51:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/02 13:01:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,24 +138,28 @@ static int	msbi_export(t_cd *pcd, char **args)
 	{
 		if (!(**args))
 		{
-			ft_fdprintf(STDERR_FILENO, "%s: %s: not a valid identifier\n", __func__, *args);
+			ft_fdprintf(STDERR_FILENO, "%s: '%s': not a valid identifier\n", __func__, *args);
 			ret = 1;
 			continue;
 		}
+		sublen = ft_strlen(*args);
 		pc = ft_strchr(*args, '=');
-		sublen = pc - *args;
+		if (pc)
+			sublen = pc - *args;
 		idx = 0;
 		isfirstchar = true;
-		while (idx < sublen && ms_isvalidvarchar(*args[idx], &isfirstchar))
+		while (idx < sublen && ms_isvalidvarchar((*args)[idx], &isfirstchar))
 				++idx;
-		if (idx < sublen)
+		if (sublen == 0 || (*args)[idx] != '=')
 		{
 			// pc = ft_substr(*args, 0, sublen);
-			ft_fdprintf(STDERR_FILENO, "%s: %s: not a valid identifier\n", __func__, *args);
+			ft_fdprintf(STDERR_FILENO, "%s: '%s': not a valid identifier\n", __func__, *args);
 			// free(pc);
 			ret = 1;
-			continue;
+			continue ;
 		}
+		if (!pc)
+			continue ;
 		env = environ;
 		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
@@ -186,12 +190,13 @@ static int	msbi_unset(t_cd *pcd, char **args)
 			++env;
 		if (*env)
 			--(pcd->envsize);
-		while (*(env))
+		free(*(env));
+		while (*(++env))
 		{
-			free(*(env++));
+			// free(*(env++));
 			*(env - 1) = *(env);
 		}
-		*env = (char *) NULL;
+		*(env - 1) = (char *) NULL;
 	}
 	return (0);
 }
