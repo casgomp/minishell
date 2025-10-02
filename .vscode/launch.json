@@ -34,6 +34,7 @@
       "type": "cppdbg",
       "request": "launch",
       "args": [
+		// "tests/shell_tests/tc_export1",
 			// "nonexist",
 			// "<<", "eof"	doesn"t work
 		],	

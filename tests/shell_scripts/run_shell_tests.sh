@@ -24,9 +24,9 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" |
 		TCOUT="${TCSCRIPT}.result"
 		truncate -s 0 "$TCOUT"
 
-		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"
+		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT" 2>&1
 		MSRET=$?
-		<"$TCSCRIPT" bash >"$BSHOUT"
+		<"$TCSCRIPT" bash >"$BSHOUT" 2>&1
 		BRET=$?
 		diff --text "$MSHOUT" "$BSHOUT" > "$DFFOUT" 2>&1
 		DRET=$?
@@ -36,13 +36,13 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" |
 		else {
 			if [[ $DRET != 0 ]]; then
 			{
-				printf "$RED diff fail ( < msh, > bash )\n$RESET" >> "$TCOUT"
-				cat "$DFFOUT" >> "$TCOUT"
+				printf "$RED diff fail ( < msh, > bash )\n$RESET" >> "$TCOUT" 2>&1
+				cat "$DFFOUT" >> "$TCOUT" 2>&1
 			} fi
 			if [[ ($MSRET != $BRET) ]]; then
 			{
-				printf "$RED Return values differ:\n$RESET" >> "$TCOUT"
-				printf "  msh=%d, bsh=%d, diff=%d\n" $MSRET $BRET $DRET >> "$TCOUT"
+				printf "$RED Return values differ:\n$RESET" >> "$TCOUT" 2>&1
+				printf "  msh=%d, bsh=%d, diff=%d\n" $MSRET $BRET $DRET >> "$TCOUT" 2>&1
 			} fi
 			if $FAIL_OK; then
 				printf "$YELLOW Fail OK\n$RESET"
