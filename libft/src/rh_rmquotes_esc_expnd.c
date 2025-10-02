@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 18:24:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 20:05:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,8 @@ char	*rh_rmqed(char const *const qutdstr, t_qed tqed)
 char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
 {
 	char **const	split = rh_split_quotes(to_split,
-		(t_qes){.q = sqed.q, .esc = sqed.esc,
-			.splt = sqed.splt, .specialsplt = sqed.specialsplt});
+			(t_qes){.q = sqed.q, .esc = sqed.esc,
+			.blank = sqed.blank, .metachr = sqed.metachr});
 	char			*substr;
 	int				idx;
 
@@ -76,7 +76,7 @@ char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
 		while (split[idx])
 		{
 			substr = rh_rmqed(split[idx],
-				(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+					(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
 					.dict = sqed.dict, .dict_data = sqed.dict_data,
 					.validchar = sqed.validchar,
 					.validchar_data = sqed.validchar_data});
@@ -114,6 +114,7 @@ static int	escape(char *const pc, int *const pidx, t_uedata *const puedata)
 //  2 if expansion did happen
 //  0 if expansion did not happen
 // -2 if set_tsstl failed after expansion happened
+// internal hint: paramlen starts at 1, bc the expnd char must also be counted
 static int	expand(char *const pc, int *const pidx,
 	t_qed const *const pqed, t_uedata *const puedata)
 {
@@ -122,7 +123,7 @@ static int	expand(char *const pc, int *const pidx,
 	char	*envval;
 	bool	isfirstchar;
 
-	paramlen = 1; // including '$' !
+	paramlen = 1;
 	isfirstchar = true;
 	while (pc[paramlen] && (*pqed->validchar)(pc[paramlen], &isfirstchar))
 		++paramlen;
@@ -152,7 +153,7 @@ static int	escape_expand(char *const pc, int *const pidx,
 	{
 		if (pqed->esc == *pc)
 		{
-			return(escape(pc, pidx, puedata));
+			return (escape(pc, pidx, puedata));
 		}
 		else if (pqed->expnd == *pc)
 		{

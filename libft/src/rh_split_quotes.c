@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 10:41:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/28 20:05:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	preproc_qesstr(char const *const s, int *const pidx,
 	{
 		if (ft_strchr(pqes->q, s[*pidx]))
 			ptsp->activeq = s[(*pidx)++];
-		else if (ft_strchr(pqes->specialsplt, s[*pidx]))
+		else if (ft_strchr(pqes->metachr, s[*pidx]))
 		{
 			while (s[*pidx + ptsp->tsl->len] == s[*pidx])
 				++(ptsp->tsl->len);
@@ -43,8 +43,8 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 	}
 	if (!s[*pidx]
 		|| (!ptsp->activeq
-			&& (ft_strchr(pqes->splt, s[*pidx])
-				|| ft_strchr(pqes->specialsplt, s[*pidx]))))
+			&& (ft_strchr(pqes->blank, s[*pidx])
+				|| ft_strchr(pqes->metachr, s[*pidx]))))
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 }
 
@@ -54,12 +54,16 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 	while (s[*pidx]
 		&& ((!ptsp->activeq
 				&& !ft_strchr(pqes->q, s[*pidx])
-				&& !ft_strchr(pqes->splt, s[*pidx])
-				&& !ft_strchr(pqes->specialsplt, s[*pidx]))
+				&& !ft_strchr(pqes->blank, s[*pidx])
+				&& !ft_strchr(pqes->metachr, s[*pidx]))
 			|| (ptsp->activeq && s[*pidx] != ptsp->activeq)))
 	{
-		if (s[*pidx] == pqes->esc && s[*pidx + 1] == pqes->q[0])
+		if ((s[*pidx] == pqes->esc)
+			&& (!ptsp->activeq
+				|| (ptsp->activeq == pqes->q[0] && s[*pidx + 1] == pqes->q[0])))
+		{
 			++(*pidx);
+		}
 		++(*pidx);
 	}
 }
@@ -73,12 +77,12 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 	int			idx;
 
 	tsp = (t_splprms){(char **) NULL, (t_startlen *) NULL, NULL, 0, '\0'};
-	if (!(s && qes.splt))
+	if (!(s && qes.blank))
 		return (cleanup_splt(&tsp), (char **) NULL);
 	idx = 0;
 	while (s[idx])
 	{
-		while (s[idx] && ft_strchr(qes.splt, s[idx]))
+		while (s[idx] && ft_strchr(qes.blank, s[idx]))
 			++idx;
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup_splt(&tsp), (char **) NULL);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/25 20:13:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/26 19:16:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int	msbi_echo(t_cd *pcd, char **args)
 {
 	int		ret;
 	bool	newline;
-
+		
 	ret = 0;
 	newline = true;
 	while (*(++args) && !ft_strcmp(*args, "-n"))
@@ -27,10 +27,10 @@ static int	msbi_echo(t_cd *pcd, char **args)
 	--args;
 	while (*(++args) && ret >= 0)
 	{
-		ret = ft_printf("%s ", *args);
+		ret = ft_printf("%s%s", *args, *(args+1)?" ":"");
+		if (ret >= 0 && *(args + 1))
+			ret = ft_printf("%c", ' ');
 	}
-	if (ret > 0)
-		ret = ft_printf("%c", '\b');
 	if (newline && ret >= 0)
 		ret = ft_printf("%c", '\n');
 	pcd->exit_status = 0;

@@ -1,8 +1,8 @@
 {
    libreadline
    Memcheck:Leak
-   #match-leak-kinds: all
-   match-leak-kinds: reachable
+   match-leak-kinds: all
+   #match-leak-kinds: reachable
    ...
    obj:/usr/lib/x86_64-linux-gnu/*
    ...
