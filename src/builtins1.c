@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 17:36:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/02 09:51:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,17 +136,13 @@ static int	msbi_export(t_cd *pcd, char **args)
 	ret = 0;
 	while (*(++args))
 	{
-		env = environ;
-		pc = ft_strchr(*args, '=');
-		if (!(pc && (**args)))
+		if (!(**args))
 		{
-			if (!(**args))
-			{
-				ft_fdprintf(STDERR_FILENO, "%s: not valid in this context\n", __func__);
-				ret = 1;
-			}
+			ft_fdprintf(STDERR_FILENO, "%s: %s: not a valid identifier\n", __func__, *args);
+			ret = 1;
 			continue;
 		}
+		pc = ft_strchr(*args, '=');
 		sublen = pc - *args;
 		idx = 0;
 		isfirstchar = true;
@@ -154,12 +150,13 @@ static int	msbi_export(t_cd *pcd, char **args)
 				++idx;
 		if (idx < sublen)
 		{
-			pc = ft_substr(*args, 0, sublen);
-			ft_fdprintf(STDERR_FILENO, "%s: not an identifier: %s\n", __func__, pc);
-			free(pc);
+			// pc = ft_substr(*args, 0, sublen);
+			ft_fdprintf(STDERR_FILENO, "%s: %s: not a valid identifier\n", __func__, *args);
+			// free(pc);
 			ret = 1;
 			continue;
 		}
+		env = environ;
 		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
 		if (*env)
@@ -177,11 +174,27 @@ static int	msbi_export(t_cd *pcd, char **args)
 	return (ret);
 }
 
-// // unset with no options
-// static int	msbi_unset()
-// {
-// 	return (1);
-// }
+// unset with no options
+static int	msbi_unset(t_cd *pcd, char **args)
+{
+	char	**env;
+	
+	while (*(++args))
+	{
+		env = environ;
+		while (*env && ft_strncmp(*args, *env, ft_strlen(*args)))
+			++env;
+		if (*env)
+			--(pcd->envsize);
+		while (*(env))
+		{
+			free(*(env++));
+			*(env - 1) = *(env);
+		}
+		*env = (char *) NULL;
+	}
+	return (0);
+}
 
 int	ms_builtins(t_cd *pcd, char **const args)
 {
@@ -197,6 +210,8 @@ int	ms_builtins(t_cd *pcd, char **const args)
 		pcd->exit_status = (msbi_export(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
 		pcd->exit_status = (msbi_pwd());
+	else if (!ft_strcmp(args[0], "unset"))
+		pcd->exit_status = (msbi_unset(pcd, args));
 	else
 		return (false);
 	return (true);
