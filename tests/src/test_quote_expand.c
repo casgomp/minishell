@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 18:43:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 14:18:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ms_rmquotes_expand.h"
+#include "msh_rmquotes_expand.h"
 #include "tests.h"
 
 #include <stdio.h>
@@ -54,9 +54,9 @@ int test_quote_expand() {
   t_qed qed = (t_qed){.q = "\"\'",
                       .esc = '\\',
                       .expnd = '$',
-                      .dict = ms_dict,
+                      .dict = msh_dict,
                       .dict_data = NULL,
-                      .validchar = ms_isvalidvarchar,
+                      .validchar = msh_isvalidvarchar,
                       .validchar_data = &firstchar};
   t_data tdata = (t_data){.qed = qed};
 

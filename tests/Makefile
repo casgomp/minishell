@@ -68,17 +68,17 @@ COMMON_INC = $(OBJFILES:.o=.d)
 #$(info $$var is [${OBJFILES:.o=.d}])
 
 # --- TARGETS ---
-SRCFILES	:= test_split_rmqed.c ms_rmquotes_expand.c
+SRCFILES	:= test_split_rmqed.c msh_rmquotes_expand.c
 -include $(COMMON_INC)
 test_split_rmqed: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
-SRCFILES	:= test_quote_expand.c ms_rmquotes_expand.c
+SRCFILES	:= test_quote_expand.c msh_rmquotes_expand.c
 -include $(COMMON_INC)
 test_quote_expand: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
-SRCFILES	:= test_split.c ms_rmquotes_expand.c
+SRCFILES	:= test_split.c msh_rmquotes_expand.c
 -include $(COMMON_INC)
 test_split: $(COMMON_DEPS)
 	$(COMMON_RECIPE)

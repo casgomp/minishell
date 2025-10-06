@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 12:42:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 14:14:25 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			//function run cmd(subset_args)
 			if (args && args[0])
 			{
-				if (ms_builtins(pcd, args))
+				if (msh_builtins(pcd, args))
 					return (rh_free_simple_array((void **)cmdln_tokens), 1);
 				else
 				{
@@ -76,18 +76,18 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 		if (pcd->fdscript == -1)
 		{
 			perror(argv[1]);
-			ms_builtins(pcd, (char* []){"exit", "127"});
+			msh_builtins(pcd, (char* []){"exit", "127"});
 		}
 		else if (dup2(pcd->fdscript, 0) == -1)
 		{
 			perror(argv[1]);
-			ms_builtins(pcd, (char* []){"exit", "9"});
+			msh_builtins(pcd, (char* []){"exit", "9"});
 		}
 	}
 	else if (argc > 2)
 	{
 		ft_printf("usage: minishell [scriptfile]\n");
-		ms_builtins(pcd, (char* []){"exit", "7"});
+		msh_builtins(pcd, (char* []){"exit", "7"});
 	}
 	return (1);
 }
