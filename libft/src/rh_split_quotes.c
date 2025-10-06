@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/28 20:05:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 19:58:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,11 @@ static int	preproc_qesstr(char const *const s, int *const pidx,
 			while (s[*pidx + ptsp->tsl->len] == s[*pidx])
 				++(ptsp->tsl->len);
 			*pidx += ptsp->tsl->len;
+			ptsp->tsl->len = *pidx - ptsp->tsl->start;
 			return (2);
 		}
 	}
 	return (1);
-}
-
-static void	postproc_qesstr(char const *const s, int *const pidx,
-									t_qes const *const pqes, t_splprms *ptsp)
-{
-	if (ptsp->activeq && s[*pidx] == ptsp->activeq)
-	{
-		ptsp->activeq = '\0';
-		++(*pidx);
-	}
-	if (!s[*pidx]
-		|| (!ptsp->activeq
-			&& (ft_strchr(pqes->blank, s[*pidx])
-				|| ft_strchr(pqes->metachr, s[*pidx]))))
-		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 }
 
 static void	advance_qesstr(char const *const s, int *const pidx,
@@ -65,6 +51,31 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 			++(*pidx);
 		}
 		++(*pidx);
+	}
+}
+
+#include <limits.h>
+static void	postproc_qesstr(char const *const s, int *const pidx,
+									t_qes const *const pqes, t_splprms *ptsp)
+{
+	if (ptsp->activeq && s[*pidx] == ptsp->activeq)
+	{
+		ptsp->activeq = '\0';
+		++(*pidx);
+	}
+	if (!s[*pidx]
+		|| (!ptsp->activeq
+			&& (ft_strchr(pqes->blank, s[*pidx])
+				|| ft_strchr(pqes->metachr, s[*pidx]))))
+		ptsp->tsl->len = *pidx - ptsp->tsl->start;
+	if (s[*pidx] == '>')
+	{
+		ptsp->tsl->len = *pidx - ptsp->tsl->start;
+		char *test = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
+		int success;
+		/* t_llong tmp =  */ft_atoll_check_input(test, INT_MAX, &success);
+		if (success > 0 && (size_t)success == ptsp->tsl->len)
+			ptsp->tsl->len = 0;
 	}
 }
 
