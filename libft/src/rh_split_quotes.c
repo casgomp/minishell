@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 19:58:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 20:23:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,12 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 			&& (ft_strchr(pqes->blank, s[*pidx])
 				|| ft_strchr(pqes->metachr, s[*pidx]))))
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
-	if (s[*pidx] == '>')
+	// This could become a speparate function (that could be specified via a fctnptr?)
+	// to handle the special treatment of some metachars.
+	// Also advancing the idx while the metachar stays the same (now done in preproc)
+	// should go there, makes more sense there, and certainly more than in preproc...
+	if (s[*pidx] == '>' || s[*pidx] == '<')
 	{
-		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 		char *test = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
 		int success;
 		/* t_llong tmp =  */ft_atoll_check_input(test, INT_MAX, &success);
