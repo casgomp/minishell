@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 15:23:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 14:24:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "ms_rmquotes_expand.h"
+#include "msh_rmquotes_expand.h"
 #include "libft.h"
 
 #include <stdlib.h>
@@ -29,8 +29,9 @@ int	ms_init(t_cd *pcd)
 	pcd->exit = false;
 	pcd->default_sqed = (t_sqed){.q = "\"\'", .esc = '\\',
 		.blank = " \t", .metachr = "|<>",
-		.expnd = '$', .dict = &ms_dict, .dict_data = pcd,
-		.validchar = &ms_isvalidvarchar, .validchar_data = (bool *) NULL};
+		.expnd = '$', .dict = &msh_dict, .dict_data = pcd,
+		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
+	pcd->mshid = "msh";
 	return (1);
 }
 

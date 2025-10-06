@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/02 13:01:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 14:28:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "ms_rmquotes_expand.h"
+#include "msh_rmquotes_expand.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static int	msbi_echo(char **args)
+static int	msh_echo(char **args)
 {
 	int		ret;
 	bool	newline;
@@ -40,7 +40,7 @@ static int	msbi_echo(char **args)
 	return (ret < 0);
 }
 
-static int	msbi_exit(t_cd *pcd, char **args)
+static int	msh_exit(t_cd *pcd, char **args)
 {
 	int	success;
 
@@ -60,15 +60,15 @@ static int	msbi_exit(t_cd *pcd, char **args)
 	return (pcd->exit_status %= 256);
 }
 
-static void	msbi_perror(char const *const errstr, int errnum)
+static void	msh_perror(char const *const errstr, int errnum)
 {
-	ft_fdprintf(2, "%s: ", getenv("SHELL"));
+	ft_fdprintf(2, "%s: ", "msh");
 	errno = errnum;
 	if (errstr)
 		perror(errstr);
 }
 
-static int	msbi_cd(char **args)
+static int	msh_cd(char **args)
 {
 	char	buf[1024];
 	char	*path;
@@ -78,7 +78,7 @@ static int	msbi_cd(char **args)
 	if (!args[1])
 		path = ft_strdup(getenv("HOME"));
 	else if (args[2])
-		return (msbi_perror(__func__, E2BIG), 1);
+		return (msh_perror(__func__+4, E2BIG), 1);
 	else
 		path = ft_strdup(args[1]);
 	if (path && !(!ft_strcmp(path, "")))
@@ -88,15 +88,15 @@ static int	msbi_cd(char **args)
 			*buf = '\0';
 			ft_strlcat(buf, path, 1024);
 			ft_strlcat(buf, ": ", 1024);
-			ft_strlcat(buf, __func__, 1024);
-			return (free(path), msbi_perror(buf, errno), 1);
+			ft_strlcat(buf, __func__+4, 1024);
+			return (free(path), msh_perror(buf, errno), 1);
 		}
 	}
 	return (0);
 }
 
 // returns the shell exit status
-static int	msbi_pwd(/*t_cd *pcd , char **args */)
+static int	msh_pwd(/*t_cd *pcd , char **args */)
 {
 	char *const cwd = getcwd((char *)NULL, 0);
 	if (!cwd)
@@ -106,7 +106,7 @@ static int	msbi_pwd(/*t_cd *pcd , char **args */)
 	return (0);
 }
 
-static int	msbi_env(/* t_cd const *const pcd */)
+static int	msh_env(/* t_cd const *const pcd */)
 {
 	char 	**env2;
 		
@@ -117,7 +117,7 @@ static int	msbi_env(/* t_cd const *const pcd */)
 }
 
 // export with no options
-static int	msbi_export(t_cd *pcd, char **args)
+static int	msh_export(t_cd *pcd, char **args)
 {
 	char	**env;
 	char	*pc;
@@ -132,13 +132,13 @@ static int	msbi_export(t_cd *pcd, char **args)
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
-		return (msbi_env());
+		return (msh_env());
 	ret = 0;
 	while (*(++args))
 	{
 		if (!(**args))
 		{
-			ft_fdprintf(STDERR_FILENO, "%s: '%s': not a valid identifier\n", __func__, *args);
+			ft_fdprintf(STDERR_FILENO, "%s: %s: '%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
 			ret = 1;
 			continue;
 		}
@@ -148,12 +148,12 @@ static int	msbi_export(t_cd *pcd, char **args)
 			sublen = pc - *args;
 		idx = 0;
 		isfirstchar = true;
-		while (idx < sublen && ms_isvalidvarchar((*args)[idx], &isfirstchar))
+		while (idx < sublen && msh_isvalidvarchar((*args)[idx], &isfirstchar))
 				++idx;
 		if (sublen == 0 || (*args)[idx] != '=')
 		{
 			// pc = ft_substr(*args, 0, sublen);
-			ft_fdprintf(STDERR_FILENO, "%s: '%s': not a valid identifier\n", __func__, *args);
+			ft_fdprintf(STDERR_FILENO, "%s: %s: '%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
 			// free(pc);
 			ret = 1;
 			continue ;
@@ -179,7 +179,7 @@ static int	msbi_export(t_cd *pcd, char **args)
 }
 
 // unset with no options
-static int	msbi_unset(t_cd *pcd, char **args)
+static int	msh_unset(t_cd *pcd, char **args)
 {
 	char	**env;
 	
@@ -201,22 +201,22 @@ static int	msbi_unset(t_cd *pcd, char **args)
 	return (0);
 }
 
-int	ms_builtins(t_cd *pcd, char **const args)
+int	msh_builtins(t_cd *pcd, char **const args)
 {
 	if (!ft_strcmp(args[0], "cd"))
-		pcd->exit_status = (msbi_cd(args));
+		pcd->exit_status = (msh_cd(args));
 	else if (!ft_strcmp(args[0], "echo"))
-		pcd->exit_status = (msbi_echo(args));
+		pcd->exit_status = (msh_echo(args));
 	else if (!ft_strcmp(args[0], "env"))
-		pcd->exit_status = (msbi_env(/* pcd */));
+		pcd->exit_status = (msh_env(/* pcd */));
 	else if (!ft_strcmp(args[0], "exit"))
-		pcd->exit_status = (msbi_exit(pcd, args));
+		pcd->exit_status = (msh_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "export"))
-		pcd->exit_status = (msbi_export(pcd, args));
+		pcd->exit_status = (msh_export(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
-		pcd->exit_status = (msbi_pwd());
+		pcd->exit_status = (msh_pwd());
 	else if (!ft_strcmp(args[0], "unset"))
-		pcd->exit_status = (msbi_unset(pcd, args));
+		pcd->exit_status = (msh_unset(pcd, args));
 	else
 		return (false);
 	return (true);
