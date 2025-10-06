@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 14:28:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 18:58:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ static int	msh_export(t_cd *pcd, char **args)
 		}
 		else
 		{
-			pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), true);
+			pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), false);
 			environ[pcd->envsize++] = ft_strdup(*args);
 			environ[pcd->envsize] = (char *) NULL;
 		}
