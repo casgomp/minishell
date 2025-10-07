@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 14:25:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 14:31:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,14 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 static void postproc_metachars(char const *const s, int *const pidx,
 								t_splprms *ptsp)
 {
-	char	*numstr;
-	int		success;
+	char const	metac = s[*pidx];
+	char		*numstr;
+	int			success;
 	
 	if (ptsp->tsl->len > 0)
 	{
 		success = 0;
-		if (s[*pidx] == '>' || s[*pidx] == '<')
+		if (metac == '>' || metac == '<')
 		{
 			numstr = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
 			if (numstr)
@@ -70,11 +71,9 @@ static void postproc_metachars(char const *const s, int *const pidx,
 		if (!success)
 			return ;
 	}
-	ptsp->tsl->len = 0;
-	while (s[*pidx + ptsp->tsl->len] == s[*pidx])
+	while (s[ptsp->tsl->len] == metac)
 		++(ptsp->tsl->len);
 	*pidx += ptsp->tsl->len;
-	ptsp->tsl->len = *pidx - ptsp->tsl->start;
 }
 
 static void	postproc_qesstr(char const *const s, int *const pidx,
