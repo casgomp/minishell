@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 10:48:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 17:33:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
+	// List of commands
+	t_cmd *const	cmds = msh_compile_cmds();
+	
 	//new vars for redirections/pipes
 	t_fds	pfds; //struct similar to pipex
 	char	**p_seg; //pipeline segments
