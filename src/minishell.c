@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 11:08:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 11:11:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@
 int	ms_init(t_cd *pcd)
 {
 	// set envvar 'SHELL' to sth like 'minishell' here in init
+	// ---> no don't, bash also doesn't do it.
+	//      If it uses "bash: " at the beginning of error msgs an the like,
+	//      it is just hardcoded
 	pcd->envrsvd = 0;
-	/* pcd->envsize =  */check_cpy_env(&environ, &(pcd->envrsvd), false);
+	check_cpy_env(&environ, &(pcd->envrsvd), false);
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
