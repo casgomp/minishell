@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 14:31:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 15:24:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,9 @@ static void postproc_metachars(char const *const s, int *const pidx,
 		if (!success)
 			return ;
 	}
-	while (s[ptsp->tsl->len] == metac)
+	while (s[ptsp->tsl->start + ptsp->tsl->len] == metac)
 		++(ptsp->tsl->len);
-	*pidx += ptsp->tsl->len;
+	*pidx = ptsp->tsl->start + ptsp->tsl->len;
 }
 
 static void	postproc_qesstr(char const *const s, int *const pidx,
