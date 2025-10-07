@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 20:29:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 10:48:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,10 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	{
 		// ignore lines that start with the comment char '#'
 		if (cmdln_tokens[0][0] == '#')
-			return (rh_free_simple_array((void **) cmdln_tokens), pcd->exit_status = 0, 1);
-
+		{
+			// comment doesn't change the last exit status in $?
+			return (rh_free_simple_array((void **) cmdln_tokens)/* , pcd->exit_status = 0 */, 1);
+		}
 		// loop over pipe sections
 		// First thing for safety, dup stdin and stdout and store them in struct.
 		pfds.stdin = dup(STDIN_FILENO);
