@@ -1,0 +1,3 @@
+export VAR="a b"
+../shell_scripts/bash_params.sh $VAR
+../shell_scripts/bash_params.sh "$VAR"

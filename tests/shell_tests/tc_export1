@@ -1,0 +1,9 @@
+export A=A A=B B=C
+unset A B
+export ""
+export A=A ""
+export A=A "" A=B
+unset A B
+export 234=234 B=234
+export 2B=2B C=2B
+export 234=234 "" B=234

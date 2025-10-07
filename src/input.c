@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 16:15:08 by pecastro         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:28:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,13 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	
 	if (cmdln_tokens && *cmdln_tokens)
 	{
+		// ignore lines that start with the comment char '#'
+		if (cmdln_tokens[0][0] == '#')
+		{
+			// comment doesn't change the last exit status in $?
+			return (rh_free_simple_array((void **) cmdln_tokens)/* , pcd->exit_status = 0 */, 1);
+		}
+		// loop over pipe sections
 		// First thing for safety, dup stdin and stdout and store them in struct.
 		// Then, loop over pipe sections:
 		// Find every segment of the pipeline (i.e. separated by control operator)
@@ -57,7 +64,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			//function run cmd(subset_args)
 			if (args && args[0])
 			{
-				if (ms_builtins(pcd, args))
+				if (msh_builtins(pcd, args))
 					return (rh_free_simple_array((void **)cmdln_tokens), 1);
 				else
 				{
@@ -79,7 +86,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			}
 		}
 	}
-	return (rh_free_simple_array((void **) cmdln_tokens), 0);
+	// If comdln is empty, don't change the last exit status
+	return (rh_free_simple_array((void **) cmdln_tokens), /* pcd->exit_status = 0, */ 0);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
@@ -93,18 +101,18 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 		if (pcd->fdscript == -1)
 		{
 			perror(argv[1]);
-			ms_builtins(pcd, (char* []){"exit", "127"});
+			msh_builtins(pcd, (char* []){"exit", "127"});
 		}
 		else if (dup2(pcd->fdscript, 0) == -1)
 		{
 			perror(argv[1]);
-			ms_builtins(pcd, (char* []){"exit", "9"});
+			msh_builtins(pcd, (char* []){"exit", "9"});
 		}
 	}
 	else if (argc > 2)
 	{
 		ft_printf("usage: minishell [scriptfile]\n");
-		ms_builtins(pcd, (char* []){"exit", "7"});
+		msh_builtins(pcd, (char* []){"exit", "7"});
 	}
 	return (1);
 }

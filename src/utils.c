@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 19:20:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 19:01:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-size_t	envsize(char **const env)
+size_t	get_envsize(char **const env)
 {
 	char 	**env2;
 	size_t	envsize;
@@ -28,27 +28,32 @@ size_t	envsize(char **const env)
 	return (envsize);
 }
 
-char	**check_cpy_env(char **oldenv, size_t *pexternenvsz, bool free_oldenv)
+size_t	check_cpy_env(
+	char ***const oldenv,
+	size_t * const penvreserved,
+	bool env_init)
 {
-	static size_t const	xtraspace = 32;
+	static size_t const	xtraspace = 1;
 	char				**newenv;
-	char				**envelem;
 	size_t				envsz;
+	size_t				idx;
 
 	if (!oldenv)
-		return ((char **) NULL);
-	envsz = envsize(oldenv);
-	if (envsz < (*pexternenvsz))
-		return (oldenv);
-	newenv = malloc((envsz + xtraspace) * sizeof(char *));
+		return (0);
+	envsz = get_envsize(*oldenv);
+	if (envsz < (*penvreserved))
+		return (envsz);
+	newenv = malloc((envsz + xtraspace + 1) * sizeof(char *));
 	if (!newenv)
-		return (*pexternenvsz = 0, (char **) NULL);
-	*pexternenvsz += xtraspace;
-	envelem = newenv;
-	while (*oldenv)
-		*(envelem++) = *(oldenv++);
-	*envelem = (char *) NULL;
-	if (free_oldenv)
-		rh_free_simple_array((void **)oldenv);
-	return (newenv);
+		return (0);
+	*penvreserved = envsz + xtraspace;
+	idx = -1;
+	while ((*oldenv)[++idx])
+		if (env_init)
+			newenv[idx] = ft_strdup((*oldenv)[idx]);
+		else
+			newenv[idx] = (*oldenv)[idx];
+	newenv[idx] = (char *) NULL;
+	*oldenv = newenv;
+	return (envsz);
 }

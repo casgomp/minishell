@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 19:51:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 18:57:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "ms_rmquotes_expand.h"
+#include "msh_rmquotes_expand.h"
 #include "libft.h"
 
 #include <stdlib.h>
@@ -21,16 +21,17 @@
 int	ms_init(t_cd *pcd)
 {
 	// set envvar 'SHELL' to sth like 'minishell' here in init
-	pcd->envsz = 0;
-	pcd->env = check_cpy_env(environ, &(pcd->envsz), false);
+	pcd->envrsvd = 0;
+	pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), true);
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
 	pcd->exit = false;
 	pcd->default_sqed = (t_sqed){.q = "\"\'", .esc = '\\',
 		.blank = " \t", .metachr = "|<>",
-		.expnd = '$', .dict = &ms_dict, .dict_data = pcd,
-		.validchar = &ms_isvalidvarchar, .validchar_data = (bool *) NULL};
+		.expnd = '$', .dict = &msh_dict, .dict_data = pcd,
+		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
+	pcd->mshid = "msh";
 	return (1);
 }
 
