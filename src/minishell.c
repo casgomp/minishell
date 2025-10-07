@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 18:57:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 11:08:28 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	ms_init(t_cd *pcd)
 {
 	// set envvar 'SHELL' to sth like 'minishell' here in init
 	pcd->envrsvd = 0;
-	pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), true);
+	/* pcd->envsize =  */check_cpy_env(&environ, &(pcd->envrsvd), false);
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 18:58:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 11:08:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,16 +170,16 @@ static int	msh_export(t_cd *pcd, char **args)
 		}
 		else
 		{
-			pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), false);
-			environ[pcd->envsize++] = ft_strdup(*args);
-			environ[pcd->envsize] = (char *) NULL;
+			idx = check_cpy_env(&environ, &(pcd->envrsvd), true);
+			environ[idx] = ft_strdup(*args);
+			environ[++idx] = (char *) NULL;
 		}
 	}
 	return (ret);
 }
 
 // unset with no options
-static int	msh_unset(t_cd *pcd, char **args)
+static int	msh_unset(/* t_cd *pcd, */ char **args)
 {
 	char	**env;
 	
@@ -189,14 +189,12 @@ static int	msh_unset(t_cd *pcd, char **args)
 		while (*env && ft_strncmp(*args, *env, ft_strlen(*args)))
 			++env;
 		if (*env)
-			--(pcd->envsize);
-		free(*(env));
-		while (*(++env))
 		{
-			// free(*(env++));
-			*(env - 1) = *(env);
+			free(*(env));
+			while (*(++env))
+				*(env - 1) = *(env);
+			*(env - 1) = (char *) NULL;
 		}
-		*(env - 1) = (char *) NULL;
 	}
 	return (0);
 }
@@ -216,7 +214,7 @@ int	msh_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "pwd"))
 		pcd->exit_status = (msh_pwd());
 	else if (!ft_strcmp(args[0], "unset"))
-		pcd->exit_status = (msh_unset(pcd, args));
+		pcd->exit_status = (msh_unset(/* pcd, */ args));
 	else
 		return (false);
 	return (true);

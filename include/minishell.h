@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 14:23:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 10:58:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ extern char **environ;
 typedef struct s_minishell_core_data
 {
 	char	*mshid;
-	size_t	envsize;
+	// size_t	envsize;
 	size_t	envrsvd;
 	int		exit_status;
 	bool	interactive;
