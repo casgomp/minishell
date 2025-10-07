@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 18:58:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 11:24:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ static int	msh_exit(t_cd *pcd, char **args)
 		pcd->exit_status = ft_atoll_check_input(args[1], INT_MAX, &success);
 		if (success < (int)ft_strlen(args[1]))
 		{
-			ft_printf("Dummy str: bash: exit: 82949672970920399492: "
-						"numeric argument required\n");
+			ft_printf("%s: %s: %s: numeric argument required\n",
+				pcd->mshid, __func__ + 4, args[1]);
 			return (1);
 		}
 	}
@@ -95,8 +95,7 @@ static int	msh_cd(char **args)
 	return (0);
 }
 
-// returns the shell exit status
-static int	msh_pwd(/*t_cd *pcd , char **args */)
+static int	msh_pwd()
 {
 	char *const cwd = getcwd((char *)NULL, 0);
 	if (!cwd)
@@ -106,7 +105,7 @@ static int	msh_pwd(/*t_cd *pcd , char **args */)
 	return (0);
 }
 
-static int	msh_env(/* t_cd const *const pcd */)
+static int	msh_env()
 {
 	char 	**env2;
 		
@@ -126,9 +125,6 @@ static int	msh_export(t_cd *pcd, char **args)
 	bool	isfirstchar;
 	int		ret;
 	
-//errors (exit val $?==1)
-// + not an identifier if var name has not allowed chars
-// + export "" gives export: not valid in this context:
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
@@ -136,12 +132,6 @@ static int	msh_export(t_cd *pcd, char **args)
 	ret = 0;
 	while (*(++args))
 	{
-		if (!(**args))
-		{
-			ft_fdprintf(STDERR_FILENO, "%s: %s: '%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
-			ret = 1;
-			continue;
-		}
 		sublen = ft_strlen(*args);
 		pc = ft_strchr(*args, '=');
 		if (pc)
@@ -152,9 +142,7 @@ static int	msh_export(t_cd *pcd, char **args)
 				++idx;
 		if (sublen == 0 || (*args)[idx] != '=')
 		{
-			// pc = ft_substr(*args, 0, sublen);
-			ft_fdprintf(STDERR_FILENO, "%s: %s: '%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
-			// free(pc);
+			ft_fdprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
 			ret = 1;
 			continue ;
 		}
@@ -170,16 +158,16 @@ static int	msh_export(t_cd *pcd, char **args)
 		}
 		else
 		{
-			pcd->envsize = check_cpy_env(&environ, &(pcd->envrsvd), false);
-			environ[pcd->envsize++] = ft_strdup(*args);
-			environ[pcd->envsize] = (char *) NULL;
+			idx = check_cpy_env(&environ, &(pcd->envrsvd), true);
+			environ[idx] = ft_strdup(*args);
+			environ[++idx] = (char *) NULL;
 		}
 	}
 	return (ret);
 }
 
 // unset with no options
-static int	msh_unset(t_cd *pcd, char **args)
+static int	msh_unset(char **args)
 {
 	char	**env;
 	
@@ -189,14 +177,12 @@ static int	msh_unset(t_cd *pcd, char **args)
 		while (*env && ft_strncmp(*args, *env, ft_strlen(*args)))
 			++env;
 		if (*env)
-			--(pcd->envsize);
-		free(*(env));
-		while (*(++env))
 		{
-			// free(*(env++));
-			*(env - 1) = *(env);
+			free(*(env));
+			while (*(++env))
+				*(env - 1) = *(env);
+			*(env - 1) = (char *) NULL;
 		}
-		*(env - 1) = (char *) NULL;
 	}
 	return (0);
 }
@@ -208,7 +194,7 @@ int	msh_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "echo"))
 		pcd->exit_status = (msh_echo(args));
 	else if (!ft_strcmp(args[0], "env"))
-		pcd->exit_status = (msh_env(/* pcd */));
+		pcd->exit_status = (msh_env());
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msh_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "export"))
@@ -216,7 +202,7 @@ int	msh_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "pwd"))
 		pcd->exit_status = (msh_pwd());
 	else if (!ft_strcmp(args[0], "unset"))
-		pcd->exit_status = (msh_unset(pcd, args));
+		pcd->exit_status = (msh_unset(args));
 	else
 		return (false);
 	return (true);
