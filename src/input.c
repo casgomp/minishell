@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/30 18:59:06 by pecastro         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:15:08 by pecastro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 	//new vars for redirections/pipes
-	t_fds	pfds; //struct similar to pipex
-	char	**p_seg; //pipeline segments
-	int		p_cnt; //pipe count
-	int		i;
 
 	/*
 	int i = 0;
@@ -40,18 +36,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	if (cmdln_tokens && *cmdln_tokens)
 	{
 		// First thing for safety, dup stdin and stdout and store them in struct.
-		pfds.stdin = dup(STDIN_FILENO);
-		pfds.stdout = dup(STDOUT_FILENO);
 		// Then, loop over pipe sections:
 		// Find every segment of the pipeline (i.e. separated by control operator)
-		p_cnt = 0;
-		i = 0;
-		while (cmdln_tokens[i])
-		{
-			if (ft_strchr(cmdln_tokens[i++], '|'))
-				p_cnt ++;
-		}
-		p_seg = malloc(sizeof(char *) * (p_cnt + 2));
 		//what if instead of creating char *segment[], Create char *
 		//i = 0;
 		//while (cmdln_tokens[i])
