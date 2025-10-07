@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 16:41:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 11:10:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ extern char **environ;
 
 typedef struct s_minishell_core_data
 {
-	size_t	envsize;
+	char	*mshid;
 	size_t	envrsvd;
 	int		exit_status;
 	bool	interactive;
@@ -31,11 +31,10 @@ typedef struct s_minishell_core_data
 }	t_cd;
 
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
-int		ms_builtins(t_cd *pcd, char **const args);
+int		msh_builtins(t_cd *pcd, char **const args);
 int		process_cmdline(t_cd *pcd, char const *const in);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
-// char	**check_cpy_env(char **oldenv, size_t *pexternenvsz, bool free_oldenv);
 size_t	check_cpy_env(char ***const oldenv, size_t * const penvreserved,
 	bool free_oldenv);
 

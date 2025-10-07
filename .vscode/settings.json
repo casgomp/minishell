@@ -91,7 +91,7 @@
 	"stat.h": "c",
 	"readline.h": "c",
 	"ft_split_quotes.h": "c",
-	"ms_rmquotes_expand.h": "c",
+	"msh_rmquotes_expand.h": "c",
 	"stdlib.h": "c",
 	"stdbool.h": "c",
 	"minishell.h": "c",

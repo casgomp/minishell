@@ -6,12 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/29 16:19:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 14:18:45 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ms_rmquotes_expand.h"
+#include "msh_rmquotes_expand.h"
 #include "tests.h"
 
 #include <stdbool.h>
@@ -64,9 +64,9 @@ int test_split_rmqed() {
                       .expnd = '$',
 					  .blank = " \t",
 					  .metachr = "|<>",
-                      .dict = ms_dict,
+                      .dict = msh_dict,
                       .dict_data = NULL,
-                      .validchar = ms_isvalidvarchar,
+                      .validchar = msh_isvalidvarchar,
                       .validchar_data = &firstchar};
   t_data tdata = (t_data){.sqed = sqed};
 

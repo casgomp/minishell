@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/01 16:51:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/06 19:01:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ size_t	get_envsize(char **const env)
 size_t	check_cpy_env(
 	char ***const oldenv,
 	size_t * const penvreserved,
-	bool free_oldenv)
+	bool env_init)
 {
-	static size_t const	xtraspace = 32;
+	static size_t const	xtraspace = 1;
 	char				**newenv;
 	size_t				envsz;
 	size_t				idx;
@@ -49,10 +49,11 @@ size_t	check_cpy_env(
 	*penvreserved = envsz + xtraspace;
 	idx = -1;
 	while ((*oldenv)[++idx])
-		newenv[idx] = (*oldenv)[idx];
+		if (env_init)
+			newenv[idx] = ft_strdup((*oldenv)[idx]);
+		else
+			newenv[idx] = (*oldenv)[idx];
 	newenv[idx] = (char *) NULL;
-	if (free_oldenv)
-		rh_free_simple_array((void **)(*oldenv));
 	*oldenv = newenv;
 	return (envsz);
 }
