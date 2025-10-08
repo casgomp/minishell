@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 17:33:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/08 10:05:15 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_rmquotes_expand.h"
 #include "libft.h"
 
 #include <stdlib.h>
@@ -24,21 +25,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 	// List of commands
-	t_cmd *const	cmds = msh_compile_cmds();
-	
-	//new vars for redirections/pipes
-	t_fds	pfds; //struct similar to pipex
-	char	**p_seg; //pipeline segments
-	int		p_cnt; //pipe count
-	int		i;
-
-	/*
-	int i = 0;
-	while (cmdln_tokens[i])
-	{
-		printf("process_cmdline: cmdln_tokens[%i] = %s\n", i, cmdln_tokens[i]);
-		i ++;
-	}*/
+	// t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
 	
 	if (cmdln_tokens && *cmdln_tokens)
 	{
@@ -49,28 +36,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			return (rh_free_simple_array((void **) cmdln_tokens)/* , pcd->exit_status = 0 */, 1);
 		}
 		// loop over pipe sections
-		// First thing for safety, dup stdin and stdout and store them in struct.
-		pfds.stdin = dup(STDIN_FILENO);
-		pfds.stdout = dup(STDOUT_FILENO);
-		// Then, loop over pipe sections:
-		// Find every segment of the pipeline (i.e. separated by control operator)
-		p_cnt = 0;
-		i = 0;
-		while (cmdln_tokens[i])
-		{
-			if (ft_strchr(cmdln_tokens[i++], '|'))
-				p_cnt ++;
-		}
-		p_seg = malloc(sizeof(char *) * (p_cnt + 2));
-		//what if instead of creating char *segment[], Create char *
-		//i = 0;
-		//while (cmdln_tokens[i])
-		//	p_seg[i++] = ft_strdup(cmdln_tokens[i])
-
-		// and put each segment into a separate array of strings.
-		// Open files 
-		// Then 
-
 		{
 			// do io redirect
 			// stdin from file, heredoc or pipe
@@ -143,7 +108,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		pprompt = rh_split_rmqed("$USER@minishell$ ", pcd->default_sqed);
+		pprompt = rh_split_rmqed("$USER@minishell$\\ ", pcd->default_sqed);
 		if (pprompt && *pprompt)
 		{
 			*pcmdline = readline(*pprompt);
