@@ -6,12 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 17:35:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 16:59:53 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+#include <limits.h>
 #include <stdlib.h>
 
 char	*msh_dict(char const *const key, void *dict_data)
@@ -48,34 +49,133 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 
 t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 {
-	char **const	split = rh_split_quotes(to_split,
+	char **const	tokens = rh_split_quotes(to_split,
 			(t_qes){.q = sqed.q, .esc = sqed.esc,
 			.blank = sqed.blank, .metachr = sqed.metachr});
-	char			*substr;
 	int				idx;
-	t_cmd			*tcmds;
-	// t_cmd			*tccmd;
+	t_cmd			*cmdlst;
+	t_cmd			*curcmd;
+	t_cmdarg		*arglst;
+	t_cmdarg		*curarg;
 
-	tcmds = (t_cmd *) NULL;
-	if (split)
-	{
-		tcmds = (t_cmd *)malloc(sizeof(t_cmd));
-		if (!tcmds)
-			return ((t_cmd *) NULL);
-		*tcmds = (t_cmd){.stdio={-1, -1, -1}, .list_io=(t_io*)NULL, .args=(char **)NULL,
-							.ctrlchr='\0', .next=(t_cmd *)NULL};
-		idx = 0;
-		while (split[idx])
+	cmdlst = (t_cmd *) NULL;
+	arglst = (t_cmdarg *) NULL;
+	idx = 0;
+	while (tokens && tokens[idx])
+	{		
+		char const	*token = tokens[idx];		
+		int			tokenlen = ft_strlen(token);	
+		
+		// get curcmd function
+		if (!cmdlst || curcmd->ctrlchr)
 		{
-			substr = rh_rmqed(split[idx],
-					(t_qed){.q = "", .esc = sqed.esc, .expnd = sqed.expnd,
-					.dict = sqed.dict, .dict_data = sqed.dict_data,
-					.validchar = sqed.validchar,
-					.validchar_data = sqed.validchar_data});
-			free(split[idx]);
-			split[idx] = substr;
+			if (!cmdlst)
+			{
+				cmdlst = (t_cmd *)malloc(sizeof(t_cmd));
+				curcmd = cmdlst;
+			}
+			else
+			{
+				curcmd->next = (t_cmd *)malloc(sizeof(t_cmd));
+				curcmd = curcmd->next;
+			}
+			if (!curcmd)
+				return (/* cleanup! */ (t_cmd *) NULL);
+			*curcmd = (t_cmd){.stdio={-1, -1, -1}, .list_io=(t_io*)NULL, .args=(char **)NULL,
+								.ctrlchr='\0', .next=(t_cmd *)NULL};
+		}
+		// check for metachars:
+		if (ft_strchr(sqed.metachr, tokens[idx][tokenlen - 1]))
+		{
+			if (!ft_strcmp(token, "|"))
+			{
+				curcmd->ctrlchr = '|';
+			}
+			else
+			{
+				curcmd->list_io = malloc(sizeof(t_io));
+				if (!curcmd->list_io)
+					return (/* cleanup?, */ NULL);
+				*(curcmd->list_io) =
+					(t_io){.fname_delim = (char*) NULL, .new_fd = -1, .old_fd = -1,
+						.tredirect = (t_rd)rd_default, .next = (t_io *)NULL};
+				int success;
+				t_llong fd_new = ft_atoll_check_input(token, INT_MAX, &success);
+				if (success > 0)
+				{
+					// if (fd_new >= 1024)
+					// 	fd_new = -1;
+					//  ----> needs to be handled later as an error:
+					//  "bash: $(fdnew): Bad file descriptor"
+					curcmd->list_io->new_fd = fd_new;
+					token = &(token[success]);
+					tokenlen = ft_strlen(token);
+				}
+				else
+					fd_new = -1;
+				if (!ft_strcmp(token, ">"))
+					curcmd->list_io->tredirect = (t_rd)fd2file_trunc;
+				else if (!ft_strcmp(token, ">>"))
+					curcmd->list_io->tredirect = (t_rd)fd2file_append;
+				else if (!ft_strcmp(token, "<"))
+					curcmd->list_io->tredirect = (t_rd)file2fd;
+				else if (!ft_strcmp(token, "<<"))
+					curcmd->list_io->tredirect = (t_rd)heredoc2fd;
+			
+				// Handle error later...
+				// if ((curcmd->list_io->tredirect == (t_rd)rd_default)
+				// 	|| (!curcmd->list_io->fname_delim))
+				// {
+				// 	// return (error)
+				// }
+				if (fd_new == -1)
+				{
+					if ((curcmd->list_io->tredirect == (t_rd)fd2file_trunc)
+						|| (curcmd->list_io->tredirect == (t_rd)fd2file_append))
+						fd_new = 1;
+					if ((curcmd->list_io->tredirect == (t_rd)file2fd)
+						|| (curcmd->list_io->tredirect == (t_rd)heredoc2fd))
+						fd_new = 0;
+				}
+			
+				if (tokens[idx + 1]
+					&& ((ft_strlen(tokens[idx + 1]) == 0)
+						|| !ft_strchr(sqed.metachr, tokens[idx + 1][0])))
+				{
+					curcmd->list_io->fname_delim = ft_strdup(tokens[idx + 1]);
+				}
+				else
+				{
+					// msh_error("bash: syntax error near unexpected token `%s'",
+					// 	tokens[idx + 1]);
+					ft_printf("bash: syntax error near unexpected token `%s'\n",
+						tokens[idx + 1]);
+					return (t_cmd *) NULL;
+				}
+				++idx;
+			
+			}
 			++idx;
 		}
+		else // if not metachar or redirect group
+		{
+			{
+				if (!arglst)
+				{
+					arglst = malloc(sizeof(t_cmdarg));
+					curarg = arglst;
+				}
+				else
+				{
+					curarg->next = malloc(sizeof(t_cmdarg));
+					curarg = curarg->next;
+				}
+				if (!curarg)
+					return (/* cleanup, */ (t_cmd *) NULL);
+				*arglst = (t_cmdarg){.arg = (char *) NULL, .next = (t_cmdarg *) NULL};			
+			}
+			arglst->arg = ft_strdup(tokens[idx]);
+		}
 	}
-	return (tcmds);
+	return (/* cleanup tokens, */ cmdlst);
 }

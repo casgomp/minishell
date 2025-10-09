@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 17:17:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 17:13:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ typedef enum e_redirect
 {
 	fd2file_trunc,
 	fd2file_append,
+	file2fd,
 	heredoc2fd,
 	// fd2fd,
+	rd_default,
 }	t_rd;
 
 typedef struct s_io
@@ -46,6 +48,12 @@ typedef struct s_io
 	int			old_fd;// initialize to -1? //either to store filename's fd, or store >&[3]
 	struct s_io	*next;
 }	t_io;
+
+typedef struct s_cmdarg
+{
+	char			*arg;
+	struct s_cmdarg	*next;
+}	t_cmdarg;
 
 typedef struct s_cmd
 {

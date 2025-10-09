@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/08 10:05:15 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 17:12:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,28 @@
 
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
-	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
+	// char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 	// List of commands
-	// t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
+	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
+	t_cmd 			*curcmd;
 	
-	if (cmdln_tokens && *cmdln_tokens)
+
+	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
-		// ignore lines that start with the comment char '#'
-		if (cmdln_tokens[0][0] == '#')
-		{
-			// comment doesn't change the last exit status in $?
-			return (rh_free_simple_array((void **) cmdln_tokens)/* , pcd->exit_status = 0 */, 1);
-		}
+		curcmd = cmds;
 		// loop over pipe sections
+		while (curcmd)
 		{
 			// do io redirect
 			// stdin from file, heredoc or pipe
 			// stdout to file trunc|append or pipe
 			// compose cmdln_tokens array for current command
 
-			char **const	args = cmdln_tokens;
+			char **const	args = curcmd->args;
 			//function run cmd(subset_args)
 			if (args && args[0])
 			{
-				if (msh_builtins(pcd, args))
-					return (rh_free_simple_array((void **)cmdln_tokens), 1);
-				else
+				if (!msh_builtins(pcd, args))
 				{
 					// run extern executable using fork and exec...
 
@@ -58,18 +54,13 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 						tmp[0], args[0]);
 					return (
 						rh_free_simple_array((void **)tmp),
-						rh_free_simple_array((void **)cmdln_tokens),
+						/*cleanup cmds; */
 						0);
 				}
 			}
-			else
-			{
-				// handle empty command string??
-			}
 		}
 	}
-	// If comdln is empty, don't change the last exit status
-	return (rh_free_simple_array((void **) cmdln_tokens), /* pcd->exit_status = 0, */ 0);
+	return (/*cleanup cmds , pcd->exit_status = 0 ,*/ 1);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
