@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/09 17:12:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 18:09:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 						0);
 				}
 			}
+			curcmd = curcmd->next;
 		}
 	}
 	return (/*cleanup cmds , pcd->exit_status = 0 ,*/ 1);
