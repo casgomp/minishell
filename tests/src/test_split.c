@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 14:18:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 15:28:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 #include <stdlib.h>
 
 typedef struct data {
-  t_qes qes;
+  t_qes	qes;
+  char	*shellScriptPath;
 } t_data;
 
 int process_tstcs(t_tstcs *test_case, void *data) {
@@ -43,11 +44,11 @@ int process_tstcs(t_tstcs *test_case, void *data) {
     test_case->minishout =
         rh_rmqed(test_case->minishout,
                  (t_qed){.dict = NULL, .esc = '\\', .expnd = '\0', .q = ptdata->qes.q});
-  sprintf(test_case->shellcmd, "../shell_scripts/shell_split.sh %s", test_case->in);
+  sprintf(test_case->shellcmd, "%s %s", ptdata->shellScriptPath, test_case->in);
   return (1);
 }
 
-int test_split() {
+int test_split(char	*shellScriptPath) {
   t_tstcs tests[] = {
       /*  0 */ {.in = "ein wort", .shellout = NULL},
       /*  1 */ {.in = "ein|wort", .shellout = "°ein°|°wort°"},
@@ -63,17 +64,22 @@ int test_split() {
       /* 11 */ {.in = "\"ein \\\"wort\\\"\" ohne \"hh\"", .shellout = NULL},
       /* 12 */ {.in = "'ein \"wort\"' ohne \"h h\"", .shellout = NULL},
       /* 13 */ {.in = "'ein \"wort\"' ohne 'h h'", .shellout = NULL},
+	  /* 14 */ {.in = "a > b a> b a >b a>b", .shellout = "°a°>°b°a°>°b°a°>°b°a°>°b°"},
+	  /* 15 */ {.in = "42 > b 42> b 42 >b 42>b", .shellout = "°42°>°b°42>°b°42°>°b°42>°b°"},
+	  /* 16 */ {.in = "42 << b 42<< b 42 <<b 42<<b", .shellout = "°42°<<°b°42<<°b°42°<<°b°42<<°b°"},
+	  /* 17 */ {.in = "42 | b 42| b 42 |b 42|b", .shellout = "°42°|°b°42°|°b°42°|°b°42°|°b°"},
+	  /* 18 */ {.in = "42 || b 42|| b 42 ||b 42||b", .shellout = "°42°||°b°42°||°b°42°||°b°42°||°b°"},
       /*eof */ {.in = NULL},
   };
 
   // Full list of bash metachar: "|&;()<> \t\n", overlaps with .blank!
   t_qes qes = {.blank = " \t", .q = "\"\'", .esc = '\\', .metachr = "|<>"};
-  t_data tdata = (t_data){.qes = qes};
+  t_data tdata = (t_data){.qes = qes, .shellScriptPath = shellScriptPath};
 
   char test_suite[128];
   sprintf(test_suite, "Test suite: %s", __func__);
 
-  generate_testoutput(test_suite, tests, &process_tstcs, &tdata);
+  generate_testoutput(test_suite, tests+15, &process_tstcs, &tdata);
 
   return (1);
 }
@@ -82,6 +88,10 @@ int main(int argc, char *argv[]) {
   (void)argc;
   (void)argv;
   setbuf(stdout, NULL);
-  test_split();
+  char	*shellScriptPath = argv[0];
+  *(strrchr(argv[0],'/') + 1) = '\0';
+  shellScriptPath = ft_strjoin(shellScriptPath, "../shell_scripts/shell_split.sh");
+  test_split(shellScriptPath);
+  free(shellScriptPath);
   return (EXIT_SUCCESS);
 }

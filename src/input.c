@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 16:28:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 18:13:47 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_rmquotes_expand.h"
 #include "libft.h"
 
 #include <stdlib.h>
@@ -22,51 +23,28 @@
 
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
-	char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
-	//new vars for redirections/pipes
-
-	/*
-	int i = 0;
-	while (cmdln_tokens[i])
-	{
-		printf("process_cmdline: cmdln_tokens[%i] = %s\n", i, cmdln_tokens[i]);
-		i ++;
-	}*/
+	// char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
+	// List of commands
+	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
+	t_cmd 			*curcmd;
 	
-	if (cmdln_tokens && *cmdln_tokens)
+
+	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
-		// ignore lines that start with the comment char '#'
-		if (cmdln_tokens[0][0] == '#')
-		{
-			// comment doesn't change the last exit status in $?
-			return (rh_free_simple_array((void **) cmdln_tokens)/* , pcd->exit_status = 0 */, 1);
-		}
+		curcmd = cmds;
 		// loop over pipe sections
-		// First thing for safety, dup stdin and stdout and store them in struct.
-		// Then, loop over pipe sections:
-		// Find every segment of the pipeline (i.e. separated by control operator)
-		//what if instead of creating char *segment[], Create char *
-		//i = 0;
-		//while (cmdln_tokens[i])
-		//	p_seg[i++] = ft_strdup(cmdln_tokens[i])
-
-		// and put each segment into a separate array of strings.
-		// Open files 
-		// Then 
-
+		while (curcmd)
 		{
 			// do io redirect
 			// stdin from file, heredoc or pipe
 			// stdout to file trunc|append or pipe
 			// compose cmdln_tokens array for current command
 
-			char **const	args = cmdln_tokens;
+			char **const	args = curcmd->args;
 			//function run cmd(subset_args)
 			if (args && args[0])
 			{
-				if (msh_builtins(pcd, args))
-					return (rh_free_simple_array((void **)cmdln_tokens), 1);
-				else
+				if (!msh_builtins(pcd, args))
 				{
 					// run extern executable using fork and exec...
 
@@ -76,18 +54,14 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 						tmp[0], args[0]);
 					return (
 						rh_free_simple_array((void **)tmp),
-						rh_free_simple_array((void **)cmdln_tokens),
+						/*cleanup cmds; */
 						0);
 				}
 			}
-			else
-			{
-				// handle empty command string??
-			}
+			curcmd = curcmd->next;
 		}
 	}
-	// If comdln is empty, don't change the last exit status
-	return (rh_free_simple_array((void **) cmdln_tokens), /* pcd->exit_status = 0, */ 0);
+	return (/*cleanup cmds , pcd->exit_status = 0 ,*/ 1);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
@@ -126,7 +100,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		pprompt = rh_split_rmqed("$USER@minishell$ ", pcd->default_sqed);
+		pprompt = rh_split_rmqed("$USER@minishell$\\ ", pcd->default_sqed);
 		if (pprompt && *pprompt)
 		{
 			*pcmdline = readline(*pprompt);

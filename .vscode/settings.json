@@ -99,7 +99,8 @@
 	"rh_utils.h": "c",
 	"fcntl.h": "c",
 	"history.h": "c",
-	"stdio.h": "c"
+	"stdio.h": "c",
+	"tests.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "keyhr.42-c-format",
