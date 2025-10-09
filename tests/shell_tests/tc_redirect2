@@ -1,0 +1,19 @@
+rm stderr_tmp
+echo hello2 1>stderr_tmp
+rm stderr_tmp
+echo hello2.1 1> /dev/null
+rm stderr_tmp
+echo hello3 1 >/dev/null
+rm stderr_tmp
+echo hello3.1 1 > /dev/null
+rm stderr_tmp
+echo hello4 1> /dev/null
+rm stderr_tmp
+echo hello5 2>/dev/null 
+rm stderr_tmp
+echo hello6 3> /dev/null
+rm stderr_tmp
+echo hello7 2>stderr_tmp 1>/dev/stderr | cat stderr_tmp
+rm stderr_tmp
+echo hi > "" | echo hello
+echo hi > >non-existant | echo hello

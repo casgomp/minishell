@@ -1,0 +1,2 @@
+cat non-existant 1>stdout_tmp 2>/dev/stdout
+cat non-existant 2>/dev/stdout 1>stdout_tmp
