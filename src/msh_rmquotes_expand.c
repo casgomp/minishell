@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/09 16:59:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/09 17:35:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,12 +153,11 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 					return (t_cmd *) NULL;
 				}
 				++idx;
-			
 			}
-			++idx;
 		}
 		else // if not metachar or redirect group
 		{
+			// get curarg function
 			{
 				if (!arglst)
 				{
@@ -175,6 +174,29 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				*arglst = (t_cmdarg){.arg = (char *) NULL, .next = (t_cmdarg *) NULL};			
 			}
 			arglst->arg = ft_strdup(tokens[idx]);
+		}
+		++idx;
+		if (curcmd->ctrlchr || !tokens[idx])
+		{
+			// Transmogrify the args list
+			// + param expansion
+			// + word splitting
+			// + quote removal
+			// fill the args char** array
+			int num_args = /* (size_t) */(curarg - arglst);
+			curcmd->args = malloc((num_args + 1) * sizeof(char *));
+			if (!curcmd->args)
+				return (/* cleanup, */ (t_cmd *) NULL);
+			curcmd->args[num_args] = (char *) NULL;
+			curarg = arglst;
+			idx = -1;
+			while (++idx < num_args)
+			{
+				curarg = arglst + idx;
+				curcmd->args[idx] = curarg->arg;
+				free(curarg);
+			}
+			arglst = (t_cmdarg *) NULL;
 		}
 	}
 	return (/* cleanup tokens, */ cmdlst);
