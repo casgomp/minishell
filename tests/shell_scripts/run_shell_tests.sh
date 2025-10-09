@@ -73,7 +73,7 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" |
 			fi
 		}
 		fi
-		rm -f {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2}		
+		rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
 	} done
 
 cd "$OLDWD"
