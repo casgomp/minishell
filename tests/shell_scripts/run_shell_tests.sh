@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/bin/bash --norc
 
 OLDWD="$(pwd)"
+WORKDIR="/tmp/mshtest_$(date +%F_%T)"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 MSHBIN="$SCRIPT_DIR/../../minishell"
 SHELL_TESTCASE_DIR="$SCRIPT_DIR/../shell_tests"
-MSHOUT="$SHELL_TESTCASE_DIR/mshout"
-BSHOUT="$SHELL_TESTCASE_DIR/bshout"
-DFFOUT="$SHELL_TESTCASE_DIR/diffout"
+MSHOUT="$WORKDIR/mshout"
+BSHOUT="$WORKDIR/bshout"
+DFFOUT="$WORKDIR/diffout"
 
 RED='\033[31m'
 GREEN='\033[0;32m'
@@ -14,11 +15,29 @@ YELLOW='\033[0;33m'
 BLUEB='\033[1;34m'
 RESET='\033[0m'
 
-clear
-cd "$SHELL_TESTCASE_DIR"
+export SHELLSCRIPTDIR="$SCRIPT_DIR/../shell_scripts/"
+export LC_ALL=C
+
 set +o noclobber
-find "$SHELL_TESTCASE_DIR" -name 'tc_*.result' -execdir rm -f '{}' ';'
-find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" |
+set +x
+clear
+
+printf "################################################################\n"
+printf "### msh tests\n"
+printf "################################################################\n"
+
+mkdir -p "$WORKDIR"
+cd "$WORKDIR"
+printf "Working and results directory: %s\n\n" $(pwd)
+
+if [[ "$WORKDIR" == "$(pwd)" ]]; then
+	printf "Cleaning up $(pwd):\n"
+	rm -v *
+	printf " ... done.\n\n"
+fi
+
+# find "$SHELL_TESTCASE_DIR" -name 'tc_*.result' -execdir rm -f '{}' ';'
+find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort |
 	while IFS= read -r TCSCRIPT; do
 	{
 		printf "${BLUEB}Test:${RESET} %s\n" "$TCSCRIPT"
@@ -32,6 +51,9 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" |
 		BRET=$?
 		diff --text "$MSHOUT"_1 "$BSHOUT"_1 > "$DFFOUT"_1 2>&1
 		DRET_1=$?
+		# replace tje different shell names with "xxsh"
+		# and rm the occasional "line x:" filed from the error output
+		sed -Ei 's/(m|ba)sh:( line [0-9]+:)?/xxsh:/' "$MSHOUT"_2 "$BSHOUT"_2
 		diff --text "$MSHOUT"_2 "$BSHOUT"_2 > "$DFFOUT"_2 2>&1
 		DRET_2=$?
 		if [[ $DRET_1 == 0 && $DRET_2 == 0 && $MSRET == $BRET ]]; then {
