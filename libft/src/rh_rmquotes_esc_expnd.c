@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/28 20:05:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/12 16:29:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,8 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 	if (!(pue->tsl_orig) || (pue->tsl)->len)
 	{
 		new_tsstl = malloc(sizeof(t_strstart_len));
+		if (!new_tsstl)
+			return (0);
 		if (!(pue->tsl_orig))
 		{
 			pue->tsl_orig = new_tsstl;
@@ -224,7 +226,7 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 		}
 	}
 	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
-	return (pue->tsl != (t_strstart_len *) NULL);
+	return (1/* pue->tsl != (t_strstart_len *) NULL */);
 }
 
 // returns...

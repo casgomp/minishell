@@ -6,12 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/09 18:09:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:31:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_builtins.h"
 #include "msh_rmquotes_expand.h"
+
 #include "libft.h"
 
 #include <stdlib.h>
@@ -49,13 +51,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					// run extern executable using fork and exec...
 
 					// Dummy
-					char **tmp = rh_split_rmqed("$SHELL", pcd->default_sqed);
-					ft_printf("%s: %s: Command not found Dummy Error...\n ...until a better solution ;)\n",
-						tmp[0], args[0]);
-					return (
-						rh_free_simple_array((void **)tmp),
-						/*cleanup cmds; */
-						0);
+					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
+					return (0);
 				}
 			}
 			curcmd = curcmd->next;

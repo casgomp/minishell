@@ -6,12 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 11:11:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:24:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_builtins.h"
 #include "msh_rmquotes_expand.h"
+
 #include "libft.h"
 
 #include <stdlib.h>
