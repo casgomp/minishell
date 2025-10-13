@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/09 18:13:47 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/13 18:47:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,14 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
 	t_cmd 			*curcmd;
 	
+	//store paths from environ.
+	some_struct.epaths = ft_env_paths(); //or maybe not a struct.
+	//Before entering loop:
+		//check if there are redirections
+		//check if there are pipes
+	//If no pipes and no redirections, then simple cmd 
 
-	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
+	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#') //# can happen anywhere in a command (not just [0]). Bash takes care of it at parsing, because it can impact number of pipes to open.
 	{
 		curcmd = cmds;
 		// loop over pipe sections
