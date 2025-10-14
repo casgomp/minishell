@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 19:31:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 11:35:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,13 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		pprompt = rh_split_rmqed("$USER@minishell$\\ ", pcd->default_sqed);
+		t_sqed const sqed = pcd->default_sqed;
+		t_qed const	qed = (t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+					.dict = sqed.dict, .dict_data = sqed.dict_data,
+					.validchar = sqed.validchar,
+					.validchar_data = sqed.validchar_data};
+
+		pprompt = rh_rmqed("$USER@minishell$\\ ", qed/* pcd->default_sqed */);
 		if (pprompt && *pprompt)
 		{
 			*pcmdline = readline(*pprompt);

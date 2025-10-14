@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 08:28:08 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 11:32:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,16 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 
 t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 {
-	t_tca	tca;
-	int		tokenidx;
+	t_tca		tca;
+	t_qes const	qes = (t_qes){.q = sqed.q, .esc = sqed.esc,
+			.blank = sqed.blank, .metachr = sqed.metachr};
+	t_qed const	qed = (t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+					.dict = sqed.dict, .dict_data = sqed.dict_data,
+					.validchar = sqed.validchar,
+					.validchar_data = sqed.validchar_data};
+	int			tokenidx;
 
-	tca.tokens = rh_split_quotes(to_split,
-			(t_qes){.q = sqed.q, .esc = sqed.esc,
-			.blank = sqed.blank, .metachr = sqed.metachr});
+	tca.tokens = rh_split_quotes(to_split, qes);
 	tca.cmdlst = (t_cmd *) NULL;
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
@@ -126,6 +130,16 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				{
 					// check string expansion
 					// + not more than one word after wordsplit!
+					char **qedtoken = rh_rmqed(tca.tokens[tokenidx + 1], qed);
+					char **wordsplit = qedtoken;
+					// char **wordsplit = rh_split_quotes(qedtoken, qes);
+					// rh_split_rmqed(tca.tokens[tokenidx + 1], sqed);
+					if (wordsplit[0] == (char *) NULL || wordsplit[1] != (char *) NULL)
+					{
+						msh_error((char const*[]){tca.tokens[tokenidx + 1], "ambiguous redirect"}, 2, -1);
+						//set return val $? = 130
+						return (t_cmd *) NULL;
+					}
 					tca.curcmd->iolst->fname_delim
 						= ft_strdup(tca.tokens[tokenidx + 1]);
 				}
@@ -134,6 +148,7 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 					// msh_error("bash: syntax error near unexpected token `%s'",
 					msh_error((char const*[]){"syntax error near unexpected token", 
 						tca.tokens[tokenidx + 1]}, 2, -1);
+					//set return val $? = 2						
 					return (t_cmd *) NULL;
 				}
 				// Handle error
@@ -147,9 +162,18 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 		}
 		else // if not metachar or redirect group
 		{
-			if (!get_curarg(&tca))
-				return (cleanup_tca(&tca), NULL);
-			tca.curarg->arg = ft_strdup(tca.tokens[tokenidx]);
+			// tca.curarg->arg = ft_strdup(tca.tokens[tokenidx]);			
+			// char *qedtoken = rh_rmqed(tca.tokens[tokenidx], qed);
+			// // char **wordsplit = rh_split_quotes(qedtoken, qes);
+			// char **wordsplit = (char *[]){qedtoken, NULL};
+			char **qedtoken = rh_rmqed(tca.tokens[tokenidx], qed);
+			char **wordsplit = qedtoken;
+			while (*wordsplit)
+			{
+				if (!get_curarg(&tca))
+					return (cleanup_tca(&tca), NULL);
+				tca.curarg->arg = *(wordsplit++);
+			}
 		}
 		++tokenidx;
 		if (tca.curcmd->ctrlchr || !tca.tokens[tokenidx])

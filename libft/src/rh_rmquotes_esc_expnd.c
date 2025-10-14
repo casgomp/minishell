@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 16:29:31 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 12:10:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static char	*compose_uestr(t_uedata *const puedata);
+static char	**compose_uestr(t_uedata *const puedata);
 static int	escape(char *const pc, int *const pidx, t_uedata *const puedata);
 static int	expand(char *const pc, int *const pidx,
 				t_qed const *const pqed, t_uedata *const puedata);
@@ -33,17 +33,18 @@ static void	cleanup_uedata(t_uedata *const puedata);
 // (Only) if the quote uses the first char of 'q', escapes will be active
 // and shell parameter expansion will happen.
 // Most common values are: q="\"'" and esc='\\'
-char	*rh_rmqed(char const *const qutdstr, t_qed tqed)
+char	**rh_rmqed(char const *const qutdstr, t_qed tqed)
 {
 	int			idx;
 	int			ret;
 	char		*pc;
 	t_uedata	uedata;
 
-	uedata = (t_uedata){ft_substr(qutdstr, 0, ft_strlen(qutdstr)), '\0',
-		(t_strstart_len *) NULL, (t_strstart_len *) NULL, (char *) NULL, 0};
+	uedata = (t_uedata){.instr = ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
+		.actvq = '\0', .tsl_orig = (t_strstart_len *) NULL,
+		.tsl = (t_strstart_len *) NULL, .uestr = (char **) NULL, .uestrlen = 0};
 	if (!(uedata.instr && tqed.q && set_tsstl(&uedata, uedata.instr, 0)))
-		return (cleanup_uedata(&uedata), (char *) NULL);
+		return (cleanup_uedata(&uedata), (char **) NULL);
 	idx = 0;
 	while (uedata.instr[idx])
 	{
@@ -54,7 +55,7 @@ char	*rh_rmqed(char const *const qutdstr, t_qed tqed)
 		if (ret > 0)
 			continue ;
 		else if (ret < 0)
-			return (cleanup_uedata(&uedata), (char *) NULL);
+			return (cleanup_uedata(&uedata), (char **) NULL);
 		++idx;
 		++(uedata.tsl->len);
 	}
@@ -62,31 +63,35 @@ char	*rh_rmqed(char const *const qutdstr, t_qed tqed)
 	return (compose_uestr(&uedata));
 }
 
-char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
-{
-	char **const	split = rh_split_quotes(to_split,
-			(t_qes){.q = sqed.q, .esc = sqed.esc,
-			.blank = sqed.blank, .metachr = sqed.metachr});
-	char			*substr;
-	int				idx;
+// char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed)
+// {
+// 	char **const	split = rh_split_quotes(to_split,
+// 			(t_qes){.q = sqed.q, .esc = sqed.esc,
+// 			.blank = sqed.blank, .metachr = sqed.metachr});
+// 	char			**substrs;
+// 	int				idx;
 
-	if (split)
-	{
-		idx = 0;
-		while (split[idx])
-		{
-			substr = rh_rmqed(split[idx],
-					(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
-					.dict = sqed.dict, .dict_data = sqed.dict_data,
-					.validchar = sqed.validchar,
-					.validchar_data = sqed.validchar_data});
-			free(split[idx]);
-			split[idx] = substr;
-			++idx;
-		}
-	}
-	return (split);
-}
+// 	if (split)
+// 	{
+// 		idx = 0;
+// 		while (split[idx])
+// 		{
+// 			substrs = rh_rmqed(split[idx],
+// 					(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+// 					.dict = sqed.dict, .dict_data = sqed.dict_data,
+// 					.validchar = sqed.validchar,
+// 					.validchar_data = sqed.validchar_data});
+// 			if (!substrs)
+// 				return (cleanup, (char **) NULL);
+// 			free(split[idx]);
+// 			// Das funktioniert nicht: substrs kann mehrere strs enthalten,
+// 			// so dass das split array zu klein wird.
+// 			split[idx] = substrs[0];
+// 			++idx;
+// 		}
+// 	}
+// 	return (split);
+// }
 
 // returns...
 //  1 if escape did happen
@@ -134,7 +139,26 @@ static int	expand(char *const pc, int *const pidx,
 		{
 			envval = (*pqed->dict)(envvar, pqed->dict_data);
 			if (envval)
-				set_tsstl(puedata, envval, ft_strlen(envval));
+			{
+				char **wordsplit;
+				if (!puedata->actvq)
+				{
+					wordsplit = rh_split_quotes(envval,
+						(t_qes){.blank=" \t\n", .esc='\0', .metachr="", .q=""});
+					int idx = 0;
+					while (wordsplit && wordsplit[idx])
+					{
+						if (!set_tsstl(puedata, wordsplit[idx], ft_strlen(wordsplit[idx])))
+							return (-2);
+						if (idx > 0)
+							puedata->tsl->newstr = true;
+						++idx;
+					}
+				}
+				else
+					if (!set_tsstl(puedata, envval, ft_strlen(envval)))
+						return (-2);
+			}
 			free(envvar);
 		}
 		*pidx += paramlen;
@@ -180,24 +204,49 @@ static void	cleanup_uedata(t_uedata *const puedata)
 	}
 }
 
-static char	*compose_uestr(t_uedata *const puedata)
+static char	**compose_uestr(t_uedata *const puedata)
 {
-	int	idx;
+	size_t	numparams;
+	size_t	paramidx;
+	size_t	idx;
 
-	puedata->uestr = malloc((puedata->uestrlen + 1) * sizeof(char));
-	if (!puedata->uestr)
-		return ((char *) NULL);
+	char *buffer = malloc((puedata->uestrlen + 1) * sizeof(char));
+	if (!buffer)
+		return ((char **) NULL);
+	numparams = 0;
 	puedata->tsl = puedata->tsl_orig;
-	idx = 0;
 	while (puedata->tsl)
 	{
-		ft_strlcpy(&(puedata->uestr[idx]), puedata->tsl->pcstart,
-			puedata->tsl->len + 1);
-		idx += puedata->tsl->len;
+		if (puedata->tsl->newstr)
+			++numparams;
 		puedata->tsl = puedata->tsl->next;
-		free(puedata->tsl_orig);
-		puedata->tsl_orig = puedata->tsl;
 	}
+	puedata->uestr = malloc((numparams + 1) * sizeof(char *));
+	if (!puedata->uestr)
+		return ((char **) NULL);
+	puedata->uestr[numparams] = (char *) NULL;		
+	puedata->tsl = puedata->tsl_orig;
+	paramidx = -1;
+	// while (++paramidx < numparams)
+	// {
+		while (puedata->tsl)
+		{
+			if (puedata->tsl->newstr) 
+			{
+				idx = 0;
+				++paramidx;
+			}
+			ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
+				puedata->tsl->len + 1);
+			idx += puedata->tsl->len;
+			puedata->tsl = puedata->tsl->next;
+			free(puedata->tsl_orig);
+			puedata->tsl_orig = puedata->tsl;
+		}
+		puedata->uestr[paramidx] = ft_strdup(buffer);
+	// }
+	free(buffer);
+	buffer = (char *) NULL;
 	puedata->tsl_orig = (t_strstart_len *) NULL;
 	free(puedata->instr);
 	puedata->instr = (char *) NULL;
@@ -225,8 +274,10 @@ static int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 			pue->tsl = pue->tsl->next;
 		}
 	}
-	*(pue->tsl) = (t_strstart_len){pcstart, len, (t_strstart_len *) NULL};
-	return (1/* pue->tsl != (t_strstart_len *) NULL */);
+	*(pue->tsl) = (t_strstart_len){
+		.newstr = (pue->tsl == pue->tsl_orig), .pcstart = pcstart, .len = len,
+		.next = (t_strstart_len *) NULL};
+	return (1);
 }
 
 // returns...

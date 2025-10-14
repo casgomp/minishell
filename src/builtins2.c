@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:47:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 08:55:45 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int	msh_export(t_cd *pcd, char **args)
 		pc = ft_strchr(*args, '=');
 		if (pc)
 			sublen = pc - *args;
+		else
+			continue ;
 		idx = 0;
 		isfirstchar = true;
 		while (idx < sublen && msh_isvalidvarchar((*args)[idx], &isfirstchar))
@@ -60,8 +62,6 @@ int	msh_export(t_cd *pcd, char **args)
 			ret = 1;
 			continue ;
 		}
-		if (!pc)
-			continue ;
 		env = environ;
 		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
