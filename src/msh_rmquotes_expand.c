@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:31:47 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 08:28:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_builtins.h"
 #include "msh_rmquotes_expand.h"
 #include "msh_rmquotes_expand_intern.h"
 
@@ -94,7 +95,11 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 					tokenlen = ft_strlen(token);
 				}
 				else
+				{
+					// evtl hier eine fehlgeschlagene Umwandlung von Zeichen vor den
+					// redir operators in ein Arg umwandeln (statt schon in split)?
 					fd_new = -1;
+				}
 				if (!ft_strcmp(token, ">"))
 					tca.curcmd->iolst->tredirect = (t_rd)fd2file_trunc;
 				else if (!ft_strcmp(token, ">>"))
@@ -103,13 +108,6 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 					tca.curcmd->iolst->tredirect = (t_rd)file2fd;
 				else if (!ft_strcmp(token, "<<"))
 					tca.curcmd->iolst->tredirect = (t_rd)heredoc2fd;
-			
-				// Handle error later...
-				// if ((curcmd->iolst->tredirect == (t_rd)rd_default)
-				// 	|| (!curcmd->iolst->fname_delim))
-				// {
-				// 	// return (error)
-				// }
 				if (fd_new == -1)
 				{
 					if ((tca.curcmd->iolst->tredirect == (t_rd)fd2file_trunc)
@@ -134,11 +132,16 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				else
 				{
 					// msh_error("bash: syntax error near unexpected token `%s'",
-					// 	tokens[tokenidx + 1]);
-					ft_printf("fixme: syntax error near unexpected token `%s'\n",
-						tca.tokens[tokenidx + 1]);
+					msh_error((char const*[]){"syntax error near unexpected token", 
+						tca.tokens[tokenidx + 1]}, 2, -1);
 					return (t_cmd *) NULL;
 				}
+				// Handle error
+				// if ((curcmd->iolst->tredirect == (t_rd)rd_default)
+				// 	|| (!curcmd->iolst->fname_delim))
+				// {
+				// 	// return (error)
+				// }
 				++tokenidx;
 			}
 		}

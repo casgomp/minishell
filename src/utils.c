@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:54:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 08:27:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ void	msh_error(char const **errstrs, int nstrs, int errnum)
 	{
 		errno = errnum;
 		ft_fdprintf(2, ": %s\n", strerror(errno));	
-		perror("");
 	}
 	else
 		ft_fdprintf(2, "\n");
