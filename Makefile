@@ -34,8 +34,10 @@ vpath %.c $(SRC_DIRS)
 
 MANDATORY_SRCS	:= 	minishell.c \
 					builtins1.c \
+					builtins2.c \
 					input.c \
 					msh_rmquotes_expand.c \
+					msh_rmquotes_expand_utils.c \
 					utils.c \
 
 BONUS_SRCS		:=  
