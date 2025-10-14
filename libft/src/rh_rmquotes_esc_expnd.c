@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 12:10:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 17:27:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,8 @@ static int	expand(char *const pc, int *const pidx,
 							return (-2);
 						if (idx > 0)
 							puedata->tsl->newstr = true;
-						++idx;
+						puedata->uestrlen += puedata->tsl->len;
+						++idx;						
 					}
 				}
 				else
@@ -162,7 +163,8 @@ static int	expand(char *const pc, int *const pidx,
 			free(envvar);
 		}
 		*pidx += paramlen;
-		if (!set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
+		if (puedata->instr[*pidx]
+			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
 			return (-2);
 		return (2);
 	}
@@ -232,18 +234,17 @@ static char	**compose_uestr(t_uedata *const puedata)
 		while (puedata->tsl)
 		{
 			if (puedata->tsl->newstr) 
-			{
 				idx = 0;
-				++paramidx;
-			}
 			ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
 				puedata->tsl->len + 1);
 			idx += puedata->tsl->len;
 			puedata->tsl = puedata->tsl->next;
 			free(puedata->tsl_orig);
 			puedata->tsl_orig = puedata->tsl;
+			if (!puedata->tsl || puedata->tsl->newstr) 
+				puedata->uestr[++paramidx] = ft_strdup(buffer);
 		}
-		puedata->uestr[paramidx] = ft_strdup(buffer);
+
 	// }
 	free(buffer);
 	buffer = (char *) NULL;
