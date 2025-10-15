@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/15 10:18:09 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/15 20:14:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,54 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	// List of commands
 	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
 	t_cmd 			*curcmd;
-	
-	//store paths from environ.
-	some_struct.epaths = ft_env_paths(); //or maybe not a struct.
-	//Before entering loop:
-		//check if there are redirections
-		//check if there are pipes
-	//If no pipes and no redirections, then simple cmd 
+	int				(*pipe_fd)[2];
+	char			**epaths;
+	char			*path;
+	int				epaths_len;
+	int				bufferlen;
 
-	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#') //# can happen anywhere in a command (not just [0]). Bash takes care of it at parsing, because it can impact number of pipes to open.
+	epaths = ft_env_paths(&epaths_len);
+	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
 		curcmd = cmds;
-		// loop over pipe sections
 		while (curcmd)
 		{
-			// do io redirect
-			// stdin from file, heredoc or pipe
-			// stdout to file trunc|append or pipe
-			// compose cmdln_tokens array for current command
+			bufferlen = 0;
+			bufferlen = epaths_len + ft_strlen(curcmd->args[0]) + 1;
+			path = ft_calloc(bufferlen, sizeof(char));
+			if (!path)
+				//return NULL? and set cd->exit to what?
+			if (curcmd->ctrlchr == '|')//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
+			{
+				//pipe
+				
+				
+				//fork ->go to child?
+				//close ...only with pipes parent calls close.
+				//wait
+			}
+			else if (curcmd->iolst->tredirect != rd_default)
+			{
+				//fork ->go to child
+				//wait
+			}
+			else
+			{
+				//call compose_check_cmd which should call stat and access from within
+				//check stat.
+				path = cmd_verif_s(curcmd, epaths); 
+				if (!path)
+				{
+					//
+				}
+				//check access.
+				if (!accessvariable??)
+				{
+					free(path); //?? free or now should be NULL?
+				}
+			}
 
+			
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args)
 			if (args && args[0])
