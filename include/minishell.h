@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/13 17:06:10 by pecastro         ###   ########.fr       */
+/*   Updated: 2025/10/15 10:06:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ typedef struct s_cmdarg
 typedef struct s_cmd
 {
 	int				stdio[3];//if it's for storing original stdio then t_stdio (see below) is redundant.
-	t_io			*list_io;
+	t_io			*iolst;
+	t_io			*curio;
 	char			**args; //for execve. args[0] will also later be concatenated to an absolute path.
 	char			ctrlchr; //('|') how is a pipe parsed (quoted/unquoted) and stored in struct?
 	struct s_cmd	*next; //if linked list;
@@ -71,7 +72,6 @@ typedef struct s_stdio //for storing original stdio. Haven't used it yet.
 }	t_stdio;
 
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
-int		msh_builtins(t_cd *pcd, char **const args);
 int		process_cmdline(t_cd *pcd, char const *const in);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);

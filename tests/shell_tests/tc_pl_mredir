@@ -1,0 +1,28 @@
+#Test bash behavior with multiple redirections (exisiting files and command names).
+mkdir /tmp/tc_pl_mredir
+cd /tmp/tc_pl_mredir
+pwd
+echo apple > filex
+echo banana > filey
+echo carrot > filez
+echo ls
+ls
+echo cat filex
+cat filex
+echo cat filey
+cat filey
+echo cat filez
+cat filez
+echo 'cat < filez < filey <filex >filep | cat <filex <filez <filey >filep >fileppp >filepp | cat <filex <filey <filez >filep >filepp > fileppp'
+cat < filez < filey <filex >filep | cat <filex <filez <filey >filep >fileppp >filepp | cat <filex <filey <filez >filep >filepp > fileppp
+echo ls
+ls
+echo cat filep
+cat filep
+echo cat filepp
+cat filepp
+echo cat fileppp
+cat fileppp
+cd ..
+pwd
+rm -r tc_pl_mredir

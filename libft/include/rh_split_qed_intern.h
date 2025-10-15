@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 16:57:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 11:12:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	cleanup_splt(t_splprms *const ptsp);
 // ----------------------------------------
 typedef struct s_strstart_len
 {
+	bool					newstr;
 	char					*pcstart;
 	size_t					len;
 	struct s_strstart_len	*next;
@@ -52,7 +53,7 @@ typedef struct s_unqut_expd_data
 	char			actvq;
 	t_strstart_len	*tsl_orig;
 	t_strstart_len	*tsl;
-	char			*uestr;
+	char			**uestr;
 	size_t			uestrlen;
 }	t_uedata;
 

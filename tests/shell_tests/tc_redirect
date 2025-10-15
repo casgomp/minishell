@@ -1,4 +1,4 @@
-echo hello 2>stderr_tmp
-echo hello 1>stdout_tmp
-echo hello 1>stdout_tmp 2>stderr_tmp
+echo hello1 2>stderr_tmp
+echo hello2 1>stdout_tmp
+echo hello3 1>stdout_tmp 2>stderr_tmp
 rm stdout_tmp stderr_tmp

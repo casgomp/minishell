@@ -6,13 +6,16 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 19:01:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/14 08:43:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 size_t	get_envsize(char **const env)
 {
@@ -56,4 +59,22 @@ size_t	check_cpy_env(
 	newenv[idx] = (char *) NULL;
 	*oldenv = newenv;
 	return (envsz);
+}
+
+void	msh_error(char const **errstrs, int nstrs, int errnum)
+{
+	ft_fdprintf(2, "%s: ", "msh");
+	while (nstrs--)
+	{
+		ft_fdprintf(2, "%s", *(errstrs++));
+		if (nstrs)
+			ft_fdprintf(2, ": ");
+	}
+	if (errnum > 0)
+	{
+		errno = errnum;
+		ft_fdprintf(2, ": %s\n", strerror(errno));	
+	}
+	else
+		ft_fdprintf(2, "\n");
 }
