@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 19:54:08 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 11:35:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 static int	rh_print_fmtstr(t_bytecount_fd *const pbc, const char **pfmt);
 static int	rh_print_arg(t_bytecount_fd *const pbc, const char **pfmt,
 				va_list valst);
-static int	ft_coreprintf(const int fd, const char *fmt, va_list valst);
+static int	ft_coreprintf(const t_pfod pfod, const char *fmt, va_list valst);
 
 int	ft_printf(const char *fmt, ...)
 {
@@ -29,27 +29,38 @@ int	ft_printf(const char *fmt, ...)
 	int		retval;
 
 	va_start(args, fmt);
-	retval = ft_coreprintf(1, fmt, args);
+	retval = ft_coreprintf((t_pfod){.fd = 1, .buf = (char *) NULL}, fmt, args);
 	va_end(args);
 	return (retval);
 }
 
-int	ft_fdprintf(const int fd, const char *fmt, ...)
+int	ft_dprintf(const int fd, const char *fmt, ...)
 {
 	va_list	args;
 	int		retval;
 
 	va_start(args, fmt);
-	retval = ft_coreprintf(fd, fmt, args);
+	retval = ft_coreprintf((t_pfod){.fd = fd, .buf = (char *) NULL}, fmt, args);
 	va_end(args);
 	return (retval);
 }
 
-int	ft_coreprintf(const int fd, const char *fmt, va_list valst)
+int	ft_sprintf(char *const buf, const char *fmt, ...)
+{
+	va_list	args;
+	int		retval;
+
+	va_start(args, fmt);
+	retval = ft_coreprintf((t_pfod){.fd = -1, .buf = buf}, fmt, args);
+	va_end(args);
+	return (retval);
+}
+
+int	ft_coreprintf(const t_pfod pfod, const char *fmt, va_list valst)
 {
 	t_bytecount_fd	bc;
 
-	bc = (t_bytecount_fd){.lastwrite = 0, .total = 0, .fd = fd};
+	bc = (t_bytecount_fd){.lastwrite = 0, .total = 0, .pfod = pfod};
 	while (*fmt)
 	{
 		if (!rh_print_fmtstr(&bc, &fmt))
