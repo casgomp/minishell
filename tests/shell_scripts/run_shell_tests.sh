@@ -47,7 +47,7 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort 
 
 		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"_1 2>"$MSHOUT"_2
 		MSRET=$?
-		<"$TCSCRIPT" bash >"$BSHOUT"_1 2>"$BSHOUT"_2
+		<"$TCSCRIPT" bash --norc >"$BSHOUT"_1 2>"$BSHOUT"_2
 		BRET=$?
 		diff --text "$MSHOUT"_1 "$BSHOUT"_1 > "$DFFOUT"_1 2>&1
 		DRET_1=$?
@@ -81,8 +81,8 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort 
 			printf "${BLUEB}Return values: $RESET" >> "$TCOUT" 2>&1
 			if [[ ($MSRET != $BRET) ]]; then
 			{
-				printf "$RED fail ( < msh, > bash )\n$RESET" >> "$TCOUT" 2>&1
-				printf "  msh=%d, bsh=%d, diffstdout=%d, diffstderr=%d\n" $MSRET $BRET $DRET_1 $DRET_2 >> "$TCOUT" 2>&1
+				printf "$RED fail\n$RESET" >> "$TCOUT" 2>&1
+				printf "  msh=%d, bash=%d, diffstdout=%d, diffstderr=%d\n" $MSRET $BRET $DRET_1 $DRET_2 >> "$TCOUT" 2>&1
 			}
 			else
 				printf "$GREEN OK\n$RESET" >> "$TCOUT" 2>&1
