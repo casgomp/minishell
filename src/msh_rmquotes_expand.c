@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 11:32:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 12:39:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 	return (ft_isalnum(c) || c == '_');
 }
 
-t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
+t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split, t_sqed const sqed)
 {
 	t_tca		tca;
 	t_qes const	qes = (t_qes){.q = sqed.q, .esc = sqed.esc,
@@ -145,10 +145,16 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				}
 				else
 				{
+					char buf[1024];
 					// msh_error("bash: syntax error near unexpected token `%s'",
-					msh_error((char const*[]){"syntax error near unexpected token", 
-						tca.tokens[tokenidx + 1]}, 2, -1);
-					//set return val $? = 2						
+					ft_sprintf(buf, "syntax error near unexpected token `%s'", 
+						tca.tokens[tokenidx + 1]);
+					// ft_dprintf(2, "syntax error near unexpected token `%s'", 
+					// 	tca.tokens[tokenidx + 1]);
+					msh_error((char const*[]){buf, }, 1, -1);
+					ft_sprintf(buf, "`%s'", to_split);
+					msh_error((char const*[]){buf, }, 1, -1);				
+					pcd->exit_status = 2;
 					return (t_cmd *) NULL;
 				}
 				// Handle error
