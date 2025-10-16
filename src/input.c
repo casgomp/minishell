@@ -6,12 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/09 18:09:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 12:38:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_builtins.h"
 #include "msh_rmquotes_expand.h"
+
 #include "libft.h"
 
 #include <stdlib.h>
@@ -25,7 +27,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	// char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
 	// List of commands
-	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
+	t_cmd *const	cmds = msh_compile_cmds(pcd, in, pcd->default_sqed);
 	t_cmd 			*curcmd;
 	
 
@@ -49,13 +51,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					// run extern executable using fork and exec...
 
 					// Dummy
-					char **tmp = rh_split_rmqed("$SHELL", pcd->default_sqed);
-					ft_printf("%s: %s: Command not found Dummy Error...\n ...until a better solution ;)\n",
-						tmp[0], args[0]);
-					return (
-						rh_free_simple_array((void **)tmp),
-						/*cleanup cmds; */
-						0);
+					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
+					return (0);
 				}
 			}
 			curcmd = curcmd->next;
@@ -100,7 +97,13 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		pprompt = rh_split_rmqed("$USER@minishell$\\ ", pcd->default_sqed);
+		t_sqed const sqed = pcd->default_sqed;
+		t_qed const	qed = (t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+					.dict = sqed.dict, .dict_data = sqed.dict_data,
+					.validchar = sqed.validchar,
+					.validchar_data = sqed.validchar_data};
+
+		pprompt = rh_rmqed("$USER@minishell$\\ ", qed/* pcd->default_sqed */);
 		if (pprompt && *pprompt)
 		{
 			*pcmdline = readline(*pprompt);
