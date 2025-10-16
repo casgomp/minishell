@@ -1,6 +1,4 @@
 #Test bash behavior with only one cmd pipeline and multiple redirections. With one non-exisiting file that interrupts redirections.
-mkdir /tmp/tc_plsing_mredir_fail
-cd /tmp/tc_plsing_mredir_fail
 pwd
 echo apple > filex
 echo banana > filey
@@ -27,4 +25,3 @@ echo cat filepppp
 cat filepppp
 cd ..
 pwd
-rm -r tc_plsing_mredir_fail

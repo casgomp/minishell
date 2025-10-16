@@ -1,6 +1,4 @@
 #Test bash behavior with multiple redirections (exisiting files and command names).
-mkdir /tmp/tc_pl_mredir
-cd /tmp/tc_pl_mredir
 pwd
 echo apple > filex
 echo banana > filey
@@ -25,4 +23,3 @@ echo cat fileppp
 cat fileppp
 cd ..
 pwd
-rm -r tc_pl_mredir

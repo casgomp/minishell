@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:45:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 18:27:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,20 +49,19 @@ static int	msh_exit(t_cd *pcd, char **args)
 		pcd->exit_status = ft_atoll_check_input(args[1], INT_MAX, &success);
 		if (success < (int)ft_strlen(args[1]))
 		{
-			ft_printf("%s: %s: %s: numeric argument required\n",
-				pcd->mshid, __func__ + 4, args[1]);
-			return (1);
+			msh_error((char const *[]){__func__ + 4, args[1],
+				"numeric argument required"}, 3, -1);
+			pcd->exit_status = 2;
 		}
 	}
 	if (pcd->interactive)
-		ft_printf("exit\n");
+		ft_dprintf(2, "exit\n");
 	pcd->exit = true;
 	return (pcd->exit_status %= 256);
 }
 
 static int	msh_cd(char **args)
 {
-	// char	buf[1024];
 	char	*path;
 
 	if (!args)
@@ -70,23 +69,24 @@ static int	msh_cd(char **args)
 	if (!args[1])
 		path = ft_strdup(getenv("HOME"));
 	else if (args[2])
-		return (msh_error((char const *[]){__func__+4,}, 1, E2BIG), 1);
+		return (msh_error((char const *[]){__func__ + 4,}, 1, E2BIG), 1);
 	else
 		path = ft_strdup(args[1]);
 	if (path && !(!ft_strcmp(path, "")))
 	{
 		if (chdir(path) == -1)
 		{
-			return (msh_error((char const *[]){path, __func__+4}, 2, errno),
-				free(path), 1);
+			msh_error((char const *[]){path, __func__ + 4}, 2, errno);
+			return (free(path), 1);
 		}
 	}
-	return (0);
+	return (free(path), 0);
 }
 
-static int	msh_pwd()
+static int	msh_pwd(void)
 {
-	char *const cwd = getcwd((char *)NULL, 0);
+	char *const	cwd = getcwd((char *) NULL, 0);
+
 	if (!cwd)
 		return (1);
 	ft_printf("%s\n", cwd);
