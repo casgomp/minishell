@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/15 20:14:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 21:08:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,9 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	// List of commands
 	t_cmd *const	cmds = msh_compile_cmds(in, pcd->default_sqed);
 	t_cmd 			*curcmd;
-	int				(*pipe_fd)[2];
+	int				p_fd[2][2];
 	char			**epaths;
-	char			*path;
 	int				epaths_len;
-	int				bufferlen;
 
 	epaths = ft_env_paths(&epaths_len);
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
@@ -41,21 +39,24 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		curcmd = cmds;
 		while (curcmd)
 		{
-			bufferlen = 0;
-			bufferlen = epaths_len + ft_strlen(curcmd->args[0]) + 1;
-			path = ft_calloc(bufferlen, sizeof(char));
-			if (!path)
-				//return NULL? and set cd->exit to what?
-			if (curcmd->ctrlchr == '|')//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
+			compose_check_cmd(pcd, curcmd, epaths, epaths_len);
+			
+			
+			
+			//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
+			if (curcmd->ctrlchr == '|')
 			{
 				//pipe
-				
+				if (pipe(p_fd[?][?]) == -1)
+					p_fd[?][?] = -1;
+				close(p_fd[?][?]); //how to know 1st cmd or middle or end cmd to know what to close? 
+
 				
 				//fork ->go to child?
 				//close ...only with pipes parent calls close.
 				//wait
 			}
-			else if (curcmd->iolst->tredirect != rd_default)
+			else if (curcmd->iolst)
 			{
 				//fork ->go to child
 				//wait
@@ -63,6 +64,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			else
 			{
 				//call compose_check_cmd which should call stat and access from within
+				
 				//check stat.
 				path = cmd_verif_s(curcmd, epaths); 
 				if (!path)
