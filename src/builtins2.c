@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 08:55:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 12:44:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,13 @@ int	msh_export(t_cd *pcd, char **args)
 		pc = ft_strchr(*args, '=');
 		if (pc)
 			sublen = pc - *args;
-		else
-			continue ;
 		idx = 0;
 		isfirstchar = true;
 		while (idx < sublen && msh_isvalidvarchar((*args)[idx], &isfirstchar))
 				++idx;
 		if (sublen == 0 || (*args)[idx] != '=')
 		{
-			ft_fdprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
+			ft_dprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
 			ret = 1;
 			continue ;
 		}
