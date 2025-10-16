@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 11:17:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 18:23:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ size_t	check_cpy_env(
 	size_t * const penvreserved,
 	bool env_init)
 {
-	static size_t const	xtraspace = 1;
+	static size_t const	xtraspace = 8;
 	char				**newenv;
 	size_t				envsz;
 	size_t				idx;
@@ -45,7 +45,7 @@ size_t	check_cpy_env(
 		return (0);
 	envsz = get_envsize(*oldenv);
 	if (envsz < (*penvreserved))
-		return (envsz);
+	 	return (envsz);
 	newenv = malloc((envsz + xtraspace + 1) * sizeof(char *));
 	if (!newenv)
 		return (0);

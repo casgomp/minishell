@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 19:24:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 18:22:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	ms_init(t_cd *pcd)
 	//      If it uses "bash: " at the beginning of error msgs an the like,
 	//      it is just hardcoded
 	pcd->envrsvd = 0;
-	check_cpy_env(&environ, &(pcd->envrsvd), false);
+	check_cpy_env(&environ, &(pcd->envrsvd), true);
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 12:44:01 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 18:41:54 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int	msh_env()
+int	msh_env(void)
 {
-	char 	**env2;
-		
-	env2 = environ;	
+	char	**env2;
+
+	env2 = environ;
 	while (*env2)
 		ft_printf("%s\n", *(env2++));
 	return (0);
@@ -38,7 +38,7 @@ int	msh_export(t_cd *pcd, char **args)
 	size_t	idx;
 	bool	isfirstchar;
 	int		ret;
-	
+
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
@@ -56,7 +56,12 @@ int	msh_export(t_cd *pcd, char **args)
 				++idx;
 		if (sublen == 0 || (*args)[idx] != '=')
 		{
-			ft_dprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n", pcd->mshid, __func__+4, *args);
+			// ft_dprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n",
+			// 	pcd->mshid, __func__ + 4, *args);
+			char buf[1024];
+			ft_sprintf(buf, "`%s\'", *args);
+			msh_error((char const *[]){__func__ + 4, buf,
+				"not a valid identifier"}, 3, -1);
 			ret = 1;
 			continue ;
 		}
@@ -70,7 +75,7 @@ int	msh_export(t_cd *pcd, char **args)
 		}
 		else
 		{
-			idx = check_cpy_env(&environ, &(pcd->envrsvd), true);
+			idx = check_cpy_env(&environ, &(pcd->envrsvd), false);
 			environ[idx] = ft_strdup(*args);
 			environ[++idx] = (char *) NULL;
 		}
@@ -82,7 +87,7 @@ int	msh_export(t_cd *pcd, char **args)
 int	msh_unset(char **args)
 {
 	char	**env;
-	
+
 	while (*(++args))
 	{
 		env = environ;
