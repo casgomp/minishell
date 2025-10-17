@@ -26,6 +26,22 @@ printf "################################################################\n"
 printf "### msh tests\n"
 printf "################################################################\n"
 
+WORKDIRS="${WORKDIR%5-*}*"
+WORKDIRS="$(ls -dt1 $WORKDIRS | tail -n+3)"
+if [[ ! -z "$WORKDIRS" ]]; then
+	printf "\n\nDo you want to cleanup all old output data in:\n"
+	printf "(The 2 latest ones will be kept in any case)\n"
+	echo "$WORKDIRS"
+	PS3="Please select an option (number): "
+	select ANS in YES no; do
+		if [[ "$ANS" == "YES" ]]; then
+			rm -rv $WORKDIRS 
+			ls -1 /tmp/ms | tail -n +3
+		fi
+		break	
+	done
+fi
+
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"
 printf "Working and results directory: %s\n\n" $(pwd)
@@ -42,12 +58,12 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort 
 	{
 		printf "${BLUEB}Test:${RESET} %s\n" "$TCSCRIPT"
 		FAIL_OK=$([[ "$TCSCRIPT" =~ failOK$ ]] && echo "true" || echo "false")
-		TCOUT="${TCSCRIPT}.result"
+		TCOUT="$WORKDIR/$(basename $TCSCRIPT).result"
 		truncate -s 0 "$TCOUT"
 
 		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"_1 2>"$MSHOUT"_2
 		MSRET=$?
-		<"$TCSCRIPT" bash >"$BSHOUT"_1 2>"$BSHOUT"_2
+		<"$TCSCRIPT" bash --norc >"$BSHOUT"_1 2>"$BSHOUT"_2
 		BRET=$?
 		diff --text "$MSHOUT"_1 "$BSHOUT"_1 > "$DFFOUT"_1 2>&1
 		DRET_1=$?
@@ -81,8 +97,8 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort 
 			printf "${BLUEB}Return values: $RESET" >> "$TCOUT" 2>&1
 			if [[ ($MSRET != $BRET) ]]; then
 			{
-				printf "$RED fail ( < msh, > bash )\n$RESET" >> "$TCOUT" 2>&1
-				printf "  msh=%d, bsh=%d, diffstdout=%d, diffstderr=%d\n" $MSRET $BRET $DRET_1 $DRET_2 >> "$TCOUT" 2>&1
+				printf "$RED fail\n$RESET" >> "$TCOUT" 2>&1
+				printf "  msh=%d, bash=%d, diffstdout=%d, diffstderr=%d\n" $MSRET $BRET $DRET_1 $DRET_2 >> "$TCOUT" 2>&1
 			}
 			else
 				printf "$GREEN OK\n$RESET" >> "$TCOUT" 2>&1

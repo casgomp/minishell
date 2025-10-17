@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 11:32:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/16 19:33:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 	return (ft_isalnum(c) || c == '_');
 }
 
-t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
+t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split, t_sqed const sqed)
 {
 	t_tca		tca;
 	t_qes const	qes = (t_qes){.q = sqed.q, .esc = sqed.esc,
@@ -80,29 +80,28 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 			{
 				tca.curcmd->ctrlchr = '|';
 			}
-			else
+			else if (ft_strchr("<>", token[tokenlen - 1]))
 			{
 				if (!get_iolstelem(&tca))
 					return (cleanup_tca(&tca), NULL);
 				int success;
 				t_llong fd_new = ft_atoll_check_input(token, INT_MAX, &success);
-				if (success > 0)
+				if (success <= 0 || fd_new < 0 || !ft_strchr("<>", token[success]))
 				{
-					// if (fd_new >= 1024)
-					// 	fd_new = -1;
-					//  ----> needs to be handled later as an error:
-					//  "bash: $(fdnew): Bad file descriptor"
-
-					// will be set later
-					// curcmd->iolst->new_fd = fd_new;
-					token = &(token[success]);
-					tokenlen = ft_strlen(token);
-				}
-				else
-				{
+					fd_new = -1;
 					// evtl hier eine fehlgeschlagene Umwandlung von Zeichen vor den
 					// redir operators in ein Arg umwandeln (statt schon in split)?
-					fd_new = -1;
+					success = tokenlen - 1;
+					while (success > 0 && ft_strchr("<>", token[success - 1]))
+						--success;
+					if (!get_curarg(&tca))
+						return (cleanup_tca(&tca), NULL);
+					if (success > 0)
+					{
+						tca.curarg->arg = ft_substr(token, 0, success);
+						token = &(token[success]);
+						tokenlen = ft_strlen(token);
+					}
 				}
 				if (!ft_strcmp(token, ">"))
 					tca.curcmd->iolst->tredirect = (t_rd)fd2file_trunc;
@@ -121,7 +120,6 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 						|| (tca.curcmd->iolst->tredirect == (t_rd)heredoc2fd))
 						fd_new = 0;
 				}
-				// also saves the fd_new possibly created via ft_atoll!
 				tca.curcmd->iolst->new_fd = fd_new;
 							
 				if (tca.tokens[tokenidx + 1]
@@ -130,14 +128,11 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				{
 					// check string expansion
 					// + not more than one word after wordsplit!
-					char **qedtoken = rh_rmqed(tca.tokens[tokenidx + 1], qed);
-					char **wordsplit = qedtoken;
-					// char **wordsplit = rh_split_quotes(qedtoken, qes);
-					// rh_split_rmqed(tca.tokens[tokenidx + 1], sqed);
+					char **wordsplit = rh_rmqed(tca.tokens[tokenidx + 1], qed);
 					if (wordsplit[0] == (char *) NULL || wordsplit[1] != (char *) NULL)
 					{
 						msh_error((char const*[]){tca.tokens[tokenidx + 1], "ambiguous redirect"}, 2, -1);
-						//set return val $? = 130
+						pcd->exit_status = 130;
 						return (t_cmd *) NULL;
 					}
 					tca.curcmd->iolst->fname_delim
@@ -145,10 +140,13 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 				}
 				else
 				{
-					// msh_error("bash: syntax error near unexpected token `%s'",
-					msh_error((char const*[]){"syntax error near unexpected token", 
-						tca.tokens[tokenidx + 1]}, 2, -1);
-					//set return val $? = 2						
+					char buf[1024];
+					ft_sprintf(buf, "syntax error near unexpected token `%s'", 
+						tca.tokens[tokenidx + 1]);
+					msh_error((char const*[]){buf, }, 1, -1);
+					ft_sprintf(buf, "`%s'", to_split);
+					msh_error((char const*[]){buf, }, 1, -1);				
+					pcd->exit_status = 2;
 					return (t_cmd *) NULL;
 				}
 				// Handle error
@@ -162,12 +160,7 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 		}
 		else // if not metachar or redirect group
 		{
-			// tca.curarg->arg = ft_strdup(tca.tokens[tokenidx]);			
-			// char *qedtoken = rh_rmqed(tca.tokens[tokenidx], qed);
-			// // char **wordsplit = rh_split_quotes(qedtoken, qes);
-			// char **wordsplit = (char *[]){qedtoken, NULL};
-			char **qedtoken = rh_rmqed(tca.tokens[tokenidx], qed);
-			char **wordsplit = qedtoken;
+			char **wordsplit = rh_rmqed(tca.tokens[tokenidx], qed);
 			while (*wordsplit)
 			{
 				if (!get_curarg(&tca))
@@ -180,8 +173,9 @@ t_cmd	*msh_compile_cmds(char const *const to_split, t_sqed const sqed)
 		{
 			if (!convert_arglst(&tca))
 				return (cleanup_tca(&tca), NULL);
-			else
-				cleanup_arglst(&tca);
+			cleanup_arglst(&tca);
+			// output parsing error if there is no command / empty args...
+			// maybe a cmd that consists only of redirections??
 		}
 	}
 	return (cleanup_tca(&tca), tca.cmdlst);

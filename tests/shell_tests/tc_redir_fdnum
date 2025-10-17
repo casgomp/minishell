@@ -1,0 +1,17 @@
+echo hi1  1>/dev/stderr | echo ho
+echo hi2.trunc  2>/dev/stdout
+echo hi2.append  2>>/dev/stdout
+echo hi3.trunc  1>/dev/stdout
+echo hi3.append  1>>/dev/stdout
+echo hi4  3>/dev/stdout
+echo hi5  4>/dev/stdout
+echo hi6  5>/dev/stdout
+echo hi7  6>/dev/stdout
+echo hi8  7>/dev/stdout
+echo hi9  8>/dev/stdout
+echo hiA  9>/dev/stdout
+echo hiB 10>/dev/stdout
+echo hiC 1023>/dev/stdout
+echo hiD 2147483647>/dev/stdout
+echo hiE -1>/dev/stdout
+echo hiF -42>/dev/stdout
