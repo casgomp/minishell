@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/17 12:31:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/17 15:00:38 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	// List of commands
 	t_cmd *const	cmds = msh_compile_cmds(pcd, in, pcd->default_sqed);
 	t_cmd 			*curcmd;
-	int				p_fd[2][2];
+	//int				p_fd[2][2];
 	char			**epaths;
 	size_t			epaths_len;
 	char			*cmdexe;
 
-
+	ft_printf("%s\n", cmds->args[0]);
 	epaths = ft_env_paths(&epaths_len);
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
@@ -46,7 +46,9 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			free(curcmd->args[0]);
 			curcmd->args[0] = cmdexe;
 
-			
+			ft_printf("%s, %s, %d\n", curcmd->args[0], cmdexe, pcd->exit_status);
+
+			/*
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args)
 			if (args && args[0])
@@ -78,12 +80,11 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
 					return (0);
 				}
-			}
+			}*/
 			//free stuff in curcmd?
 			curcmd = curcmd->next;
 		}
 	}
-	free(epaths);
 	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);
 }
 
