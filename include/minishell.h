@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 21:08:11 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/17 12:21:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,9 @@ size_t	check_cpy_env(char ***const oldenv, size_t * const penvreserved,
 	bool free_oldenv);
 
 char	**ft_env_paths(int *len);
-static int	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, int epaths_len);
-
-char	*cmd_verif_s(t_cmd *cmd, char **epaths);
+char	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len);
+static int	*compose_check_path(char **path, char *cmdexe, char *pathstr, size_t bufferlen);
+static int	access_check_path(char *pathstr);
+static int	free_splitstrs(char **split);
 
 #endif // MINISHELL_H

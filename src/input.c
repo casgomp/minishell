@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 21:08:08 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/17 12:21:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	t_cmd 			*curcmd;
 	int				p_fd[2][2];
 	char			**epaths;
-	int				epaths_len;
+	size_t			epaths_len;
+	char			*cmdexe;
+
 
 	epaths = ft_env_paths(&epaths_len);
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
@@ -39,44 +41,10 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		curcmd = cmds;
 		while (curcmd)
 		{
-			compose_check_cmd(pcd, curcmd, epaths, epaths_len);
-			
-			
-			
-			//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
-			if (curcmd->ctrlchr == '|')
-			{
-				//pipe
-				if (pipe(p_fd[?][?]) == -1)
-					p_fd[?][?] = -1;
-				close(p_fd[?][?]); //how to know 1st cmd or middle or end cmd to know what to close? 
-
-				
-				//fork ->go to child?
-				//close ...only with pipes parent calls close.
-				//wait
-			}
-			else if (curcmd->iolst)
-			{
-				//fork ->go to child
-				//wait
-			}
-			else
-			{
-				//call compose_check_cmd which should call stat and access from within
-				
-				//check stat.
-				path = cmd_verif_s(curcmd, epaths); 
-				if (!path)
-				{
-					//
-				}
-				//check access.
-				if (!accessvariable??)
-				{
-					free(path); //?? free or now should be NULL?
-				}
-			}
+			//maybe a small function for setting cmdexe as args[0]?
+			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
+			free(curcmd->args[0]);
+			curcmd->args[0] = cmdexe;
 
 			
 			char **const	args = curcmd->args;
@@ -86,16 +54,37 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 				if (!msh_builtins(pcd, args))
 				{
 					// run extern executable using fork and exec...
+					//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
+					if (curcmd->ctrlchr == '|')
+					{
+						//pipe
+						if (pipe(p_fd[?][?]) == -1)
+							p_fd[?][?] = -1;
+						close(p_fd[?][?]); //how to know 1st cmd or middle or end cmd to know what to close? 
 
+						
+						//fork ->go to child?
+						//close ...only with pipes parent calls close.
+						//wait
+					}
+					//fork ->go to child
+					//wait
+					//next step happens inside child
+					while (curcmd && curcmd->iolst)
+					{
+						//curcmd->iolst = curcmd->iolst->next??
+					}
 					// Dummy
 					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
 					return (0);
 				}
 			}
+			//free stuff in curcmd?
 			curcmd = curcmd->next;
 		}
 	}
-	return (/*cleanup cmds , pcd->exit_status = 0 ,*/ 1);
+	free(epaths);
+	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);
 }
 
 int	setup_stdin(t_cd *pcd, int const argc, char **const argv)

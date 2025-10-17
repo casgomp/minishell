@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/16 21:08:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/17 12:21:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,95 +36,73 @@ char	**ft_env_paths(int *len)
 	*len = ft_strlen(pathvarstr);
 	free(pathvarstr);
 	return(paths);
-
-	/*
-	int		i;
-
-	i = 0;
-	while (environ[i])
-	{
-		if (ft_strncmp(environ[i], "PATH=", 5) == 0)
-			return (ft_split(environ[i] + 5, ':'));
-		i ++;
-	}
-	return (NULL);*/
 }
 
-static int	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, int epaths_len)
+char	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len)
 {
 	char			**testpath;
 	char			*path;
-	int				bufferlen;
+	char			*pcmd;
+	size_t			bufferlen;
+	int				check;
 
-	bufferlen = 0;
-	bufferlen = epaths_len + ft_strlen(curcmd->args[0]) + 1;
+	pcmd = curcmd->args[0];
+	bufferlen = epaths_len + ft_strlen(pcmd) + 1;
 	path = ft_calloc(bufferlen, sizeof(char));
 	if (!path)
+		return (pcd->exit_status = EXIT_FAILURE, 0);
+	check = 0;
+	if (ft_strchr(pcmd, '/'))
+		check = compose_check_path(NULL, pcmd, path, bufferlen);
+	else
 	{
-		//free epaths?
-		//return NULL? and set cd->exit to what?
-	}
-	if (ft_strchr(curcmd->args[0], '/'))
-	{
-		if (compose_check_path(NULL, curcmd->args[0], path, bufferlen))
+		testpath = epaths;
+		while (*testpath && !check)
 		{
-			//function to free epaths
-			return (path);
-		}
-		else
-		{
-			//perror(curcmd->args[0])
-			//function to free epaths //can i free it here? or in calling function?
-			free(path);
-			pcd->exit_status = 127;
-			//return (NULL)?; //This is wrong because child still opens files and sets redirections before exiting
+			check = compose_check_path(*testpath, pcmd, path, bufferlen);
+			++testpath;
 		}
 	}
-	testpath = epaths;
-	while (*testpath)
-	{
-		if (compose_check_path(*testpath, curcmd->args[0], path, bufferlen))
-		{
-			//function to free epaths
-			return (path);
-		}
-		++testpath;
-	}
-	//perror(curcmd->args[0])
-	//function to free epaths //can i free it here? or in calling function?
-	free(path);
-	pcd->exit_status = 127;
-	//return (NULL)?;//This is wrong because child still opens files and sets redirections before exiting
-	
-
-
-
+	if (!check)
+		return (perror(pcmd), pcd->exit_status = 127, free_splitstrs(epaths), free(path), NULL);
+	check = access_check_path(path);
+	if (!check)
+		return (perror(pcmd), pcd->exit_status = 126, free_splitstrs(epaths), free(path), NULL);
+	return(free_splitstrs(epaths), pcd->exit_status = EXIT_SUCCESS, 1);
 }
 
-char	*compose_check_path(t_cmd *cmd, char **epaths)
+static int	*compose_check_path(char **path, char *cmdexe, char *pathstr, size_t bufferlen)
 {
-	struct stat	*statbuf;
-	int			bufferlen;
-	int			i;
+	struct stat	statbuf;
 
-	i = 0;
-	while (epaths[i])
+	if (!(cmdexe && path))
+		return (0);
+	pathstr[0] = '\0';
+	if (path && *path)
 	{
-		//each call to stat must be preceded by appending cmd (i.e. args[0]) to path.
-		if (ft_strchr(cmd->args[0], '/'))
-		{
-			
-		}
-		
-		//when correct env path is found, then path is stored in variable to use in access.
-		stat()
-		//if invalid cmd, calling process must exit(127) after opening files, etc.
-		i ++;
+		ft_strlcat(pathstr, path, bufferlen);
+		ft_strlcat(pathstr, "/", bufferlen);
 	}
+	ft_strlcat(pathstr, cmdexe, bufferlen);
+	if(stat(pathstr, &statbuf) != -1)
+		return(1);
+	return(0);
 }
 
+static int	access_check_path(char *pathstr)
+{
+	if(access(pathstr, X_OK) != -1)
+		return(1);
+	return(0);
+}
 
-//function to check access()
-int	access_check_path()
-	//if correct then it can be used for execve.
-	//will only fail if command executable file has no permissions and exit(126).
+static int	free_splitstrs(char **split)
+{
+	char **const	spltorig = split;
+
+	while (*split)
+		free(*(split++));
+	free(spltorig);
+	split = (char **) NULL;
+	return (1);
+}
