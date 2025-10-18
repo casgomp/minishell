@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/17 15:17:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/18 19:37:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "libft.h"
 
 #include <stdlib.h>
-#include <readline/readline.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>

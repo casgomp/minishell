@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/17 13:35:28 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/18 19:37:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ typedef struct s_cmd
 	int				stdio[3];//if it's for storing original stdio then t_stdio (see below) is redundant.
 	t_io			*iolst;
 	t_io			*curio;
-	char			**args; //for execve. args[0] will also later be concatenated to an absolute path.
-	char			ctrlchr; //('|') how is a pipe parsed (quoted/unquoted) and stored in struct?
+	char			**args;
+	char			ctrlchr; //('|')
 	struct s_cmd	*next; //if linked list;
 }	t_cmd;
 

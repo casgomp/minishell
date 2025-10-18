@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/17 15:00:38 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/18 19:37:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,62 +29,76 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	// List of commands
 	t_cmd *const	cmds = msh_compile_cmds(pcd, in, pcd->default_sqed);
 	t_cmd 			*curcmd;
-	//int				p_fd[2][2];
 	char			**epaths;
 	size_t			epaths_len;
 	char			*cmdexe;
+	int				nchild;
+	int				*pids;
+	int				i;
+	int				status_code;
+	int				*wstatus;
 
-	ft_printf("%s\n", cmds->args[0]);
+	ft_printf("%s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
+	i = -1;
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
 		curcmd = cmds;
 		while (curcmd)
 		{
-			//maybe a small function for setting cmdexe as args[0]?
+			//would getting cmdexe happen in children. And maybe put in small function?
 			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
 			free(curcmd->args[0]);
 			curcmd->args[0] = cmdexe;
+			ft_printf("%s, %s, %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
 
-			ft_printf("%s, %s, %d\n", curcmd->args[0], cmdexe, pcd->exit_status);
-
-			/*
 			char **const	args = curcmd->args;
-			//function run cmd(subset_args)
-			if (args && args[0])
+			//function run cmd(subset_args).
+			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
 			{
-				if (!msh_builtins(pcd, args))
+				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
 				{
-					// run extern executable using fork and exec...
-					//check if there's pipes (other ctrl chrs behave differently i.e. for N commands && will create N-1 children, not N)
-					if (curcmd->ctrlchr == '|')
+					nchild = count_children(curcmd);
+					if (nchild == -1)
 					{
-						//pipe
-						if (pipe(p_fd[?][?]) == -1)
-							p_fd[?][?] = -1;
-						close(p_fd[?][?]); //how to know 1st cmd or middle or end cmd to know what to close? 
-
-						
-						//fork ->go to child?
-						//close ...only with pipes parent calls close.
-						//wait
+						//cmdexe in child? then also here for simple cmd.
+						execve(args[0], args, environ);
 					}
-					//fork ->go to child
-					//wait
-					//next step happens inside child
-					while (curcmd && curcmd->iolst)
-					{
-						//curcmd->iolst = curcmd->iolst->next??
-					}
+					//cmdexe in child?
+					pids = malloc(sizeof(int) * nchild);
+					if (!pids)
+						//return (NULL)? and free something?
+					parent_setup(curcmd, pids, ++i);
+					
 					// Dummy
 					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
 					return (0);
 				}
-			}*/
+			}
 			//free stuff in curcmd?
 			curcmd = curcmd->next;
 		}
+		//close opened fds?
+		status_code = 0;
+		wstatus = malloc(sizeof(int) * nchild);
+		if (!wstatus)
+		{
+			//free? and return(?);
+		}
+		i = 0;
+		while (i < nchild)
+		{
+			waitpid (pids[i], &wstatus[i], 0);
+			if (WIFEXITED(wstatus[i]))
+				status_code = WEXITSTATUS(wstatus[i]);
+			i ++;
+		}
+		free (wstatus);
+		free(pids);
+		pcd->exit_status = status_code;
+		return (1);
 	}
+	//free epaths too?
 	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);
 }
 
