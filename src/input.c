@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/18 19:37:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/19 18:40:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,20 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+
+int	count_children(t_cmd *curcmd)
+{
+	int	nchild;
+
+	nchild = 0;
+	while (curcmd)
+	{
+		if (curcmd->ctrlchr == '|' || curcmd->iolst)
+			nchild ++;
+	}
+	return (nchild);
+}
+
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	// char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
@@ -35,8 +49,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				nchild;
 	int				*pids;
 	int				i;
-	int				status_code;
 	int				*wstatus;
+	char			*buffer;
 
 	ft_printf("%s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
@@ -52,6 +66,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			curcmd->args[0] = cmdexe;
 			ft_printf("%s, %s, %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
 
+			//if heredocs in parent, all must be stored in a char *buffer[N]
+
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args).
 			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
@@ -59,17 +75,19 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
 				{
 					nchild = count_children(curcmd);
-					if (nchild == -1)
+					if (nchild == 0)
 					{
 						//cmdexe in child? then also here for simple cmd.
 						execve(args[0], args, environ);
 					}
-					//cmdexe in child?
 					pids = malloc(sizeof(int) * nchild);
 					if (!pids)
 						//return (NULL)? and free something?
 					parent_setup(curcmd, pids, ++i);
-					
+					//child_setup gets called from parent but 
+					//could be better to call here?
+					//also, should get cmdexe in child?
+
 					// Dummy
 					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
 					return (0);
@@ -79,7 +97,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			curcmd = curcmd->next;
 		}
 		//close opened fds?
-		status_code = 0;
 		wstatus = malloc(sizeof(int) * nchild);
 		if (!wstatus)
 		{
@@ -90,12 +107,11 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		{
 			waitpid (pids[i], &wstatus[i], 0);
 			if (WIFEXITED(wstatus[i]))
-				status_code = WEXITSTATUS(wstatus[i]);
+				pcd->exit_status = WEXITSTATUS(wstatus[i]);
 			i ++;
 		}
 		free (wstatus);
 		free(pids);
-		pcd->exit_status = status_code;
 		return (1);
 	}
 	//free epaths too?
