@@ -104,7 +104,8 @@
 	"errno.h": "c",
 	"features.h": "c",
 	"msh_rmquotes_expand_intern.h": "c",
-	"rh_split_qed.h": "c"
+	"rh_split_qed.h": "c",
+	"types.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "keyhr.42-c-format",

@@ -37,6 +37,7 @@ MANDATORY_SRCS	:= 	minishell.c \
 					builtins2.c \
 					input.c \
 					paths.c \
+					processes.c \
 					msh_rmquotes_expand.c \
 					msh_rmquotes_expand_utils.c \
 					utils.c \

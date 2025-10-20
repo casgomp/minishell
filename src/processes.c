@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/19 18:40:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 18:03:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,10 @@
 #include "libft.h"
 
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-typedef struct	s_fdcls
-{
-	int	pre1[2];
-	int	pre2[2];
-}	t_fdcl;
 
 int	get_heredoc(int fd, char *limiter)
 {
@@ -35,38 +30,22 @@ int	get_heredoc(int fd, char *limiter)
 	prompt = "> ";
 	while (1)
 	{
-		if (ft_putstr(prompt) == -1)
+		if (write(1, prompt, 2) == -1)
 			return (0);
 		ret = get_next_line(0);
 		if (!ret)
 			return (0);
 		if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\n')
 			return (free(ret), 1);
-		if (ft_putstr_fd(ret, fd) == -1) //ft_putstr_fd has void return. Should be int.
+		if (write(fd, ret, ft_strlen(ret)) == -1)
 			return (free(ret), 0);
 		free (ret);
 	}
 }
 
-/*redirections_setup is repetitive....use something like:
-int open_redir_file(const char *filename, int oflags, mode_t mode)
-{
-    int fd;
-
-    if (oflags & O_CREAT)
-        fd = open(filename, oflags, mode);
-    else
-        fd = open(filename, oflags);
-
-    if (fd == -1)
-        perror(file);
-
-    return fd;
-}*/
 int	redirections_setup(t_cmd *curcmd)
 {
 	char	*fnmdlm;
-	char	*delim;
 	int		hdfdpipe[2];
 
 	fnmdlm = curcmd->iolst->fname_delim;
@@ -81,22 +60,24 @@ int	redirections_setup(t_cmd *curcmd)
 	else if (curcmd->iolst->tredirect == fd2file_append)
 	{
 		curcmd->iolst->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		//same
+		if (curcmd->iolst->old_fd == -1)
+			return (perror(fnmdlm), 0);
 	}
 	else if (curcmd->iolst->tredirect == file2fd)
 	{
 		curcmd->iolst->old_fd = open(fnmdlm, O_RDONLY);
-		//same
+		if (curcmd->iolst->old_fd == -1)
+			return (perror(fnmdlm), 0);
 	}
 	else if (curcmd->iolst->tredirect == heredoc2fd)
 	{
 		if (pipe(hdfdpipe) == -1)
-			return (perror(hdfdpipe), 1);
+			return (perror("pipe"), 1);
 		if (get_heredoc(hdfdpipe[1], fnmdlm) == 0)
-			//return(perror("?"), 1);//check returnvalues!
+			//return(perror("?"), 1);//check returnvalues!;
 		close (hdfdpipe[1]);
 		dup2(hdfdpipe[0], curcmd->iolst->new_fd);
-		close(curcmd->iolst->old_fd)
+		close(curcmd->iolst->old_fd);
 	}
 	return (1);
 }
@@ -124,7 +105,7 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 	if (ret == 0)
 		return (0); //should have cd as parameter so i can assign cd->exit_status = 1
 	execve(curcmd->args[0], curcmd->args, environ);
-	perror(execve);
+	perror(curcmd->args[0]);//what? wrong filename or options?
 	return (0);//and set exits status?
 }
 
@@ -140,14 +121,14 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 		close(fdcl.pre1[1]);
 	if (curcmd->ctrlchr == '|')
 	{
-		if (pipe(fdpipe) == -1);
-			return (perror(fdpipe), 1);
+		if (pipe(fdpipe) == -1)
+			return (perror("pipe"), 1);
 	}
 	if (curcmd->next)
 	{
 		pids[i] = fork();
 		if (pids[i] == -1)
-		return (perror(pids[i]), 1);
+		return (perror("fork"), 1);
 	}
 	if (pids[i] == 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/19 18:40:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 18:03:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <readline/history.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 
 int	count_children(t_cmd *curcmd)
@@ -50,10 +51,11 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				*pids;
 	int				i;
 	int				*wstatus;
-	char			*buffer;
 
 	ft_printf("%s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
+	nchild = 0;
+	pids = 0;
 	i = -1;
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
@@ -79,6 +81,8 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					{
 						//cmdexe in child? then also here for simple cmd.
 						execve(args[0], args, environ);
+						perror(curcmd->args[0]);//what? wrong filename or options?
+						return (0);//and set exits status?
 					}
 					pids = malloc(sizeof(int) * nchild);
 					if (!pids)

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/19 18:40:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 18:03:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,19 @@ typedef struct s_cmd
 	struct s_cmd	*next; //if linked list;
 }	t_cmd;
 
+typedef struct	s_fdcls
+{
+	int	pre1[2];
+	int	pre2[2];
+}	t_fdcl;
+
+/*
 typedef struct s_stdio //for storing original stdio. Haven't used it yet.
 {
 	int	stdin;
 	int	stdout;
 }	t_stdio;
+*/
 
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd, char const *const in);
@@ -77,11 +85,18 @@ int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
 size_t	check_cpy_env(char ***const oldenv, size_t * const penvreserved,
 	bool free_oldenv);
+//additions to input.c:
+int	count_children(t_cmd *curcmd);
 
 char	**ft_env_paths(size_t *len);
 char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len);
 //static int	compose_check_path(char **path, char *cmdexe, char *pathstr, size_t bufferlen);
 //static int	access_check_path(char *pathstr);
 //static int	free_splitstrs(char **split);
+
+int		parent_setup(t_cmd *curcmd, int *pids, int i);
+int		child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
+int		redirections_setup(t_cmd *curcmd);
+int		get_heredoc(int fd, char *limiter);
 
 #endif // MINISHELL_H

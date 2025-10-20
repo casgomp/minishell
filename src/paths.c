@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/19 18:40:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 18:03:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "libft.h"
 
 #include <stdlib.h>
+#include <sys/wait.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
