@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:35:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 10:12:45 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	set_curcmd(t_tca *ptca)
 			ptca->curcmd = ptca->curcmd->next;
 		}
 		*(ptca->curcmd) =
-			(t_cmd){.stdio={-1, -1, -1}, .iolst=(t_io*)NULL,
+			(t_cmd){/* .stdio={-1, -1, -1}, */ .iolst=(t_io*)NULL,
 				.args=(char **)NULL, .ctrlchr='\0', .next=(t_cmd *)NULL};
 		ptca->num_args = 0;
 	}

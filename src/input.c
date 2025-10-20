@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 12:38:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 12:35:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 	if (pcd->interactive)
 	{
 		t_sqed const sqed = pcd->default_sqed;
-		t_qed const	qed = (t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
+		t_qed const	qed =
+			(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd, .ifs = sqed.ifs,
 					.dict = sqed.dict, .dict_data = sqed.dict_data,
 					.validchar = sqed.validchar,
 					.validchar_data = sqed.validchar_data};

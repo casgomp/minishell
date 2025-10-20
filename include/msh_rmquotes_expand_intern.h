@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/12 20:32:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 10:15:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef struct s_tokens_cmds_arg
 int	set_curcmd(t_tca *ptca);
 int	get_iolstelem(t_tca *ptca);
 int	get_curarg(t_tca *ptca);
-int convert_arglst(t_tca *ptca);
+int	convert_arglst(t_tca *ptca);
 int	cleanup_arglst(t_tca *ptca);
 int	cleanup_tca(t_tca *ptca);
 

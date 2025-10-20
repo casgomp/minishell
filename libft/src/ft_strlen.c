@@ -6,13 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 21:23:50 by rhaas             #+#    #+#             */
-/*   Updated: 2025/05/10 11:42:15 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 12:18:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen(const char *const s)
 {
 	size_t	n;
 

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/14 11:12:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 13:30:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,24 @@ typedef struct s_unqut_expd_data
 	char			**uestr;
 	size_t			uestrlen;
 }	t_uedata;
+
+typedef struct s_expand_wordsplit
+{
+	int		paramlen;
+	char	*envvar;
+	char	*envval;
+	char	**wordsplit;
+	bool	isfirstchar;
+}	t_ews;
+
+int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len);
+int	escape(char *const pc, int *const pidx, t_uedata *const puedata);
+int	expand_value(char *const envval, char ***pwordsplit,
+	t_qed const *const pqed, t_uedata *const puedata);
+int	expand(char *const pc, int *const pidx,
+	t_qed const *const pqed, t_uedata *const puedata);
+int	escape_expand(char *const pc, int *const pidx,
+				t_qed const *const pqed, t_uedata *const puedata);
+
 
 #endif // RH_SPLIT_QED_INTERN_H

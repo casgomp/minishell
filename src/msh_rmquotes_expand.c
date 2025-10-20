@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 19:33:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 11:29:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,16 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 	return (ft_isalnum(c) || c == '_');
 }
 
-t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split, t_sqed const sqed)
+t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split,
+			t_sqed const sqed)
 {
 	t_tca		tca;
 	t_qes const	qes = (t_qes){.q = sqed.q, .esc = sqed.esc,
-			.blank = sqed.blank, .metachr = sqed.metachr};
+		.blank = sqed.blank, .metachr = sqed.metachr};
 	t_qed const	qed = (t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd,
-					.dict = sqed.dict, .dict_data = sqed.dict_data,
-					.validchar = sqed.validchar,
-					.validchar_data = sqed.validchar_data};
+		.dict = sqed.dict, .dict_data = sqed.dict_data,
+		.validchar = sqed.validchar,
+		.validchar_data = sqed.validchar_data};
 	int			tokenidx;
 
 	tca.tokens = rh_split_quotes(to_split, qes);
@@ -66,10 +67,10 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split, t_sqed const sqed
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
 	while (tca.tokens && tca.tokens[tokenidx])
-	{		
+	{	
 		char const	*token = tca.tokens[tokenidx];		
-		int			tokenlen = ft_strlen(token);	
-		
+		int			tokenlen = ft_strlen(token);
+
 		// set new curcmd if necessary
 		if (!set_curcmd(&tca))
 			return (cleanup_tca(&tca), NULL);
@@ -77,15 +78,15 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split, t_sqed const sqed
 		if (ft_strchr(sqed.metachr, token[tokenlen - 1]))
 		{
 			if (!ft_strcmp(token, "|"))
-			{
 				tca.curcmd->ctrlchr = '|';
-			}
+			else if (!ft_strcmp(token, "\n"))
+				tca.curcmd->ctrlchr = '\n';
 			else if (ft_strchr("<>", token[tokenlen - 1]))
 			{
 				if (!get_iolstelem(&tca))
 					return (cleanup_tca(&tca), NULL);
 				int success;
-				t_llong fd_new = ft_atoll_check_input(token, INT_MAX, &success);
+				t_llong	fd_new = ft_atoll_check_input(token, INT_MAX, &success);
 				if (success <= 0 || fd_new < 0 || !ft_strchr("<>", token[success]))
 				{
 					fd_new = -1;
