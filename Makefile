@@ -111,7 +111,7 @@ re:
 # --- HELPER RULES ---
 norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
-	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
+	watch -n1 "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
 
 .PHONY: all bonus mandatory clean fclean re norm
 # $(LIBFT)

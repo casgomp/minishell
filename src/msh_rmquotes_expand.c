@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 10:21:29 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 11:44:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,12 +147,12 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 				pcd->exit_status = 2;
 				return (cleanup_tca(ptca), false);
 			}
-			// Handle error
-			// if ((curcmd->iolst->tredirect == (t_rd)rd_default)
-			// 	|| (!curcmd->iolst->fname_delim))
-			// {
-			// 	// return (error)
-			// }
+			if ((ptca->curcmd->iolst->tredirect == (t_rd)rd_default)
+				|| (!ptca->curcmd->iolst->fname_delim))
+			{
+				pcd->exit_status = 130;
+				msh_error((char const *[]){"Internal Error"}, 1, -1);
+			}
 			++tokenidx;
 		}
 	}
@@ -163,6 +163,7 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 		{
 			if (!get_curarg(ptca))
 				return (cleanup_tca(ptca), (t_cmd *) NULL);
+			// if (ft_strlen(*wordsplit) == 0 &&
 			ptca->curarg->arg = *(wordsplit++);
 		}
 	}
@@ -182,115 +183,16 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split,
 	tokenidx = 0;
 	while (tca.tokens && tca.tokens[tokenidx])
 	{
-		// set new curcmd if necessary
 		if (!set_curcmd(&tca))
 			return (cleanup_tca(&tca), NULL);
-
 		if (!msh_compile_simplecmd(pcd, &tca, tokenidx, sqed))
 			return (cleanup_tca(&tca), (t_cmd *) NULL);
-		// char const	*token = tca.tokens[tokenidx];		
-		// int			tokenlen = ft_strlen(token);
-		// // check for metachars:
-		// if (ft_strchr(sqed.metachr, token[tokenlen - 1]))
-		// {
-		// 	if (!ft_strcmp(token, "|"))
-		// 		tca.curcmd->ctrlchr = '|';
-		// 	else if (!ft_strcmp(token, "\n"))
-		// 		tca.curcmd->ctrlchr = '\n';
-		// 	else if (ft_strchr("<>", token[tokenlen - 1]))
-		// 	{
-		// 		if (!get_iolstelem(&tca))
-		// 			return (cleanup_tca(&tca), NULL);
-		// 		int success;
-		// 		t_llong	fd_new = ft_atoll_check_input(token, INT_MAX, &success);
-		// 		if (success <= 0 || fd_new < 0 || !ft_strchr("<>", token[success]))
-		// 		{
-		// 			fd_new = -1;
-		// 			success = tokenlen - 1;
-		// 			while (success > 0 && ft_strchr("<>", token[success - 1]))
-		// 				--success;
-		// 			if (!get_curarg(&tca))
-		// 				return (cleanup_tca(&tca), NULL);
-		// 			if (success > 0)
-		// 			{
-		// 				tca.curarg->arg = ft_substr(token, 0, success);
-		// 				token = &(token[success]);
-		// 				tokenlen = ft_strlen(token);
-		// 			}
-		// 		}
-		// 		if (!ft_strcmp(token, ">"))
-		// 			tca.curcmd->iolst->tredirect = (t_rd)fd2file_trunc;
-		// 		else if (!ft_strcmp(token, ">>"))
-		// 			tca.curcmd->iolst->tredirect = (t_rd)fd2file_append;
-		// 		else if (!ft_strcmp(token, "<"))
-		// 			tca.curcmd->iolst->tredirect = (t_rd)file2fd;
-		// 		else if (!ft_strcmp(token, "<<"))
-		// 			tca.curcmd->iolst->tredirect = (t_rd)heredoc2fd;
-		// 		if (fd_new == -1)
-		// 		{
-		// 			if ((tca.curcmd->iolst->tredirect == (t_rd)fd2file_trunc)
-		// 				|| (tca.curcmd->iolst->tredirect == (t_rd)fd2file_append))
-		// 				fd_new = 1;
-		// 			if ((tca.curcmd->iolst->tredirect == (t_rd)file2fd)
-		// 				|| (tca.curcmd->iolst->tredirect == (t_rd)heredoc2fd))
-		// 				fd_new = 0;
-		// 		}
-		// 		tca.curcmd->iolst->new_fd = fd_new;		
-		// 		if (tca.tokens[tokenidx + 1]
-		// 			&& ((ft_strlen(tca.tokens[tokenidx + 1]) == 0)
-		// 				|| !ft_strchr(sqed.metachr, tca.tokens[tokenidx + 1][0])))
-		// 		{
-		// 			// check string expansion
-		// 			// + not more than one word after wordsplit!
-		// 			char **wordsplit = rh_rmqed(tca.tokens[tokenidx + 1], qed);
-		// 			if (!wordsplit || wordsplit[0] == (char *) NULL
-		// 				|| wordsplit[1] != (char *) NULL)
-		// 			{
-		// 				msh_error((char const*[]){tca.tokens[tokenidx + 1], "ambiguous redirect"}, 2, -1);
-		// 				pcd->exit_status = 130;
-		// 				return (cleanup_tca(&tca), (t_cmd *) NULL);
-		// 			}
-		// 			tca.curcmd->iolst->fname_delim
-		// 				= ft_strdup(tca.tokens[tokenidx + 1]);
-		// 		}
-		// 		else
-		// 		{
-		// 			char buf[1024];
-		// 			ft_sprintf(buf, "syntax error near unexpected token `%s'", 
-		// 				tca.tokens[tokenidx + 1]);
-		// 			msh_error((char const*[]){buf, }, 1, -1);
-		// 			ft_sprintf(buf, "`%s'", to_split);
-		// 			msh_error((char const*[]){buf, }, 1, -1);				
-		// 			pcd->exit_status = 2;
-		// 			return (cleanup_tca(&tca), (t_cmd *) NULL);
-		// 		}
-		// 		// Handle error
-		// 		// if ((curcmd->iolst->tredirect == (t_rd)rd_default)
-		// 		// 	|| (!curcmd->iolst->fname_delim))
-		// 		// {
-		// 		// 	// return (error)
-		// 		// }
-		// 		++tokenidx;
-		// 	}
-		// }
-		// else // if not metachar or redirect group
-		// {
-		// 	char **wordsplit = rh_rmqed(tca.tokens[tokenidx], qed);
-		// 	while (wordsplit && *wordsplit)
-		// 	{
-		// 		if (!get_curarg(&tca))
-		// 			return (cleanup_tca(&tca), (t_cmd *) NULL);
-		// 		tca.curarg->arg = *(wordsplit++);
-		// 	}
-		// }
 		++tokenidx;
 		if (tca.curcmd->ctrlchr || !tca.tokens[tokenidx])
 		{
 			if (!convert_arglst(&tca))
 				return (cleanup_tca(&tca), (t_cmd *) NULL);
 			cleanup_arglst(&tca);
-			// output parsing error if there is no command / empty args...
-			// maybe a cmd that consists only of redirections??
 		}
 	}
 	return (cleanup_tca(&tca), tca.cmdlst);

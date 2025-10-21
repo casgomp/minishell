@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 10:01:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 15:47:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,20 +78,22 @@ int	expand_value(char *const envval, char ***pwordsplit,
 		if (!*pwordsplit)
 			return (false);
 		idx = 0;
-		while (*pwordsplit && (*pwordsplit)[idx])
+		if (!(*pwordsplit)[idx] && puedata->tsl->len == 0)
+			puedata->tsl->newstr = false;
+		// 	puedata->tsl->pcstart = (char *) NULL;
+		while ((*pwordsplit)[idx])
 		{
-			if (!set_tsstl(puedata, (*pwordsplit)[idx],
-				ft_strlen((*pwordsplit)[idx])))
-				return (false);
+			if (!set_tsstl(puedata, (*pwordsplit)[idx], ft_strlen((*pwordsplit)[idx])))
+				return (rh_free_simple_array((void **)(*pwordsplit)), false);
 			if (idx > 0)
 				puedata->tsl->newstr = true;
 			puedata->uestrlen += puedata->tsl->len;
 			++idx;
 		}
+		free(*pwordsplit);
 	}
-	else
-		if (!set_tsstl(puedata, envval, ft_strlen(envval)))
-			return (false);
+	else if (!set_tsstl(puedata, envval, ft_strlen(envval)))
+		return (false);
 	return (true);
 }
 
@@ -105,7 +107,7 @@ int	expand(char *const pc, int *const pidx,
 {
 	t_ews	ews;
 
-	ews = (t_ews){.paramlen = 1, .isfirstchar = true};
+	ews = (t_ews){.paramlen = 1, .isfirstchar = true, .wordsplit = NULL};
 	while (pc[ews.paramlen]
 		&& (*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
 		++ews.paramlen;
@@ -118,12 +120,12 @@ int	expand(char *const pc, int *const pidx,
 			free(ews.envvar);
 			if (ews.envval
 				&& !expand_value(ews.envval, &ews.wordsplit, pqed, puedata))
-				return (free(ews.wordsplit), -2);
+				return (/* free(ews.wordsplit),  */-2);
 		}
 		*pidx += ews.paramlen;
-		if (puedata->instr[*pidx]
+		if (puedata->instr[*pidx] && puedata->tsl->pcstart
 			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
-			return (free(ews.wordsplit), -2);
+			return (/* free(ews.wordsplit), */ -2);
 		return (2);
 	}
 	return (0);

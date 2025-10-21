@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 10:01:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 15:34:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,14 +106,33 @@ static char	**compose_uestr(t_uedata *const puedata)
 	paramidx = -1;
 	while (puedata->tsl)
 	{
+		/*
 		if (puedata->tsl->newstr)
 			idx = 0;
+		if (!puedata->tsl->pcstart)
+		{
+			puedata->tsl = puedata->tsl->next;
+			continue ;
+		}
 		ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
 			puedata->tsl->len + 1);
 		idx += puedata->tsl->len;
 		puedata->tsl = puedata->tsl->next;
 		if (!puedata->tsl || puedata->tsl->newstr)
 			puedata->uestrs[++paramidx] = ft_strdup(buffer);
+		/*/
+		if (puedata->tsl->newstr)
+			idx = 0;
+		if (puedata->tsl->pcstart)
+		{
+			ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
+				puedata->tsl->len + 1);
+			idx += puedata->tsl->len;
+			if (!puedata->tsl->next || puedata->tsl->next->newstr)
+				puedata->uestrs[++paramidx] = ft_strdup(buffer);
+		}
+		puedata->tsl = puedata->tsl->next;
+		//*/
 	}
 	return (free(buffer), cleanup_uedata(puedata), puedata->uestrs);
 }
