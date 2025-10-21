@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 13:30:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 10:01:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ typedef struct s_strstart_len
 	struct s_strstart_len	*next;
 }	t_strstart_len;
 
-typedef struct s_unqut_expd_data
+typedef struct s_unquted_expanded_split_data
 {
 	char			*instr;
 	char			actvq;
 	t_strstart_len	*tsl_orig;
 	t_strstart_len	*tsl;
-	char			**uestr;
+	char			**uestrs;
 	size_t			uestrlen;
 }	t_uedata;
 

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 13:31:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 10:01:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 	}
 	*(pue->tsl) = (t_strstart_len){
 		.newstr = (pue->tsl == pue->tsl_orig), .pcstart = pcstart, .len = len,
-		.next = (t_strstart_len *) NULL};
+		.next = (t_strstart_len*) NULL};
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 10:12:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 10:25:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,13 @@ int	cleanup_arglst(t_tca *ptca)
 		free(ptca->arglst);
 		ptca->arglst = ptca->curarg;
 	}
+	ptca->num_args = 0;
 	return (1);
 }
 int	cleanup_tca(t_tca *ptca)
 {
 	rh_free_simple_array((void **)ptca->tokens);
+	ptca->tokens = (char **) NULL;
 	if (!cleanup_arglst(ptca))
 		return (0);
 	return (1);

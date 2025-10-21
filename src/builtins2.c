@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 18:41:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 09:57:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,17 +54,16 @@ int	msh_export(t_cd *pcd, char **args)
 		isfirstchar = true;
 		while (idx < sublen && msh_isvalidvarchar((*args)[idx], &isfirstchar))
 				++idx;
-		if (sublen == 0 || (*args)[idx] != '=')
+		if (sublen == 0 || idx < sublen)
 		{
-			// ft_dprintf(STDERR_FILENO, "%s: %s: `%s': not a valid identifier\n",
-			// 	pcd->mshid, __func__ + 4, *args);
 			char buf[1024];
 			ft_sprintf(buf, "`%s\'", *args);
 			msh_error((char const *[]){__func__ + 4, buf,
 				"not a valid identifier"}, 3, -1);
 			ret = 1;
-			continue ;
 		}
+		if ((*args)[sublen] != '=')
+			continue ;
 		env = environ;
 		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
@@ -87,12 +86,19 @@ int	msh_export(t_cd *pcd, char **args)
 int	msh_unset(char **args)
 {
 	char	**env;
+	size_t	arglen;
 
 	while (*(++args))
 	{
+		if (ft_strchr(*args, '=') != (char *) NULL)
+			continue ;
+		arglen = ft_strlen(*args);
 		env = environ;
-		while (*env && ft_strncmp(*args, *env, ft_strlen(*args)))
+		while (*env && !(ft_strncmp(*args, *env, arglen) == 0
+						&& (*env)[arglen] == '='))
+		{
 			++env;
+		}
 		if (*env)
 		{
 			free(*(env));

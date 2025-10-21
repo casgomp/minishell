@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/07 15:24:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 10:03:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,29 +48,11 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 	}
 }
 
-static void postproc_metachars(char const *const s, int *const pidx,
+static void	postproc_metachars(char const *const s, int *const pidx,
 								t_splprms *ptsp)
 {
 	char const	metac = s[*pidx];
-	char		*numstr;
-	int			success;
-	
-	if (ptsp->tsl->len > 0)
-	{
-		success = 0;
-		if (metac == '>' || metac == '<')
-		{
-			numstr = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
-			if (numstr)
-			{
-				/* t_llong tmp =  */ft_atoll_check_input(numstr, LLONG_MAX, &success);
-				free(numstr);
-				success = ((success > 0) && ((size_t)success == ptsp->tsl->len));
-			}
-		}
-		if (!success)
-			return ;
-	}
+
 	while (s[ptsp->tsl->start + ptsp->tsl->len] == metac)
 		++(ptsp->tsl->len);
 	*pidx = ptsp->tsl->start + ptsp->tsl->len;

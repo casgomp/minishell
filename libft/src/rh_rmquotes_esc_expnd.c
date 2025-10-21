@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 13:32:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 10:01:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char	**rh_rmqed(char const *const qutdstr, t_qed tqed)
 
 	uedata = (t_uedata){.instr = ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
 		.actvq = '\0', .tsl_orig = (t_strstart_len *) NULL,
-		.tsl = (t_strstart_len *) NULL, .uestr = (char **) NULL, .uestrlen = 0};
+		.tsl = (t_strstart_len *) NULL, .uestrs = (char**) NULL, .uestrlen = 0};
 	if (!(uedata.instr && tqed.q && set_tsstl(&uedata, uedata.instr, 0)))
 		return (cleanup_uedata(&uedata), (char **) NULL);
 	idx = 0;
@@ -63,24 +63,20 @@ static void	cleanup_uedata(t_uedata *const puedata)
 {
 	if (puedata->instr)
 		free(puedata->instr);
-	puedata->tsl = puedata->tsl_orig;
+	puedata->instr = (char *) NULL;
 	while (puedata->tsl_orig)
 	{
-		puedata->tsl_orig = puedata->tsl->next;
-		free(puedata->tsl);
-		puedata->tsl = puedata->tsl_orig;
+		puedata->tsl = puedata->tsl_orig->next;
+		free(puedata->tsl_orig);
+		puedata->tsl_orig = puedata->tsl;
 	}
+	puedata->tsl_orig = (t_strstart_len *) NULL;
 }
 
-static char	**compose_uestr(t_uedata *const puedata)
+static bool	init_compose_uestr(t_uedata *const puedata)
 {
-	size_t	numparams;
-	size_t	paramidx;
-	size_t	idx;
+	size_t		numparams;
 
-	char *buffer = malloc((puedata->uestrlen + 1) * sizeof(char));
-	if (!buffer)
-		return ((char **) NULL);
 	numparams = 0;
 	puedata->tsl = puedata->tsl_orig;
 	while (puedata->tsl)
@@ -89,10 +85,23 @@ static char	**compose_uestr(t_uedata *const puedata)
 			++numparams;
 		puedata->tsl = puedata->tsl->next;
 	}
-	puedata->uestr = malloc((numparams + 1) * sizeof(char *));
-	if (!puedata->uestr)
+	puedata->uestrs = malloc((numparams + 1) * sizeof(char *));
+	if (!puedata->uestrs)
+		return (false);
+	puedata->uestrs[numparams] = (char *) NULL;
+	return (true);
+}
+
+static char	**compose_uestr(t_uedata *const puedata)
+{
+	size_t		paramidx;
+	size_t		idx;
+	char *const	buffer = malloc((puedata->uestrlen + 1) * sizeof(char));
+
+	if (!buffer)
 		return ((char **) NULL);
-	puedata->uestr[numparams] = (char *) NULL;		
+	if (!init_compose_uestr(puedata))
+		return (free(buffer), cleanup_uedata(puedata), (char **) NULL);
 	puedata->tsl = puedata->tsl_orig;
 	paramidx = -1;
 	while (puedata->tsl)
@@ -103,17 +112,10 @@ static char	**compose_uestr(t_uedata *const puedata)
 			puedata->tsl->len + 1);
 		idx += puedata->tsl->len;
 		puedata->tsl = puedata->tsl->next;
-		free(puedata->tsl_orig);
-		puedata->tsl_orig = puedata->tsl;
 		if (!puedata->tsl || puedata->tsl->newstr)
-			puedata->uestr[++paramidx] = ft_strdup(buffer);
+			puedata->uestrs[++paramidx] = ft_strdup(buffer);
 	}
-	free(buffer);
-	buffer = (char *) NULL;
-	puedata->tsl_orig = (t_strstart_len *) NULL;
-	free(puedata->instr);
-	puedata->instr = (char *) NULL;
-	return (puedata->uestr);
+	return (free(buffer), cleanup_uedata(puedata), puedata->uestrs);
 }
 
 // returns...

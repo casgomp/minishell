@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 10:15:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 16:33:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 typedef struct s_tokens_cmds_arg
 {
+	char const	*tosplit;
 	char		**tokens;
 	t_cmd		*cmdlst;
 	t_cmd		*curcmd;

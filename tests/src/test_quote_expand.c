@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 14:18:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 14:51:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int test_quote_expand() {
   t_qed qed = (t_qed){.q = "\"\'",
                       .esc = '\\',
                       .expnd = '$',
+					  .ifs = " \t\n",
                       .dict = msh_dict,
                       .dict_data = NULL,
                       .validchar = msh_isvalidvarchar,
