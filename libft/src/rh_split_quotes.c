@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 10:03:05 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 11:16:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,15 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 				|| ft_strchr(pqes->metachr, s[*pidx]))))
 	{
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
-		// Optionally if postproc_metachars is passed as a fnctn ptr:
-		if (/* postproc_metachars
-			&& */ s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
+		if (s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
 			postproc_metachars(s, pidx, ptsp);
 	}
 }
+// ^^^^^^^^ Optionally ^^^^^^^^
+// ... if postproc_metachars is passed as a fnctn ptr:
+// if (postproc_metachars
+// 	   && s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
+// 	postproc_metachars(s, pidx, ptsp);
 
 // Same as ft_split, but takes a string containing quote chars
 // (typically "\\"\\'") that will cancel the effect of the split char
