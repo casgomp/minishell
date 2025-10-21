@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 18:03:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 17:44:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@ int	count_children(t_cmd *curcmd)
 	int	nchild;
 
 	nchild = 0;
+	ft_printf("count_children: nchild= %d\n", nchild);//debugging
 	while (curcmd)
 	{
 		if (curcmd->ctrlchr == '|' || curcmd->iolst)
 			nchild ++;
+		curcmd = curcmd->next;
 	}
+	ft_printf("count_children: nchild= %d\n", nchild);//debugging
 	return (nchild);
 }
 
@@ -52,7 +55,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				i;
 	int				*wstatus;
 
-	ft_printf("%s\n", cmds->args[0]);//debugging
+	ft_printf("process_cmdline: %s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
 	nchild = 0;
 	pids = 0;
@@ -66,35 +69,37 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
 			free(curcmd->args[0]);
 			curcmd->args[0] = cmdexe;
-			ft_printf("%s, %s, %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
+			ft_printf("curcmd->args[0]= %s, cmdexe= %s, pcd->exit_status= %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
 
 			//if heredocs in parent, all must be stored in a char *buffer[N]
 
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args).
+			ft_printf("process_cmdline: args[0]= %s\n", args[0]);//debugging
 			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
 			{
 				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
 				{
 					nchild = count_children(curcmd);
+					ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
 					if (nchild == 0)
 					{
 						//cmdexe in child? then also here for simple cmd.
 						execve(args[0], args, environ);
 						perror(curcmd->args[0]);//what? wrong filename or options?
-						return (0);//and set exits status?
+						return (0);//return what and set exits status?
 					}
 					pids = malloc(sizeof(int) * nchild);
 					if (!pids)
-						//return (NULL)? and free something?
+						return (0);//return (NULL)? and free something?
 					parent_setup(curcmd, pids, ++i);
 					//child_setup gets called from parent but 
 					//could be better to call here?
 					//also, should get cmdexe in child?
 
 					// Dummy
-					msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
-					return (0);
+					//msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
+					//return (0);
 				}
 			}
 			//free stuff in curcmd?

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/20 18:03:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/21 17:44:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 	int	ret;
 
 	ret = 1;
+	ft_printf("child_setup: fdpipe[0]= %d\n", fdpipe[0]);//debugging
 	if (fdpipe[0] != -1)
 		close(fdpipe[0]);
 	if (fdcl->pre1[0] != -1)
@@ -115,6 +116,7 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 	int				fdpipe[2] = {-1, -1};
 
 	//if heredocs, all must be stored in parent in a char *buffer[N]
+	ft_printf("parent_setup: i = %d\n", i);//debugging
 	if (fdcl.pre2[0] != -1)
 		close(fdcl.pre2[0]);
 	if (fdcl.pre1[1] != -1)
@@ -124,14 +126,17 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 		if (pipe(fdpipe) == -1)
 			return (perror("pipe"), 1);
 	}
-	if (curcmd->next)
+	if (curcmd->next || curcmd->iolst)
 	{
+		ft_printf("entered loop!\n");//debugging
 		pids[i] = fork();
 		if (pids[i] == -1)
 		return (perror("fork"), 1);
 	}
+	ft_printf("parent_setup: pids[%d]= %d\n", i, pids[i]);//debugging
 	if (pids[i] == 0)
 	{
+		ft_printf("inside child!\n");//debugging
 		child_setup(curcmd, &fdcl, fdpipe);
 		return(perror(curcmd->args[0]),1 );//check return values.
 	}
