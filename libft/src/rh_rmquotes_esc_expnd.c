@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 17:50:29 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:46:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,38 +22,6 @@ static int	toggle_quote(char *const pc, t_qed const *const pqed,
 				t_uedata *const puedata);
 static void	cleanup_uedata(t_uedata *const puedata);
 
-// int	check_do_wordsplit(char *const envval, char ***pwordsplit,
-// 	t_qed const *const pqed, t_uedata *const puedata)
-// {
-// 	int		idx;
-
-// 	if (!puedata->actvq)
-// 	{
-// 		*pwordsplit = rh_split_quotes(envval, (t_qes){.blank = pqed->ifs,
-// 				.esc = '\0', .metachr = "", .q = ""});
-// 		if (!(*pwordsplit))
-// 			return (false);
-// 		idx = 0;
-// 		if (!(*pwordsplit)[idx] && puedata->tsl->len == 0)
-// 		{
-// 			if (!set_tsstl(puedata, (char *) NULL, 0))
-// 				return (rh_free_simple_array((void **)(*pwordsplit)), false);
-// 			// puedata->tsl->newstr = false;
-// 			// puedata->tsl->pcstart = (char *) NULL;
-// 		}
-// 		while ((*pwordsplit)[idx])
-// 		{
-// 			if (!set_tsstl(puedata, (*pwordsplit)[idx], ft_strlen((*pwordsplit)[idx])))
-// 				return (rh_free_simple_array((void **)(*pwordsplit)), false);
-// 			puedata->tsl->newstr |= (idx > 0);
-// 			puedata->uestrlen += puedata->tsl->len;
-// 			++idx;
-// 		}
-// 		free(*pwordsplit);
-// 	}
-// 	return (true);
-// }
-
 // Removes one level of quotes from the quoted string 'qutdstr'
 // Different quote chars can be specified in the C-string 'q'
 // (Only) if the quote uses the first char of 'q', escapes will be active
@@ -68,13 +36,14 @@ char	*rh_rmqed(char const *const qutdstr, t_qed *pqed)
 	uedata = (t_uedata){.instr = ft_substr(qutdstr, 0, ft_strlen(qutdstr)),
 		.actvq = '\0', .expansion = false, .tsl_orig = (t_strstart_len *) NULL,
 		.tsl = (t_strstart_len *) NULL, .uestr = (char*) NULL, .uestrlen = 0};
-	if (!(uedata.instr && pqed->q && set_tsstl(&uedata, uedata.instr, 0, false)))
+	if (!(uedata.instr && pqed->q
+			&& set_tsstl(&uedata, uedata.instr, 0, false)))
 		return (cleanup_uedata(&uedata), (char *) NULL);
 	idx = 0;
 	while (uedata.instr[idx])
 	{
-		if(toggle_quote(&uedata.instr[idx], pqed, &uedata) && pqed->rmq)
-			continue;
+		if (toggle_quote(&uedata.instr[idx], pqed, &uedata) && pqed->rmq)
+			continue ;
 		ret = escape_expand(&uedata.instr[idx], &idx, pqed, &uedata);
 		if (ret > 0)
 			continue ;
@@ -126,37 +95,16 @@ static void	cleanup_uedata(t_uedata *const puedata)
 
 static char	*compose_uestr(t_uedata *const puedata)
 {
-	// size_t		paramidx;
 	size_t		idx;
 	size_t		idx2;
 	char *const	buffer = malloc((2 * puedata->uestrlen + 1) * sizeof(char));
 
 	if (!buffer)
 		return ((char *) NULL);
-	// if (!init_compose_uestr(puedata))
-	// 	return (free(buffer), cleanup_uedata(puedata), (char **) NULL);
 	puedata->tsl = puedata->tsl_orig;
-	// paramidx = -1;
 	idx = 0;
 	while (puedata->tsl)
 	{
-		/*
-		if (puedata->tsl->newstr)
-			idx = 0;
-		if (!puedata->tsl->pcstart)
-		{
-			puedata->tsl = puedata->tsl->next;
-			continue ;
-		}
-		ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
-			puedata->tsl->len + 1);
-		idx += puedata->tsl->len;
-		puedata->tsl = puedata->tsl->next;
-		if (!puedata->tsl || puedata->tsl->newstr)
-			puedata->uestr[++paramidx] = ft_strdup(buffer);
-		/*/
-		// if (puedata->tsl->newstr)
-		// 	idx = 0;
 		if (puedata->tsl->pcstart)
 		{
 			idx2 = -1;
@@ -167,18 +115,13 @@ static char	*compose_uestr(t_uedata *const puedata)
 					buffer[idx++] = '\\';
 				buffer[idx++] = puedata->tsl->pcstart[idx2];
 			}
-			// ft_strlcpy(&(buffer[idx]), puedata->tsl->pcstart,
-			// 	puedata->tsl->len/*  + 1 */);
-			// idx += puedata->tsl->len;
-			if (!puedata->tsl->next/*  || puedata->tsl->next->newstr */)
-				// puedata->uestr[++paramidx] = ft_strdup(buffer);
+			if (!puedata->tsl->next)
 			{
 				buffer[idx] = '\0';
 				puedata->uestr = ft_strdup(buffer);
 			}
 		}
 		puedata->tsl = puedata->tsl->next;
-		//*/
 	}
 	return (free(buffer), cleanup_uedata(puedata), puedata->uestr);
 }

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:33:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:42:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len, bool expanded)
 			pue->tsl = pue->tsl->next;
 		}
 	}
-	*(pue->tsl) = (t_strstart_len){
-		.newstr = (pue->tsl == pue->tsl_orig), .expanded = expanded, .pcstart = pcstart, .len = len,
+	*(pue->tsl) = (t_strstart_len){.newstr = (pue->tsl == pue->tsl_orig),
+		.expanded = expanded, .pcstart = pcstart, .len = len,
 		.next = (t_strstart_len*) NULL};
 	return (1);
 }
@@ -47,7 +47,8 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len, bool expanded)
 //  1 if escape did happen
 //  0 if not
 // -1 on invalid input or strlcpy error
-int	escape(char *const pc, int *const pidx, t_qed const *const pqed, t_uedata *const puedata)
+int	escape(char *const pc, int *const pidx, t_qed const *const pqed,
+	t_uedata *const puedata)
 {
 	if (!(pc && puedata))
 		return (-1);
@@ -73,33 +74,6 @@ int	expand_value(char *const envval, char ***pwordsplit,
 {
 	(void)pwordsplit;
 	(void)pqed;
-/* 	int		idx;
-
-	if (!puedata->actvq)
-	{
-		*pwordsplit = rh_split_quotes(envval, (t_qes){.blank = pqed->ifs,
-				.esc = '\0', .metachr = "", .q = ""});
-		if (!(*pwordsplit))
-			return (false);
-		idx = 0;
-		if (!(*pwordsplit)[idx] && puedata->tsl->len == 0)
-		{
-			if (!set_tsstl(puedata, (char *) NULL, 0))
-				return (rh_free_simple_array((void **)(*pwordsplit)), false);
-			// puedata->tsl->newstr = false;
-			// puedata->tsl->pcstart = (char *) NULL;
-		}
-		while ((*pwordsplit)[idx])
-		{
-			if (!set_tsstl(puedata, (*pwordsplit)[idx], ft_strlen((*pwordsplit)[idx])))
-				return (rh_free_simple_array((void **)(*pwordsplit)), false);
-			puedata->tsl->newstr |= (idx > 0);
-			puedata->uestrlen += puedata->tsl->len;
-			++idx;
-		}
-		free(*pwordsplit);
-	}
-	else */
 	if (!set_tsstl(puedata, envval, ft_strlen(envval), true))
 		return (false);
 	return (true);
@@ -127,12 +101,12 @@ int	expand(char *const pc, int *const pidx,
 			free(ews.envvar);
 			if (ews.envval
 				&& !expand_value(ews.envval, &ews.wordsplit, pqed, puedata))
-				return (/* free(ews.wordsplit),  */-2);
+				return (-2);
 		}
 		*pidx += ews.paramlen;
-		if (puedata->instr[*pidx]/*  && puedata->tsl->pcstart */
+		if (puedata->instr[*pidx]
 			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0, false))
-			return (/* free(ews.wordsplit), */ -2);
+			return (-2);
 		pqed->expstat = true;
 		return (2);
 	}
