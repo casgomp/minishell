@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 17:21:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:21:54 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,8 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 	}
 	else // if not metachar or redirect group
 	{
-		t_qed ed = (t_qed){.dict=qed.dict, .dict_data=qed.dict_data, .esc='\0', .expnd=qed.expnd,
-			.expstat=false, .q="", .rmq = false, .validchar=qed.validchar, .validchar_data=qed.validchar_data};
+		t_qed ed = (t_qed){.dict=qed.dict, .dict_data=qed.dict_data, .esc=qed.esc, .expnd=qed.expnd,
+			.expstat=false, .q=qed.q, .rmq = false, .validchar=qed.validchar, .validchar_data=qed.validchar_data};
 		char *argword = rh_rmqed(ptca->tokens[tokenidx], &ed);
 		char **args[2];// = (char **[]){NULL, NULL};
 		t_qes qes4wordsplit = (t_qes){.blank = "", .esc = '\0', .metachr = "",

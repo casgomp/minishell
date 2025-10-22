@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 17:49:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:33:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,18 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len, bool expanded)
 // -1 on invalid input or strlcpy error
 int	escape(char *const pc, int *const pidx, t_qed const *const pqed, t_uedata *const puedata)
 {
-	size_t	pclength;
-
 	if (!(pc && puedata))
 		return (-1);
 	if ((!puedata->actvq)
 		|| (puedata->actvq == pqed->q[0] && puedata->actvq == *(pc + 1)))
 	{
-		pclength = ft_strlen(pc);
-		if (ft_strlcpy(pc, pc + 1, pclength) != (pclength - 1))
-			return (-1);
+		if (pqed->rmq)
+			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
+		else
+		{
+			++(*pidx);
+			++(puedata->tsl->len);
+		}
 		++(*pidx);
 		++(puedata->tsl->len);
 		return (1);
