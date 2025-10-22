@@ -6,18 +6,17 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 12:11:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 17:49:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-// #include "rh_split_qed.h"
 #include "rh_split_qed_intern.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
 
-int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
+int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len, bool expanded)
 {
 	t_strstart_len	*new_tsstl;
 
@@ -39,7 +38,7 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 		}
 	}
 	*(pue->tsl) = (t_strstart_len){
-		.newstr = (pue->tsl == pue->tsl_orig), .pcstart = pcstart, .len = len,
+		.newstr = (pue->tsl == pue->tsl_orig), .expanded = expanded, .pcstart = pcstart, .len = len,
 		.next = (t_strstart_len*) NULL};
 	return (1);
 }
@@ -48,13 +47,14 @@ int	set_tsstl(t_uedata *pue, char *const pcstart, size_t len)
 //  1 if escape did happen
 //  0 if not
 // -1 on invalid input or strlcpy error
-int	escape(char *const pc, int *const pidx, t_uedata *const puedata)
+int	escape(char *const pc, int *const pidx, t_qed const *const pqed, t_uedata *const puedata)
 {
 	size_t	pclength;
 
 	if (!(pc && puedata))
 		return (-1);
-	if ((!puedata->actvq) || (puedata->actvq == *(pc + 1)))
+	if ((!puedata->actvq)
+		|| (puedata->actvq == pqed->q[0] && puedata->actvq == *(pc + 1)))
 	{
 		pclength = ft_strlen(pc);
 		if (ft_strlcpy(pc, pc + 1, pclength) != (pclength - 1))
@@ -69,7 +69,9 @@ int	escape(char *const pc, int *const pidx, t_uedata *const puedata)
 int	expand_value(char *const envval, char ***pwordsplit,
 	t_qed const *const pqed, t_uedata *const puedata)
 {
-	int		idx;
+	(void)pwordsplit;
+	(void)pqed;
+/* 	int		idx;
 
 	if (!puedata->actvq)
 	{
@@ -95,7 +97,8 @@ int	expand_value(char *const envval, char ***pwordsplit,
 		}
 		free(*pwordsplit);
 	}
-	else if (!set_tsstl(puedata, envval, ft_strlen(envval)))
+	else */
+	if (!set_tsstl(puedata, envval, ft_strlen(envval), true))
 		return (false);
 	return (true);
 }
@@ -106,13 +109,12 @@ int	expand_value(char *const envval, char ***pwordsplit,
 // -2 if set_tsstl failed after expansion happened
 // internal hint: paramlen starts at 1, bc the expnd char must also be counted
 int	expand(char *const pc, int *const pidx,
-	t_qed const *const pqed, t_uedata *const puedata)
+	t_qed *const pqed, t_uedata *const puedata)
 {
 	t_ews	ews;
 
 	ews = (t_ews){.paramlen = 1, .isfirstchar = true, .wordsplit = NULL};
-	while (/* pc[ews.paramlen]
-		&& */ (*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
+	while ((*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
 		++ews.paramlen;
 	if (ews.paramlen > 1)
 	{
@@ -127,8 +129,9 @@ int	expand(char *const pc, int *const pidx,
 		}
 		*pidx += ews.paramlen;
 		if (puedata->instr[*pidx]/*  && puedata->tsl->pcstart */
-			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
+			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0, false))
 			return (/* free(ews.wordsplit), */ -2);
+		pqed->expstat = true;
 		return (2);
 	}
 	return (0);
@@ -136,13 +139,14 @@ int	expand(char *const pc, int *const pidx,
 
 // returns the return values of escape resp. expand
 int	escape_expand(char *const pc, int *const pidx,
-				t_qed const *const pqed, t_uedata *const puedata)
+				t_qed *const pqed, t_uedata *const puedata)
 {
-	if (puedata->actvq == pqed->q[0] || !puedata->actvq)
+	if (*pc
+		&& (puedata->actvq == pqed->q[0] || !puedata->actvq))
 	{
 		if (pqed->esc == *pc)
 		{
-			return (escape(pc, pidx, puedata));
+			return (escape(pc, pidx, pqed, puedata));
 		}
 		else if (pqed->expnd == *pc)
 		{

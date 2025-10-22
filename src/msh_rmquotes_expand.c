@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 11:44:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 17:21:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,28 +48,10 @@ bool	msh_isvalidvarchar(char const c, void *validchar_data)
 	return (ft_isalnum(c) || c == '_');
 }
 
-static t_qed	rh_sqed2qed(t_sqed const *const psqed)
-{
-	return ((t_qed){
-		.q = psqed->q, .esc = psqed->esc,
-		.expnd = psqed->expnd, .ifs = psqed->ifs,
-		.dict = psqed->dict, .dict_data = psqed->dict_data,
-		.validchar = psqed->validchar, .validchar_data = psqed->validchar_data
-	});
-}
-
-static t_qes	rh_sqed2qes(t_sqed const *const psqed)
-{
-	return ((t_qes){
-		.q = psqed->q, .esc = psqed->esc,
-		.blank = psqed->blank, .metachr = psqed->metachr		
-	});
-}
-
 static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 	t_sqed const sqed)
 {
-	t_qed const	qed = rh_sqed2qed(&sqed);	
+	t_qed		qed = rh_sqed2qed(&sqed);
 	char const	*token = ptca->tokens[tokenidx];
 	int			tokenlen = ft_strlen(token);
 	// check for metachars:
@@ -125,7 +107,9 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 			{
 				// check string expansion
 				// + not more than one word after wordsplit!
-				char **wordsplit = rh_rmqed(ptca->tokens[tokenidx + 1], qed);
+				char *const argword = rh_rmqed(ptca->tokens[tokenidx + 1], &qed);
+				char **wordsplit = rh_split_quotes(argword, (t_qes){.blank = sqed.ifs,
+									.esc = '\0', .metachr = "", .q = sqed.q});
 				if (!wordsplit || wordsplit[0] == (char *) NULL
 					|| wordsplit[1] != (char *) NULL)
 				{
@@ -133,8 +117,11 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 					pcd->exit_status = 130;
 					return (cleanup_tca(ptca), false);
 				}
-				ptca->curcmd->iolst->fname_delim
-					= ft_strdup(ptca->tokens[tokenidx + 1]);
+				// ptca->curcmd->iolst->fname_delim
+				// 	= ft_strdup(ptca->tokens[tokenidx + 1]);
+				ptca->curcmd->iolst->fname_delim = ft_strdup(argword);
+				free(argword);
+				free(wordsplit);
 			}
 			else
 			{
@@ -158,14 +145,28 @@ static bool	msh_compile_simplecmd(t_cd *pcd, t_tca *ptca, int tokenidx,
 	}
 	else // if not metachar or redirect group
 	{
-		char **wordsplit = rh_rmqed(ptca->tokens[tokenidx], qed);
-		while (wordsplit && *wordsplit)
+		t_qed ed = (t_qed){.dict=qed.dict, .dict_data=qed.dict_data, .esc='\0', .expnd=qed.expnd,
+			.expstat=false, .q="", .rmq = false, .validchar=qed.validchar, .validchar_data=qed.validchar_data};
+		char *argword = rh_rmqed(ptca->tokens[tokenidx], &ed);
+		char **args[2];// = (char **[]){NULL, NULL};
+		t_qes qes4wordsplit = (t_qes){.blank = "", .esc = '\0', .metachr = "",
+			.q = sqed.q};
+		if (ed.expstat)
+			qes4wordsplit.blank = sqed.ifs;
+		args[0] = rh_split_quotes(argword, qes4wordsplit);
+		args[1] = args[0];
+		free(argword);
+		// for removing quotes:
+		ed = (t_qed){.dict=NULL, .dict_data=NULL, .esc='\\', .expnd='\0',
+			.expstat=false, .q=sqed.q, .rmq = true, .validchar=NULL, .validchar_data=NULL};
+		while (args[1] && *args[1])
 		{
 			if (!get_curarg(ptca))
 				return (cleanup_tca(ptca), (t_cmd *) NULL);
-			// if (ft_strlen(*wordsplit) == 0 &&
-			ptca->curarg->arg = *(wordsplit++);
+			ptca->curarg->arg = 
+				rh_rmqed(*(args[1]++), &ed);
 		}
+		rh_free_simple_array((void **)args[0]);
 	}
 	return (true);
 }

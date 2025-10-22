@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 15:01:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 16:04:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,25 +90,25 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 
 int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 {
-	char		**pprompt;
+	char		*prompt;
 	size_t		cmdln_len;
 
 	if (!pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		t_sqed const sqed = pcd->default_sqed;
-		t_qed const	qed =
-			(t_qed){.q = sqed.q, .esc = sqed.esc, .expnd = sqed.expnd, .ifs = sqed.ifs,
-					.dict = sqed.dict, .dict_data = sqed.dict_data,
-					.validchar = sqed.validchar,
-					.validchar_data = sqed.validchar_data};
-
-		pprompt = rh_rmqed("$USER@minishell$\\ ", qed/* pcd->default_sqed */);
-		if (pprompt && *pprompt)
+		// t_sqed const sqed = pcd->default_sqed;
+		// t_qed const	qed =
+		// 	(t_qed){.q = sqed.q, .rmq = true, .expstat = false, .esc = sqed.esc, .expnd = sqed.expnd, /* .ifs = sqed.ifs, */
+		// 			.dict = sqed.dict, .dict_data = sqed.dict_data,
+		// 			.validchar = sqed.validchar,
+		// 			.validchar_data = sqed.validchar_data};
+		t_qed qed = rh_sqed2qed(&(pcd->default_sqed));
+		prompt = rh_rmqed("$USER@minishell$\\ ", &qed);
+		if (prompt)
 		{
-			*pcmdline = readline(*pprompt);
-			rh_free_simple_array((void **)pprompt);
+			*pcmdline = readline(prompt);
+			free(prompt);
 			if (*pcmdline)
 				add_history(*pcmdline);
 		}

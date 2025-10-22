@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 14:51:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:00:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int process_tstcs(t_tstcs *test_case, void *data) {
   t_data *ptdata = (t_data *)data;
 
   sprintf(test_case->info, "esc = '%c'", ptdata->qed.esc ? ptdata->qed.esc : '0');
-  test_case->minishout = rh_rmqed(test_case->in, ptdata->qed);
+  test_case->minishout = rh_rmqed(test_case->in, &(ptdata->qed));
   sprintf(test_case->shellcmd, "echo -n %s", test_case->in);
   return (1);
 }
@@ -46,15 +46,16 @@ int test_quote_expand() {
       /* 11 */ {.in = "\"a-$3SHELL-b-'$SHELL'-c-\"", .shellout = NULL},
       /* 12 */ {.in = "\"a-$<-b\"", .shellout = NULL},
       /* 13 */ {.in = "\"a-$A<-b\"", .shellout = NULL},
-	  /* 14 */ {.in = "\"'''$USER\"''\\'", .shellout = NULL},
+      /* 14 */ {.in = "\"'''$USER\"''\\'", .shellout = NULL},
       /*eof */ {.in = NULL},
   };
 
   bool firstchar;
   t_qed qed = (t_qed){.q = "\"\'",
+                      .rmq = true,
                       .esc = '\\',
                       .expnd = '$',
-					  .ifs = " \t\n",
+                      .expstat = false,
                       .dict = msh_dict,
                       .dict_data = NULL,
                       .validchar = msh_isvalidvarchar,

@@ -6,12 +6,14 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 10:15:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 15:09:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MSH_RMQUOTES_EXPAND_H
 # define MSH_RMQUOTES_EXPAND_H
+
+# include "minishell.h"
 
 # include <stdbool.h>
 

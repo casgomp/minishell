@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 11:58:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 16:03:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,22 @@ char	**rh_split_quotes(char const *const s, t_qes const qes);
 typedef struct s_quotes_esc_dict
 {
 	char	*q;
+	bool	rmq;
 	char	esc;
 	char	expnd;
-	char	*ifs;
+	bool	expstat;
+	// char	*ifs;
 	void	*dict_data;
 	char	*(*dict)(char const *const key, void *dict_data);
 	void	*validchar_data;
 	bool	(*validchar)(char const c, void *validchar_data);
 }	t_qed;
-char	**rh_rmqed(char const *const qutdstr, t_qed tqed);
+char	*rh_rmqed(char const *const qutdstr, t_qed *pqed);
 
 typedef struct s_split_quotes_esc_dict
 {
 	char	*q;
+	bool	rmq;
 	char	esc;
 	char	*blank;
 	char	*metachr;
@@ -66,5 +69,8 @@ typedef struct s_split_quotes_esc_dict
 	bool	(*validchar)(char const c, void *validchar_data);
 }	t_sqed;
 char	**rh_split_rmqed(char const *const to_split, t_sqed const sqed);
+
+t_qed	rh_sqed2qed(t_sqed const *const psqed);
+t_qes	rh_sqed2qes(t_sqed const *const psqed);
 
 #endif // RH_SPLIT_QED_H
