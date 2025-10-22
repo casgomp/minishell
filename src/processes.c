@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/21 17:44:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 13:31:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,48 +43,55 @@ int	get_heredoc(int fd, char *limiter)
 	}
 }
 
-int	redirections_setup(t_cmd *curcmd)
+int	redirections_setup(t_io *curredir)
 {
 	char	*fnmdlm;
 	int		hdfdpipe[2];
 
-	fnmdlm = curcmd->iolst->fname_delim;
-	if (curcmd->iolst->tredirect == fd2file_trunc)
+	fnmdlm = curredir->fname_delim;
+	if (curredir->tredirect == fd2file_trunc)
 	{
-		curcmd->iolst->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if (curcmd->iolst->old_fd == -1)
+		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
-		dup2(curcmd->iolst->old_fd, curcmd->iolst->new_fd);//also check dup2 return and perror?
-		close(curcmd->iolst->old_fd);
+		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
+		close(curredir->old_fd);
 	}
-	else if (curcmd->iolst->tredirect == fd2file_append)
+	else if (curredir->tredirect == fd2file_append)
 	{
-		curcmd->iolst->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		if (curcmd->iolst->old_fd == -1)
+		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
+		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
+		close(curredir->old_fd);
 	}
-	else if (curcmd->iolst->tredirect == file2fd)
+	else if (curredir->tredirect == file2fd)
 	{
-		curcmd->iolst->old_fd = open(fnmdlm, O_RDONLY);
-		if (curcmd->iolst->old_fd == -1)
+		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
+		curredir->old_fd = open(fnmdlm, O_RDONLY);
+		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
+		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
+		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
+		close(curredir->old_fd);
 	}
-	else if (curcmd->iolst->tredirect == heredoc2fd)
+	else if (curredir->tredirect == heredoc2fd)
 	{
 		if (pipe(hdfdpipe) == -1)
-			return (perror("pipe"), 1);
+			return (perror("pipe"), 0);
 		if (get_heredoc(hdfdpipe[1], fnmdlm) == 0)
-			//return(perror("?"), 1);//check returnvalues!;
+			return(perror("heredoc???"), 0);//check returnvalues!;
 		close (hdfdpipe[1]);
-		dup2(hdfdpipe[0], curcmd->iolst->new_fd);
-		close(curcmd->iolst->old_fd);
+		dup2(hdfdpipe[0], curredir->new_fd);
+		close(curredir->old_fd);
 	}
 	return (1);
 }
 
 int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
-	int	ret;
+	int		ret;
+	t_io	*curredir;
 
 	ret = 1;
 	ft_printf("child_setup: fdpipe[0]= %d\n", fdpipe[0]);//debugging
@@ -101,8 +108,12 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 		close(fdpipe[1]);
 	}
 	//should check_compose args here in child?.
-	while (curcmd->iolst && (ret != 0))
-		ret = redirections_setup(curcmd);
+	curredir = curcmd->iolst;
+	while (curredir && (ret != 0)) // ..............................here's bug infinite loop.
+	{
+		ret = redirections_setup(curredir);
+		curredir = curredir->next;
+	}
 	if (ret == 0)
 		return (0); //should have cd as parameter so i can assign cd->exit_status = 1
 	execve(curcmd->args[0], curcmd->args, environ);

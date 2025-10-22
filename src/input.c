@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 17:44:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 13:34:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,16 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+static void	print_info_cmds(t_cmd *const cmds) //just for debugging
+{
+	t_cmd	*currcmd = cmds;
+
+	while (currcmd)
+	{
+		ft_printf("print_info_cmds: args[0]=%s, ctrlchr=%c\n", currcmd->args[0], currcmd->ctrlchr);
+		currcmd = currcmd->next;
+	}
+}
 
 int	count_children(t_cmd *curcmd)
 {
@@ -31,6 +41,8 @@ int	count_children(t_cmd *curcmd)
 
 	nchild = 0;
 	ft_printf("count_children: nchild= %d\n", nchild);//debugging
+	if (curcmd->ctrlchr == '|')
+			nchild ++;
 	while (curcmd)
 	{
 		if (curcmd->ctrlchr == '|' || curcmd->iolst)
@@ -55,6 +67,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				i;
 	int				*wstatus;
 
+	print_info_cmds(cmds);
 	ft_printf("process_cmdline: %s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
 	nchild = 0;
@@ -65,12 +78,13 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		curcmd = cmds;
 		while (curcmd)
 		{
+			ft_printf("process_cmdline: curcmd->args[0]= %s\n", curcmd->args[0]);//debugging
 			//would getting cmdexe happen in children. And maybe put in small function?
 			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
 			free(curcmd->args[0]);
 			curcmd->args[0] = cmdexe;
-			ft_printf("curcmd->args[0]= %s, cmdexe= %s, pcd->exit_status= %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
-
+			ft_printf("process_cmdline: curcmd->args[0]= %s, cmdexe= %s, pcd->exit_status= %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
+			
 			//if heredocs in parent, all must be stored in a char *buffer[N]
 
 			char **const	args = curcmd->args;
@@ -91,7 +105,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					}
 					pids = malloc(sizeof(int) * nchild);
 					if (!pids)
-						return (0);//return (NULL)? and free something?
+						return (1);//return (NULL)? and free something?
 					parent_setup(curcmd, pids, ++i);
 					//child_setup gets called from parent but 
 					//could be better to call here?
@@ -123,7 +137,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		free(pids);
 		return (1);
 	}
-	//free epaths too?
+	//free epaths?
 	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);
 }
 
