@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 15:47:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 12:11:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,18 +75,21 @@ int	expand_value(char *const envval, char ***pwordsplit,
 	{
 		*pwordsplit = rh_split_quotes(envval, (t_qes){.blank = pqed->ifs,
 				.esc = '\0', .metachr = "", .q = ""});
-		if (!*pwordsplit)
+		if (!(*pwordsplit))
 			return (false);
 		idx = 0;
 		if (!(*pwordsplit)[idx] && puedata->tsl->len == 0)
-			puedata->tsl->newstr = false;
-		// 	puedata->tsl->pcstart = (char *) NULL;
+		{
+			if (!set_tsstl(puedata, (char *) NULL, 0))
+				return (rh_free_simple_array((void **)(*pwordsplit)), false);
+			// puedata->tsl->newstr = false;
+			// puedata->tsl->pcstart = (char *) NULL;
+		}
 		while ((*pwordsplit)[idx])
 		{
 			if (!set_tsstl(puedata, (*pwordsplit)[idx], ft_strlen((*pwordsplit)[idx])))
 				return (rh_free_simple_array((void **)(*pwordsplit)), false);
-			if (idx > 0)
-				puedata->tsl->newstr = true;
+			puedata->tsl->newstr |= (idx > 0);
 			puedata->uestrlen += puedata->tsl->len;
 			++idx;
 		}
@@ -108,8 +111,8 @@ int	expand(char *const pc, int *const pidx,
 	t_ews	ews;
 
 	ews = (t_ews){.paramlen = 1, .isfirstchar = true, .wordsplit = NULL};
-	while (pc[ews.paramlen]
-		&& (*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
+	while (/* pc[ews.paramlen]
+		&& */ (*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
 		++ews.paramlen;
 	if (ews.paramlen > 1)
 	{
@@ -123,7 +126,7 @@ int	expand(char *const pc, int *const pidx,
 				return (/* free(ews.wordsplit),  */-2);
 		}
 		*pidx += ews.paramlen;
-		if (puedata->instr[*pidx] && puedata->tsl->pcstart
+		if (puedata->instr[*pidx]/*  && puedata->tsl->pcstart */
 			&& !set_tsstl(puedata, &(puedata->instr[*pidx]), 0))
 			return (/* free(ews.wordsplit), */ -2);
 		return (2);

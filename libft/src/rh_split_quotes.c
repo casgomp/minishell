@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/21 11:16:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 12:27:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,12 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 		ptsp->activeq = '\0';
 		++(*pidx);
 	}
-	if (((!s[*pidx]) && (!ptsp->tsl->len))
-		|| (s[*pidx]
-			&& (!ptsp->activeq)
-			&& (ft_strchr(pqes->blank, s[*pidx])
-				|| ft_strchr(pqes->metachr, s[*pidx]))))
+	if (ptsp->tsl
+		&& (((!s[*pidx]) && (!ptsp->tsl->len))
+			|| (s[*pidx]
+				&& (!ptsp->activeq)
+				&& (ft_strchr(pqes->blank, s[*pidx])
+					|| ft_strchr(pqes->metachr, s[*pidx])))))
 	{
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 		if (s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
