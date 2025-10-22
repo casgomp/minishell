@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:42:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/22 18:53:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,8 @@ int	escape(char *const pc, int *const pidx, t_qed const *const pqed,
 	return (0);
 }
 
-int	expand_value(char *const envval, char ***pwordsplit,
-	t_qed const *const pqed, t_uedata *const puedata)
+static int	expand_value(char *const envval, t_uedata *const puedata)
 {
-	(void)pwordsplit;
-	(void)pqed;
 	if (!set_tsstl(puedata, envval, ft_strlen(envval), true))
 		return (false);
 	return (true);
@@ -89,7 +86,7 @@ int	expand(char *const pc, int *const pidx,
 {
 	t_ews	ews;
 
-	ews = (t_ews){.paramlen = 1, .isfirstchar = true, .wordsplit = NULL};
+	ews = (t_ews){.paramlen = 1, .isfirstchar = true};
 	while ((*pqed->validchar)(pc[ews.paramlen], &ews.isfirstchar))
 		++ews.paramlen;
 	if (ews.paramlen > 1)
@@ -100,7 +97,7 @@ int	expand(char *const pc, int *const pidx,
 			ews.envval = (*pqed->dict)(ews.envvar, pqed->dict_data);
 			free(ews.envvar);
 			if (ews.envval
-				&& !expand_value(ews.envval, &ews.wordsplit, pqed, puedata))
+				&& !expand_value(ews.envval, puedata))
 				return (-2);
 		}
 		*pidx += ews.paramlen;
