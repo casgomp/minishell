@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/23 13:40:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 17:31:53 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_qed	rh_sqed2qed(t_sqed const *const psqed)
 		.q = psqed->q,
 		.esc = psqed->esc,
 		.rmqe = psqed->rmqe,
-		.expnd = psqed->expnd, .expstat = false, 
+		.expnd = psqed->expnd, .expstat = false,
 		.dict = psqed->dict, .dict_data = psqed->dict_data,
 		.validchar = psqed->validchar, .validchar_data = psqed->validchar_data
 	});
