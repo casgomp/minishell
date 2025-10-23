@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:37:15 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 15:19:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@
 
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
-	// char **const	cmdln_tokens = rh_split_rmqed(in, pcd->default_sqed);
-	// List of commands
 	t_cmd *const	cmds = msh_compile_cmds(pcd, in, pcd->default_sqed);
 	t_cmd 			*curcmd;
 	
@@ -97,12 +95,6 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	if (pcd->interactive)
 	{
-		// t_sqed const sqed = pcd->default_sqed;
-		// t_qed const	qed =
-		// 	(t_qed){.q = sqed.q, .rmq = true, .expstat = false, .esc = sqed.esc, .expnd = sqed.expnd, /* .ifs = sqed.ifs, */
-		// 			.dict = sqed.dict, .dict_data = sqed.dict_data,
-		// 			.validchar = sqed.validchar,
-		// 			.validchar_data = sqed.validchar_data};
 		t_qed qed = rh_sqed2qed(&(pcd->default_sqed));
 		prompt = rh_rmqed("$USER@minishell$ ", &qed);
 		if (prompt)

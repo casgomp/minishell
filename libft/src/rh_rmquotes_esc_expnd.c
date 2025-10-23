@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:54:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 12:59:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char	*rh_rmqed(char const *const qutdstr, t_qed *pqed)
 	idx = 0;
 	while (uedata.instr[idx])
 	{
-		if (toggle_quote(&uedata.instr[idx], pqed, &uedata) && pqed->rmq)
+		if (toggle_quote(&uedata.instr[idx], pqed, &uedata) && pqed->rmqe)
 			continue ;
 		ret = escape_expand(&uedata.instr[idx], &idx, pqed, &uedata);
 		if (ret > 0)
@@ -133,7 +133,7 @@ static int	toggle_quote(char *const pc, t_qed const *const pqed,
 			puedata->actvq = *pc;
 		else if (puedata->actvq)
 			puedata->actvq = '\0';
-		if (pqed->rmq)
+		if (pqed->rmqe)
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
 		return (1);
 	}

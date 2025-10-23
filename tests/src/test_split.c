@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:00:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 12:59:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int process_tstcs(t_tstcs *test_case, void *data) {
   if (test_case->shellout == NULL)
   {
 	t_qed qed = (t_qed){.q = "\"\'",
-                                                                  .rmq = true,
+                                                                  .rmqe = true,
                                                                   .esc = '\\',
                                                                   .expnd = '\0',
                                                                   .expstat = false,
@@ -87,7 +87,7 @@ int test_split(char *shellScriptPath) {
   // Full list of bash metachar: "|&;()<> \t\n", overlaps with .blank!
   bool firstchar;
   t_sqed sqed = (t_sqed){.q = "\"\'",
-                         .rmq = true,
+                         .rmqe = true,
                          .esc = '\\',
                          .expnd = '$',
                          .blank = " \t",

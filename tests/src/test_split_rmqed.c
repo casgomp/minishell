@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 17:57:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 12:59:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int test_split_rmqed() {
   // Full list of bash metachar: "|&;()<> \t\n", overlaps with .blank!
   bool firstchar;
   t_sqed sqed = (t_sqed){.q = "\"\'",
-                         .rmq = true,
+                         .rmqe = true,
                          .esc = '\\',
                          .expnd = '$',
                          .blank = " \t",

@@ -5,9 +5,13 @@ WORKDIR="/tmp/mshtest_$(date +%F_%T)"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 MSHBIN="$SCRIPT_DIR/../../minishell"
 SHELL_TESTCASE_DIR="$SCRIPT_DIR/../shell_tests"
-MSHOUT="$WORKDIR/mshout"
-BSHOUT="$WORKDIR/bshout"
-DFFOUT="$WORKDIR/diffout"
+# MSHOUT="$WORKDIR/mshout"
+# BSHOUT="$WORKDIR/bshout"
+# DFFOUT="$WORKDIR/diffout"
+MSHOUT="mshout"
+BSHOUT="bashout"
+DFFOUT="diffout"
+
 
 RED='\033[31m'
 GREEN='\033[0;32m'
@@ -35,7 +39,7 @@ if [[ ! -z "$WORKDIRS" ]]; then
 	PS3="Please select an option (number): "
 	select ANS in YES no; do
 		if [[ "$ANS" == "YES" ]]; then
-			rm -rv $WORKDIRS
+			rm -r $WORKDIRS
 			printf "\nStill available output dirs:\n"
 			ls -1 -d /tmp/ms* # | tail -n +3
 		fi
@@ -63,9 +67,15 @@ TC_SCRPS="$(find "$SHELL_TESTCASE_DIR" -type f -name $TC_SCRPTS -not -name "tc_*
 echo "$TC_SCRPS" |
 	while IFS= read -r TCSCRIPT; do
 	{
+		printf "\n################################################################################################\n"
 		printf "${BLUEB}Test:${RESET} %s\n" "$TCSCRIPT"
 		FAIL_OK=$([[ "$TCSCRIPT" =~ failOK$ ]] && echo "true" || echo "false")
-		TCOUT="$WORKDIR/$(basename $TCSCRIPT).result"
+
+		cd "$WORKDIR"
+		TESTDIR="$(basename $TCSCRIPT)"
+		mkdir -p "$TESTDIR"
+		cd "$TESTDIR"		
+		TCOUT="${TESTDIR}.result"
 		truncate -s 0 "$TCOUT"
 
 		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"_1 2>"$MSHOUT"_2
@@ -118,7 +128,8 @@ echo "$TC_SCRPS" |
 			fi
 		}
 		fi
-		rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
+		printf "================================================================================================\n"		
+		=rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
 	} done
 
 cd "$OLDWD"

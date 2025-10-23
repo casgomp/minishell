@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:53:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 12:59:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	escape(char *const pc, int *const pidx, t_qed const *const pqed,
 	if ((!puedata->actvq)
 		|| (puedata->actvq == pqed->q[0] && puedata->actvq == *(pc + 1)))
 	{
-		if (pqed->rmq)
+		if (pqed->rmqe)
 			ft_strlcpy(pc, pc + 1, ft_strlen(pc));
 		else
 		{
