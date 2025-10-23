@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/23 15:19:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 17:21:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@
 int	process_cmdline(t_cd *pcd, char const *const in)
 {
 	t_cmd *const	cmds = msh_compile_cmds(pcd, in, pcd->default_sqed);
-	t_cmd 			*curcmd;
-	
+	t_cmd			*curcmd;
 
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
@@ -70,46 +69,52 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 		if (pcd->fdscript == -1)
 		{
 			perror(argv[1]);
-			msh_builtins(pcd, (char* []){"exit", "127"});
+			msh_builtins(pcd, (char *[]){"exit", "127"});
 		}
 		else if (dup2(pcd->fdscript, 0) == -1)
 		{
 			perror(argv[1]);
-			msh_builtins(pcd, (char* []){"exit", "9"});
+			msh_builtins(pcd, (char *[]){"exit", "9"});
 		}
 	}
 	else if (argc > 2)
 	{
 		ft_printf("usage: minishell [scriptfile]\n");
-		msh_builtins(pcd, (char* []){"exit", "7"});
+		msh_builtins(pcd, (char *[]){"exit", "7"});
 	}
 	return (1);
 }
 
+static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
+{
+	t_qed	qed;
+	char	*prompt;
+
+	qed = rh_sqed2qed(&(pcd->default_sqed));
+	prompt = rh_rmqed("$USER@minishell$ ", &qed);
+	if (prompt)
+	{
+		*pcmdline = readline(prompt);
+		free(prompt);
+		if (*pcmdline)
+			add_history(*pcmdline);
+	}
+	else
+	{
+		pcd->exit_status = 130;
+		msh_error((char const *[]){"Prompt generation error"}, 1, -1);
+	}
+}
+
 int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 {
-	char		*prompt;
 	size_t		cmdln_len;
 
 	if (!pcmdline)
 		return (0);
+	*pcmdline = (char *) NULL;
 	if (pcd->interactive)
-	{
-		t_qed qed = rh_sqed2qed(&(pcd->default_sqed));
-		prompt = rh_rmqed("$USER@minishell$ ", &qed);
-		if (prompt)
-		{
-			*pcmdline = readline(prompt);
-			free(prompt);
-			if (*pcmdline)
-				add_history(*pcmdline);
-		}
-		else
-		{
-			pcd->exit_status = 130;
-			msh_error((char const *[]){"Internal Error"}, 1, -1);
-		}
-	}
+		get_cmdline_addhist_prompt(pcd, pcmdline);
 	else
 	{
 		*pcmdline = get_next_line(0);

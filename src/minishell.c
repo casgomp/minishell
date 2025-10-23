@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 11:57:11 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 17:04:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,6 @@
 
 int	ms_init(t_cd *pcd)
 {
-	// set envvar 'SHELL' to sth like 'minishell' here in init
-	// ---> no don't, bash also doesn't do it.
-	//      If it uses "bash: " at the beginning of error msgs an the like,
-	//      it is just hardcoded
 	pcd->envrsvd = 0;
 	check_cpy_env(&environ, &(pcd->envrsvd), true);
 	pcd->exit_status = 42;
@@ -45,7 +41,7 @@ int	ms_cleanup(t_cd *pcd)
 	rl_clear_history();
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
-	// clear env if ptr changed!
+	rh_free_simple_array((void **) environ);
 	return (1);
 }
 
