@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/16 18:23:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 17:30:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 size_t	get_envsize(char **const env)
 {
-	char 	**env2;
+	char	**env2;
 	size_t	envsize;
 
 	if (!env)
@@ -33,7 +33,7 @@ size_t	get_envsize(char **const env)
 
 size_t	check_cpy_env(
 	char ***const oldenv,
-	size_t * const penvreserved,
+	size_t *const penvreserved,
 	bool env_init)
 {
 	static size_t const	xtraspace = 8;
@@ -45,17 +45,19 @@ size_t	check_cpy_env(
 		return (0);
 	envsz = get_envsize(*oldenv);
 	if (envsz < (*penvreserved))
-	 	return (envsz);
+		return (envsz);
 	newenv = malloc((envsz + xtraspace + 1) * sizeof(char *));
 	if (!newenv)
 		return (0);
 	*penvreserved = envsz + xtraspace;
 	idx = -1;
 	while ((*oldenv)[++idx])
+	{
 		if (env_init)
 			newenv[idx] = ft_strdup((*oldenv)[idx]);
 		else
 			newenv[idx] = (*oldenv)[idx];
+	}
 	newenv[idx] = (char *) NULL;
 	*oldenv = newenv;
 	return (envsz);
@@ -73,7 +75,7 @@ void	msh_error(char const **errstrs, int nstrs, int errnum)
 	if (errnum > 0)
 	{
 		errno = errnum;
-		ft_dprintf(2, ": %s\n", strerror(errno));	
+		ft_dprintf(2, ": %s\n", strerror(errno));
 	}
 	else
 		ft_dprintf(2, "\n");

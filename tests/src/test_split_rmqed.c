@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/06 14:18:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/23 12:59:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ int process_tstcs(t_tstcs *test_case, void *data) {
   while (splt[idx])
     sprintf(test_case->minishout + strlen(test_case->minishout), "%s°", splt[idx++]);
   if (test_case->shellout == NULL)
-    test_case->minishout =
-        rh_rmqed(test_case->minishout,
-                 (t_qed){.dict = NULL, .esc = '\\', .expnd = '\0', .q = ptdata->sqed.q});
- 
+  {
+	t_qed qed = rh_sqed2qed(&(ptdata->sqed));
+    test_case->minishout = rh_rmqed(test_case->minishout, &qed);
+  }
   sprintf(test_case->info, "esc = '%c'", ptdata->sqed.esc ? ptdata->sqed.esc : '0');
   sprintf(test_case->shellcmd, "echo -n %s", test_case->in);
   return (1);
@@ -52,7 +52,7 @@ int process_tstcs(t_tstcs *test_case, void *data) {
 int test_split_rmqed() {
   t_tstcs tests[] = {
       /*  0 */ {.in = "f1 >out <in \"<lit\" a'<'b", .shellout = NULL},
-	  /*  0 */ {.in = "f1 2>&1 <in \"<lit\" a'<'b", .shellout = NULL},
+      /*  0 */ {.in = "f1 2>&1 <in \"<lit\" a'<'b", .shellout = NULL},
       /*  1 */ {.in = "ein|wort", .shellout = "°ein°|°wort°"},
       /*eof */ {.in = NULL},
   };
@@ -60,14 +60,16 @@ int test_split_rmqed() {
   // Full list of bash metachar: "|&;()<> \t\n", overlaps with .blank!
   bool firstchar;
   t_sqed sqed = (t_sqed){.q = "\"\'",
-                      .esc = '\\',
-                      .expnd = '$',
-					  .blank = " \t",
-					  .metachr = "|<>",
-                      .dict = msh_dict,
-                      .dict_data = NULL,
-                      .validchar = msh_isvalidvarchar,
-                      .validchar_data = &firstchar};
+                         .rmqe = true,
+                         .esc = '\\',
+                         .expnd = '$',
+                         .blank = " \t",
+                         .ifs = " \t\n",
+                         .metachr = "|<>",
+                         .dict = msh_dict,
+                         .dict_data = NULL,
+                         .validchar = msh_isvalidvarchar,
+                         .validchar_data = &firstchar};
   t_data tdata = (t_data){.sqed = sqed};
 
   char test_suite[128];

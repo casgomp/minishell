@@ -5,9 +5,13 @@ WORKDIR="/tmp/mshtest_$(date +%F_%T)"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 MSHBIN="$SCRIPT_DIR/../../minishell"
 SHELL_TESTCASE_DIR="$SCRIPT_DIR/../shell_tests"
-MSHOUT="$WORKDIR/mshout"
-BSHOUT="$WORKDIR/bshout"
-DFFOUT="$WORKDIR/diffout"
+# MSHOUT="$WORKDIR/mshout"
+# BSHOUT="$WORKDIR/bshout"
+# DFFOUT="$WORKDIR/diffout"
+MSHOUT="mshout"
+BSHOUT="bashout"
+DFFOUT="diffout"
+
 
 RED='\033[31m'
 GREEN='\033[0;32m'
@@ -35,8 +39,9 @@ if [[ ! -z "$WORKDIRS" ]]; then
 	PS3="Please select an option (number): "
 	select ANS in YES no; do
 		if [[ "$ANS" == "YES" ]]; then
-			rm -rv $WORKDIRS 
-			ls -1 /tmp/ms | tail -n +3
+			rm -r $WORKDIRS
+			printf "\nStill available output dirs:\n"
+			ls -1 -d /tmp/ms* # | tail -n +3
 		fi
 		break	
 	done
@@ -44,7 +49,7 @@ fi
 
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"
-printf "Working and results directory: %s\n\n" $(pwd)
+printf "\nWorking and results directory: %s\n\n" $(pwd)
 
 if [[ "$WORKDIR" == "$(pwd)" ]]; then
 	printf "Cleaning up $(pwd):\n"
@@ -52,13 +57,25 @@ if [[ "$WORKDIR" == "$(pwd)" ]]; then
 	printf " ... done.\n\n"
 fi
 
+TC_SCRPTS="tc_*"
+if [[ "$1" ]]; then
+	TC_SCRPTS=$1
+fi
+
 # find "$SHELL_TESTCASE_DIR" -name 'tc_*.result' -execdir rm -f '{}' ';'
-find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort |
+TC_SCRPS="$(find "$SHELL_TESTCASE_DIR" -type f -name $TC_SCRPTS -not -name "tc_*.result" | sort)"
+echo "$TC_SCRPS" |
 	while IFS= read -r TCSCRIPT; do
 	{
+		printf "\n################################################################################################\n"
 		printf "${BLUEB}Test:${RESET} %s\n" "$TCSCRIPT"
 		FAIL_OK=$([[ "$TCSCRIPT" =~ failOK$ ]] && echo "true" || echo "false")
-		TCOUT="$WORKDIR/$(basename $TCSCRIPT).result"
+
+		cd "$WORKDIR"
+		TESTDIR="$(basename $TCSCRIPT)"
+		mkdir -p "$TESTDIR"
+		cd "$TESTDIR"		
+		TCOUT="${TESTDIR}.result"
 		truncate -s 0 "$TCOUT"
 
 		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"_1 2>"$MSHOUT"_2
@@ -111,7 +128,8 @@ find "$SHELL_TESTCASE_DIR" -type f -name 'tc_*' -not -name "tc_*.result" | sort 
 			fi
 		}
 		fi
-		rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
+		printf "================================================================================================\n"		
+		=rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
 	} done
 
 cd "$OLDWD"

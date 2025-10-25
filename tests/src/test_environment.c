@@ -19,13 +19,12 @@
 
 extern char **environ;
 
-size_t env_size()
-{
+size_t env_size() {
   char **envsave = environ;
   size_t envsize = 0;
 
   while (*(envsave++))
-  	++envsize;
+    ++envsize;
   return (envsize);
 }
 
@@ -46,24 +45,24 @@ int test_environment() {
   printf("envptrsave: %p\n", envsave);
   printf("envptr    : %p\n", environ);
 
-  envsize = env_size();  
- 
+  envsize = env_size();
+
   unsetenv("VAR");
   envval = getenv("VAR");
   printf("envptrsave: %p\n", envsave);
   printf("envptr    : %p\n", environ);
- 
+
   envsize = env_size();
-   
+
   setenv("VAR", "ValueWert", 0);
-  envval = getenv("VAR");  
+  envval = getenv("VAR");
   printf("envptrsave: %p\n", envsave);
   printf("envptr    : %p\n", environ);
 
   envsize = env_size();
-   
+
   setenv("VAR2", "ValueWert", 0);
-  envval = getenv("VAR2");  
+  envval = getenv("VAR2");
   printf("envptrsave: %p\n", envsave);
   printf("envptr    : %p\n", environ);
 

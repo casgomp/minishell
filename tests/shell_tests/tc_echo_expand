@@ -1,0 +1,36 @@
+export T=''
+echo $T
+echo "$T"
+echo +$T
+echo $T+
+echo +$T+
+echo +$T +
+echo + $T+
+echo +"$T"+
+echo + $T +
+echo + "$T" +
+echo +"$T" | cat -e
+echo + "$T" | cat -e
+echo $T""+ | cat -e
+echo $T"" + | cat -e
+unset T
+export T2='+  ""  +'
+echo +$T2+
+echo +"$T2"+
+unset T
+export T='  '
+echo $T
+echo "$T"
+echo +$T
+echo $T+
+echo +$T+
+echo +$T +
+echo + $T+
+echo +"$T"+
+echo + $T +
+echo + "$T" +
+echo +"$T" | cat -e
+echo + "$T" | cat -e
+echo $T""+ | cat -e
+echo $T"" + | cat -e
+unset T

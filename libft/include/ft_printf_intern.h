@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/10/16 11:34:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 10:32:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_bytecount_fd
 	t_pfod	pfod;
 }				t_bytecount_fd;
 
+int		ft_coreprintf(const t_pfod pfod, const char *fmt, va_list valst);
 int		rh_set_formatspec(const char **pfmt, t_fmtspec *fmtspec);
 int		rh_actflx(t_fsflag flag, const t_fmtspec *const fmtspec);
 int		rh_convspec_c(va_list valst, const t_fmtspec *const fmtspec,

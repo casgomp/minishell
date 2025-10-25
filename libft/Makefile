@@ -71,11 +71,14 @@ MANDATORY_SRCS	:= \
 	rh_split_quotes.c \
 	rh_split_quotes2.c \
 	rh_rmquotes_esc_expnd.c \
+	rh_rmquotes_esc_expnd2.c \
+	rh_rmquotes_esc_expnd3.c \
 	rh_utils.c \
 
 # ft_printf
 MANDATORY_SRCS	+= \
 	ft_printf.c \
+	ft_printf_core.c \
 	ft_printf_fmtconv_std.c \
 	ft_printf_output.c \
 	ft_printf_fmtspec.c \
