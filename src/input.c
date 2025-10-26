@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/25 18:00:47 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/25 19:25:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,14 @@ static void	print_info_cmds(t_cmd *const cmds) //just for debugging
 	while (currcmd)
 	{
 		ft_printf("print_info_cmds: args[0]=%s, ctrlchr=%c\n", currcmd->args[0], currcmd->ctrlchr);
+		t_io	*curredir = currcmd->iolst;
+		int i = 0;
+		while (curredir)
+		{
+			ft_printf("print_info_redir: loop %d; sign_enum=%d, fnm_delim=%s\n", i, curredir->tredirect, curredir->fname_delim);	
+			curredir = curredir->next;
+			i ++;
+		}
 		currcmd = currcmd->next;
 	}
 }

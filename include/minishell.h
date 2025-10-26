@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/25 18:01:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/26 12:01:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,17 @@ typedef struct s_cmd
 	struct s_cmd	*next; //if linked list;
 }	t_cmd;
 
-typedef struct s_stdio //for storing original stdio. Haven't used it yet.
+typedef struct s_fdcl
+{
+	int	pre1[2];
+	int	pre2[2];
+}	t_fdcl;
+/*
+typedef struct s_stdio //for storing original stdio. Don't need it?.
 {
 	int	stdin;
 	int	stdout;
-}	t_stdio;
+}	t_stdio;*/
 
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd, char const *const in);

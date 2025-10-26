@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/22 13:31:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/26 10:38:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int	redirections_setup(t_io *curredir)
 	fnmdlm = curredir->fname_delim;
 	if (curredir->tredirect == fd2file_trunc)
 	{
+		ft_printf("redirections_setup: opening file with enum fd2file_trunc\n");
 		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
@@ -59,6 +60,7 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == fd2file_append)
 	{
+		ft_printf("redirections_setup: opening file with enum fd2file_append\n");
 		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
@@ -67,6 +69,7 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == file2fd)
 	{
+		ft_printf("redirections_setup: opening file with enum file2fd\n");
 		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
 		curredir->old_fd = open(fnmdlm, O_RDONLY);
 		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
@@ -77,6 +80,7 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == heredoc2fd)
 	{
+		ft_printf("redirections_setup: opening file with enum heredoc2fd\n");
 		if (pipe(hdfdpipe) == -1)
 			return (perror("pipe"), 0);
 		if (get_heredoc(hdfdpipe[1], fnmdlm) == 0)
