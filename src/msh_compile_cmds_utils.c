@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   msh_rmquotes_expand_utils.c                        :+:      :+:    :+:   */
+/*   msh_compile_cmds_utils.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:17:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 16:06:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	get_iolstelem(t_tca *ptca)
 		ptca->curcmd->curio->next = newio;
 		ptca->curcmd->curio = ptca->curcmd->curio->next;
 	}
-	*(ptca->curcmd->iolst) = (t_io){.fname_delim = (char *) NULL, .new_fd = -1,
+	*(ptca->curcmd->curio) = (t_io){.fname_delim = (char *) NULL, .new_fd = -1,
 		.old_fd = -1, .tredirect = (t_rd)rd_default, .next = (t_io *) NULL};
 	return (1);
 }
