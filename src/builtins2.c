@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:16:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 17:57:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,11 @@ static void	msh_export_setenv(t_cd *pcd, char const *const arg, char **env)
 	}
 	else
 	{
+		ft_printf("%s: envsize: %d, rsvd: %d, writepos:%d,%d\n",
+			__func__, get_envsize(environ), pcd->envrsvd, -1, -1);
 		idx = check_cpy_env(&environ, &(pcd->envrsvd), false);
+		ft_printf("%s: envsize: %d, rsvd: %d, writepos:%d,%d\n",
+			__func__, get_envsize(environ), pcd->envrsvd, idx, idx+1);
 		environ[idx] = ft_strdup(arg);
 		environ[++idx] = (char *) NULL;
 	}

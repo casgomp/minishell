@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/23 17:30:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 16:56:54 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ size_t	check_cpy_env(
 			newenv[idx] = (*oldenv)[idx];
 	}
 	newenv[idx] = (char *) NULL;
+	if (!env_init)
+		free (*oldenv);
 	*oldenv = newenv;
 	return (envsz);
 }
