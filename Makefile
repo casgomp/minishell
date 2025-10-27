@@ -38,8 +38,11 @@ MANDATORY_SRCS	:= 	minishell.c \
 					input.c \
 					paths.c \
 					processes.c \
-					msh_rmquotes_expand.c \
-					msh_rmquotes_expand_utils.c \
+					msh_sqed_functions.c \
+					msh_ioredirect.c \
+					msh_compile_cmds.c \
+					msh_compile_cmds_utils.c \
+					msh_compile_cmds_utils2.c \
 					utils.c \
 
 BONUS_SRCS		:=  
