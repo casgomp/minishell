@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 16:25:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 18:27:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	print_info_cmds(t_cmd *const cmds) //just for debugging
 		currcmd = currcmd->next;
 	}
 }
-
+/*
 int	count_children(t_cmd *curcmd)
 {
 	int	nchild;
@@ -55,6 +55,21 @@ int	count_children(t_cmd *curcmd)
 	{
 		if (curcmd->ctrlchr == '|' || curcmd->iolst)
 			nchild ++;
+		curcmd = curcmd->next;
+	}
+	ft_printf("count_children: nchild= %d\n", nchild);//debugging
+	return (nchild);
+}*/
+
+int	count_children(t_cmd *curcmd)
+{
+	int	nchild;
+
+	nchild = 0;
+	ft_printf("count_children: nchild= %d\n", nchild);//debugging
+	while (curcmd)
+	{
+		nchild ++;
 		curcmd = curcmd->next;
 	}
 	ft_printf("count_children: nchild= %d\n", nchild);//debugging
@@ -82,6 +97,11 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
 		curcmd = cmds;
+		nchild = count_children(curcmd);
+		pids = malloc(sizeof(int) * nchild);
+		if (!pids)
+			return (1);//return (NULL)? and free something?
+		ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
 		while (curcmd)
 		{
 			ft_printf("process_cmdline: curcmd->args[0]= %s\n", curcmd->args[0]);//debugging
@@ -100,18 +120,13 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			{
 				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
 				{
-					nchild = count_children(curcmd);
-					ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
-					if (nchild == 0)
+					/*if (nchild == 0)
 					{
 						//cmdexe in child? then also here for simple cmd.
 						execve(args[0], args, environ);
 						perror(curcmd->args[0]);//what? wrong filename or options?
 						return (0);//return what and set exits status?
-					}
-					pids = malloc(sizeof(int) * nchild);
-					if (!pids)
-						return (1);//return (NULL)? and free something?
+					}*/
 					parent_setup(curcmd, pids, ++i);
 					//child_setup gets called from parent but 
 					//could be better to call here?
@@ -123,9 +138,11 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 				}
 			}
 			//free stuff in curcmd?
+			//free pids?
 			curcmd = curcmd->next;
 		}
 		//close opened fds?
+		ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
 		wstatus = malloc(sizeof(int) * nchild);
 		if (!wstatus)
 		{

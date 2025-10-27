@@ -6,12 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/26 10:38:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 18:27:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "msh_rmquotes_expand.h"
 #include "libft.h"
 
 #include <fcntl.h>
@@ -113,7 +112,7 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 	}
 	//should check_compose args here in child?.
 	curredir = curcmd->iolst;
-	while (curredir && (ret != 0)) // ..............................here's bug infinite loop.
+	while (curredir && (ret != 0))
 	{
 		ret = redirections_setup(curredir);
 		curredir = curredir->next;
@@ -141,13 +140,15 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 		if (pipe(fdpipe) == -1)
 			return (perror("pipe"), 1);
 	}
-	if (curcmd->next || curcmd->iolst)
+	/*if (curcmd->next || curcmd->iolst)
 	{
-		ft_printf("entered loop!\n");//debugging
 		pids[i] = fork();
 		if (pids[i] == -1)
 		return (perror("fork"), 1);
-	}
+	}*/
+	pids[i] = fork();
+	if (pids[i] == -1)
+		return (perror("fork"), 1);
 	ft_printf("parent_setup: pids[%d]= %d\n", i, pids[i]);//debugging
 	if (pids[i] == 0)
 	{
