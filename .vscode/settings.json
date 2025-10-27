@@ -91,7 +91,7 @@
 	"stat.h": "c",
 	"readline.h": "c",
 	"ft_split_quotes.h": "c",
-	"msh_rmquotes_expand.h": "c",
+	"msh_compile_cmds.h": "c",
 	"stdlib.h": "c",
 	"stdbool.h": "c",
 	"minishell.h": "c",
@@ -103,7 +103,7 @@
 	"tests.h": "c",
 	"errno.h": "c",
 	"features.h": "c",
-	"msh_rmquotes_expand_intern.h": "c",
+	"msh_compile_cmds_intern.h": "c",
 	"rh_split_qed.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
