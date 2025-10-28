@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 17:37:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 18:15:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				i;
 	int				*wstatus;
 
-	print_info_cmds(cmds);
 	epaths = ft_env_paths(&epaths_len);
 	nchild = 0;
 	pids = 0;

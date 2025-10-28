@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 17:37:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 18:15:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,7 @@ int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd, char const *const in);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
-size_t	check_cpy_env(char ***const oldenv, size_t * const penvreserved,
-	bool free_oldenv);
+size_t	check_cpy_env(t_cd *pcd, bool env_init);
 //additions to input.c:
 int	count_children(t_cmd *curcmd);
 
