@@ -63,8 +63,12 @@ if [[ "$1" ]]; then
 fi
 
 # find "$SHELL_TESTCASE_DIR" -name 'tc_*.result' -execdir rm -f '{}' ';'
-TC_SCRPS="$(find "$SHELL_TESTCASE_DIR" -type f -name $TC_SCRPTS -not -name "tc_*.result" | sort)"
-echo "$TC_SCRPS" |
+TC_SCRPTS="$(find "$SHELL_TESTCASE_DIR" -type f -name $TC_SCRPTS -not -name "tc_*.result" | sort)"
+if [[ -z "$TC_SCRPTS" ]]; then
+	printf "No testcases found for pattern '$TC_SCRPTS'.\n"
+	printf "Please check you input parameter.\n\n"
+else
+echo "$TC_SCRPTS" |
 	while IFS= read -r TCSCRIPT; do
 	{
 		printf "\n################################################################################################\n"
@@ -131,5 +135,5 @@ echo "$TC_SCRPS" |
 		printf "================================================================================================\n"		
 		=rm {"$MSHOUT","$BSHOUT","$DFFOUT"}_{1,2} 2>/dev/null
 	} done
-
+fi
 cd "$OLDWD"
