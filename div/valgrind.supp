@@ -1,5 +1,5 @@
 {
-   libreadline
+   msh:libreadline
    Memcheck:Leak
    match-leak-kinds: all
    #match-leak-kinds: reachable
@@ -8,6 +8,14 @@
    ...
    #fun:readline
    #...
+}
+
+{
+   msh:InvalidReadWrite
+   Memcheck:Addr8
+   ...
+   fun:readline
+   ...
 }
 
 #{

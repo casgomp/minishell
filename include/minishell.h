@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 18:27:24 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:07:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 # include <stdbool.h>
 
 extern char	**environ;
+# define ENV_XTRA_ELEMS 8
 
 typedef struct s_minishell_core_data
 {
 	char	*mshid;
+	char	**msh_env;
 	size_t	envrsvd;
 	int		exit_status;
 	bool	interactive;
@@ -36,7 +38,6 @@ typedef enum e_redirect
 	fd2file_append,
 	file2fd,
 	heredoc2fd,
-	// fd2fd,
 	rd_default,
 }	t_rd;
 
