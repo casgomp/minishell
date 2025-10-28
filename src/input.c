@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 18:27:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:37:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-static void	print_info_cmds(t_cmd *const cmds) //just for debugging
+/*static void	print_info_cmds(t_cmd *const cmds) //just for debugging
 {
 	t_cmd	*currcmd = cmds;
 
@@ -41,7 +41,7 @@ static void	print_info_cmds(t_cmd *const cmds) //just for debugging
 		}
 		currcmd = currcmd->next;
 	}
-}
+}*/
 /*
 int	count_children(t_cmd *curcmd)
 {
@@ -66,13 +66,11 @@ int	count_children(t_cmd *curcmd)
 	int	nchild;
 
 	nchild = 0;
-	ft_printf("count_children: nchild= %d\n", nchild);//debugging
 	while (curcmd)
 	{
 		nchild ++;
 		curcmd = curcmd->next;
 	}
-	ft_printf("count_children: nchild= %d\n", nchild);//debugging
 	return (nchild);
 }
 
@@ -89,7 +87,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				*wstatus;
 
 	print_info_cmds(cmds);
-	ft_printf("process_cmdline: %s\n", cmds->args[0]);//debugging
 	epaths = ft_env_paths(&epaths_len);
 	nchild = 0;
 	pids = 0;
@@ -101,21 +98,17 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		pids = malloc(sizeof(int) * nchild);
 		if (!pids)
 			return (1);//return (NULL)? and free something?
-		ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
 		while (curcmd)
 		{
-			ft_printf("process_cmdline: curcmd->args[0]= %s\n", curcmd->args[0]);//debugging
 			//would getting cmdexe happen in children. And maybe put in small function?
 			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
 			free(curcmd->args[0]);
 			curcmd->args[0] = cmdexe;
-			ft_printf("process_cmdline: curcmd->args[0]= %s, cmdexe= %s, pcd->exit_status= %d\n", curcmd->args[0], cmdexe, pcd->exit_status);//debugging
 			
 			//if heredocs in parent, all must be stored in a char *buffer[N]
 
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args).
-			ft_printf("process_cmdline: args[0]= %s\n", args[0]);//debugging
 			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
 			{
 				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
@@ -142,7 +135,6 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			curcmd = curcmd->next;
 		}
 		//close opened fds?
-		ft_printf("process_cmdline: nchild= %d\n", nchild);//debugging
 		wstatus = malloc(sizeof(int) * nchild);
 		if (!wstatus)
 		{

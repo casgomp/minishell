@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/27 18:27:17 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:37:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	redirections_setup(t_io *curredir)
 	fnmdlm = curredir->fname_delim;
 	if (curredir->tredirect == fd2file_trunc)
 	{
-		ft_printf("redirections_setup: opening file with enum fd2file_trunc\n");
 		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
@@ -59,7 +58,6 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == fd2file_append)
 	{
-		ft_printf("redirections_setup: opening file with enum fd2file_append\n");
 		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
@@ -68,10 +66,7 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == file2fd)
 	{
-		ft_printf("redirections_setup: opening file with enum file2fd\n");
-		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
 		curredir->old_fd = open(fnmdlm, O_RDONLY);
-		ft_printf("redirections_setup: file2fd: curredir->old_fd = %d\n", curredir->old_fd);//debugging
 		if (curredir->old_fd == -1)
 			return (perror(fnmdlm), 0);
 		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
@@ -79,7 +74,6 @@ int	redirections_setup(t_io *curredir)
 	}
 	else if (curredir->tredirect == heredoc2fd)
 	{
-		ft_printf("redirections_setup: opening file with enum heredoc2fd\n");
 		if (pipe(hdfdpipe) == -1)
 			return (perror("pipe"), 0);
 		if (get_heredoc(hdfdpipe[1], fnmdlm) == 0)
@@ -97,7 +91,6 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 	t_io	*curredir;
 
 	ret = 1;
-	ft_printf("child_setup: fdpipe[0]= %d\n", fdpipe[0]);//debugging
 	if (fdpipe[0] != -1)
 		close(fdpipe[0]);
 	if (fdcl->pre1[0] != -1)
@@ -130,7 +123,6 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 	int				fdpipe[2] = {-1, -1};
 
 	//if heredocs, all must be stored in parent in a char *buffer[N]
-	ft_printf("parent_setup: i = %d\n", i);//debugging
 	if (fdcl.pre2[0] != -1)
 		close(fdcl.pre2[0]);
 	if (fdcl.pre1[1] != -1)
@@ -149,10 +141,8 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 	pids[i] = fork();
 	if (pids[i] == -1)
 		return (perror("fork"), 1);
-	ft_printf("parent_setup: pids[%d]= %d\n", i, pids[i]);//debugging
 	if (pids[i] == 0)
 	{
-		ft_printf("inside child!\n");//debugging
 		child_setup(curcmd, &fdcl, fdpipe);
 		return(perror(curcmd->args[0]),1 );//check return values.
 	}

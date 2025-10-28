@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/27 18:27:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:37:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 			++testpath;
 		}
 	}
-	ft_printf("compose_check_cmd: path= %s\n", path);//debugging
 	if (!check)
 		return (perror(pcmd), pcd->exit_status = 127, free_splitstrs(epaths), free(path), NULL);
 	check = access_check_path(path);
