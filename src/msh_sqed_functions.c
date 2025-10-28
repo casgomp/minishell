@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 14:50:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 13:42:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,16 @@
 char	*msh_dict(char const *const key, void *dict_data)
 {
 	t_cd *const	pcd = (t_cd *)dict_data;
+	char		*exitstatus;
+	static char	exitstatbuff[8];
 
 	if (!ft_strcmp(key, "?"))
-		return (ft_itoa(pcd->exit_status));
+	{
+		exitstatus = ft_itoa(pcd->exit_status);
+		ft_strlcpy(exitstatbuff, exitstatus, 8);
+		free(exitstatus);
+		return (exitstatbuff);
+	}
 	else
 		return (getenv(key));
 }

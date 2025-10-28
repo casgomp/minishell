@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 19:17:00 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 10:16:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 11:45:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,11 @@
 
 int		msh_builtins(t_cd *pcd, char **const args);
 
-int		msh_env(void);
+int		msh_env(t_cd *pcd);
 size_t	get_envsize(char **const env);
-size_t	check_cpy_env(char ***const oldenv, size_t *const penvreserved,
-			bool free_oldenv);
+size_t	check_cpy_env(t_cd *pcd, bool free_oldenv);
 int		msh_export(t_cd *pcd, char **args);
-int		msh_unset(char **args);
+int		msh_unset(t_cd *pcd, char **args);
 
 void	msh_error(char const **const errstrs, int nstrs, int errnum);
 #endif // MSH_BUILTINS_H

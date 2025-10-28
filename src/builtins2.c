@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:16:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 13:22:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int	msh_env(void)
+int	msh_env(t_cd *pcd)
 {
 	char	**env2;
 
-	env2 = environ;
+	env2 = pcd->msh_env;
 	while (*env2)
 		ft_printf("%s\n", *(env2++));
 	return (0);
 }
 
 static bool	msh_export_check_arg(char const *const arg, size_t *const psublen,
-	int *preturn, char const *const funcname)
+	char const *const funcname)
 {
 	char	*pc;
 	bool	isfirstchar;	
@@ -50,7 +50,7 @@ static bool	msh_export_check_arg(char const *const arg, size_t *const psublen,
 		ft_sprintf(buf, "`%s\'", arg);
 		msh_error((char const *[]){funcname, buf,
 			"not a valid identifier"}, 3, -1);
-		*preturn = 1;
+		return (false);
 	}
 	if ((arg)[*psublen] != '=')
 		return (false);
@@ -68,9 +68,11 @@ static void	msh_export_setenv(t_cd *pcd, char const *const arg, char **env)
 	}
 	else
 	{
-		idx = check_cpy_env(&environ, &(pcd->envrsvd), false);
-		environ[idx] = ft_strdup(arg);
-		environ[++idx] = (char *) NULL;
+		idx = check_cpy_env(pcd, false);
+		pcd->msh_env[idx] = ft_strdup(arg);
+		pcd->msh_env[++idx] = (char *) NULL;
+		if (environ != pcd->msh_env)
+			environ = pcd->msh_env;
 	}
 }
 
@@ -84,13 +86,16 @@ int	msh_export(t_cd *pcd, char **args)
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
-		return (msh_env());
+		return (msh_env(pcd));
 	ret = 0;
 	while (*(++args))
 	{
-		if (!msh_export_check_arg(*args, &sublen, &ret, __func__ + 4))
+		if (!msh_export_check_arg(*args, &sublen, __func__ + 4))
+		{
+			ret = 1;
 			continue ;
-		env = environ;
+		}
+		env = pcd->msh_env;
 		while (*env && ft_strncmp(*args, *env, sublen + 1))
 			++env;
 		msh_export_setenv(pcd, *args, env);
@@ -99,7 +104,7 @@ int	msh_export(t_cd *pcd, char **args)
 }
 
 // unset with no options
-int	msh_unset(char **args)
+int	msh_unset(t_cd *pcd, char **args)
 {
 	char	**env;
 	size_t	arglen;
@@ -109,7 +114,7 @@ int	msh_unset(char **args)
 		if (ft_strchr(*args, '=') != (char *) NULL)
 			continue ;
 		arglen = ft_strlen(*args);
-		env = environ;
+		env = pcd->msh_env;
 		while (*env && !(ft_strncmp(*args, *env, arglen) == 0
 				&& (*env)[arglen] == '='))
 		{
