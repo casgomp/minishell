@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:17:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/27 16:14:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,23 +45,23 @@ static void	msh_ioredirect_settype(t_tca *ptca,
 	char const *const iooperator, t_llong fd_new)
 {
 	if (!ft_strcmp(iooperator, ">"))
-		ptca->curcmd->iolst->tredirect = (t_rd)fd2file_trunc;
+		ptca->curcmd->curio->tredirect = (t_rd)fd2file_trunc;
 	else if (!ft_strcmp(iooperator, ">>"))
-		ptca->curcmd->iolst->tredirect = (t_rd)fd2file_append;
+		ptca->curcmd->curio->tredirect = (t_rd)fd2file_append;
 	else if (!ft_strcmp(iooperator, "<"))
-		ptca->curcmd->iolst->tredirect = (t_rd)file2fd;
+		ptca->curcmd->curio->tredirect = (t_rd)file2fd;
 	else if (!ft_strcmp(iooperator, "<<"))
-		ptca->curcmd->iolst->tredirect = (t_rd)heredoc2fd;
+		ptca->curcmd->curio->tredirect = (t_rd)heredoc2fd;
 	if (fd_new == -1)
 	{
-		if ((ptca->curcmd->iolst->tredirect == (t_rd)fd2file_trunc)
-			|| (ptca->curcmd->iolst->tredirect == (t_rd)fd2file_append))
+		if ((ptca->curcmd->curio->tredirect == (t_rd)fd2file_trunc)
+			|| (ptca->curcmd->curio->tredirect == (t_rd)fd2file_append))
 			fd_new = 1;
-		if ((ptca->curcmd->iolst->tredirect == (t_rd)file2fd)
-			|| (ptca->curcmd->iolst->tredirect == (t_rd)heredoc2fd))
+		if ((ptca->curcmd->curio->tredirect == (t_rd)file2fd)
+			|| (ptca->curcmd->curio->tredirect == (t_rd)heredoc2fd))
 			fd_new = 0;
 	}
-	ptca->curcmd->iolst->new_fd = fd_new;
+	ptca->curcmd->curio->new_fd = fd_new;
 }
 
 static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
@@ -80,7 +80,7 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 			pcd->exit_status = 130;
 			return (false);
 		}
-		ptca->curcmd->iolst->fname_delim = ft_strdup(token_ws[0]);
+		ptca->curcmd->curio->fname_delim = ft_strdup(token_ws[0]);
 		return (rh_free_simple_array((void **)token_ws), true);
 	}
 	ft_sprintf(buf, "syntax error near unexpected token `%s'", iotarget);
@@ -107,8 +107,8 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);
-	if ((ptca->curcmd->iolst->tredirect == (t_rd)rd_default)
-		|| (!ptca->curcmd->iolst->fname_delim))
+	if ((ptca->curcmd->curio->tredirect == (t_rd)rd_default)
+		|| (!ptca->curcmd->curio->fname_delim))
 	{
 		pcd->exit_status = 130;
 		msh_error((char const *[]){"Internal Error", }, 1, -1);
