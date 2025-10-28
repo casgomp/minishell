@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 16:56:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 13:46:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,37 +31,32 @@ size_t	get_envsize(char **const env)
 	return (envsize);
 }
 
-size_t	check_cpy_env(
-	char ***const oldenv,
-	size_t *const penvreserved,
-	bool env_init)
+size_t	check_cpy_env(t_cd *pcd, bool env_init)
 {
-	static size_t const	xtraspace = 8;
 	char				**newenv;
 	size_t				envsz;
 	size_t				idx;
 
-	if (!oldenv)
-		return (0);
-	envsz = get_envsize(*oldenv);
-	if (envsz < (*penvreserved))
+	envsz = get_envsize(pcd->msh_env);
+	if (envsz < pcd->envrsvd)
 		return (envsz);
-	newenv = malloc((envsz + xtraspace + 1) * sizeof(char *));
+	newenv = malloc((envsz + ENV_XTRA_ELEMS + 1) * sizeof(char *));
 	if (!newenv)
 		return (0);
-	*penvreserved = envsz + xtraspace;
+	pcd->envrsvd = envsz + ENV_XTRA_ELEMS;
 	idx = -1;
-	while ((*oldenv)[++idx])
+	while ((pcd->msh_env)[++idx])
 	{
 		if (env_init)
-			newenv[idx] = ft_strdup((*oldenv)[idx]);
+			newenv[idx] = ft_strdup((pcd->msh_env)[idx]);
 		else
-			newenv[idx] = (*oldenv)[idx];
+			newenv[idx] = (pcd->msh_env)[idx];
 	}
 	newenv[idx] = (char *) NULL;
 	if (!env_init)
-		free (*oldenv);
-	*oldenv = newenv;
+		free(pcd->msh_env);
+	pcd->msh_env = newenv;
+	environ = pcd->msh_env;
 	return (envsz);
 }
 

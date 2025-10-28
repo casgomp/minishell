@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 16:46:17 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/28 13:08:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 int	ms_init(t_cd *pcd)
 {
 	pcd->envrsvd = 0;
-	check_cpy_env(&environ, &(pcd->envrsvd), true);
+	pcd->msh_env = environ;
+	check_cpy_env(pcd, true);
 	pcd->exit_status = 42;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
@@ -41,7 +42,7 @@ int	ms_cleanup(t_cd *pcd)
 	rl_clear_history();
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
-	// rh_free_simple_array((void **) environ);
+	rh_free_simple_array((void **)pcd->msh_env);
 	return (1);
 }
 
