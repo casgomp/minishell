@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 18:15:29 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/29 11:33:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				nchild;
 	int				*pids;
 	int				i;
-	int				*wstatus;
+	// int				*wstatus;
 
 	epaths = ft_env_paths(&epaths_len);
 	nchild = 0;
@@ -99,19 +99,19 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			return (1);//return (NULL)? and free something?
 		while (curcmd)
 		{
-			//would getting cmdexe happen in children. And maybe put in small function?
-			cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
-			free(curcmd->args[0]);
-			curcmd->args[0] = cmdexe;
-			
-			//if heredocs in parent, all must be stored in a char *buffer[N]
-
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args).
 			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
 			{
 				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
 				{
+					//would getting cmdexe happen in children. And maybe put in small function?
+					cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
+					free(curcmd->args[0]);
+					curcmd->args[0] = cmdexe;
+					
+					//if heredocs in parent, all must be stored in a char *buffer[N]
+
 					/*if (nchild == 0)
 					{
 						//cmdexe in child? then also here for simple cmd.
@@ -134,21 +134,21 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			curcmd = curcmd->next;
 		}
 		//close opened fds?
-		wstatus = malloc(sizeof(int) * nchild);
-		if (!wstatus)
-		{
-			//free? and return(?);
-		}
-		i = 0;
-		while (i < nchild)
-		{
-			waitpid (pids[i], &wstatus[i], 0);
-			if (WIFEXITED(wstatus[i]))
-				pcd->exit_status = WEXITSTATUS(wstatus[i]);
-			i ++;
-		}
-		free (wstatus);
-		free(pids);
+				// wstatus = malloc(sizeof(int) * nchild);
+				// if (!wstatus)
+				// {
+				// 	//free? and return(?);
+				// }
+				// i = 0;
+				// while (i < nchild)
+				// {
+				// 	waitpid (pids[i], &wstatus[i], 0);
+				// 	if (WIFEXITED(wstatus[i]))
+				// 		pcd->exit_status = WEXITSTATUS(wstatus[i]);
+				// 	i ++;
+				// }
+				// free (wstatus);
+				// free(pids);
 		return (1);
 	}
 	//free epaths?
