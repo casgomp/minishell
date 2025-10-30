@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/29 11:33:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/30 10:19:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,33 +45,64 @@
 /*
 int	count_children(t_cmd *curcmd)
 {
-	int	nchild;
+	int	ncmds;
 
-	nchild = 0;
-	ft_printf("count_children: nchild= %d\n", nchild);//debugging
+	ncmds = 0;
+	ft_printf("count_children: ncmds= %d\n", ncmds);//debugging
 	if (curcmd->ctrlchr == '|')
-			nchild ++;
+			ncmds ++;
 	while (curcmd)
 	{
 		if (curcmd->ctrlchr == '|' || curcmd->iolst)
-			nchild ++;
+			ncmds ++;
 		curcmd = curcmd->next;
 	}
-	ft_printf("count_children: nchild= %d\n", nchild);//debugging
-	return (nchild);
+	ft_printf("count_children: ncmds= %d\n", ncmds);//debugging
+	return (ncmds);
 }*/
 
-int	count_children(t_cmd *curcmd)
+int	count_cmds(t_cmd *curcmd)
 {
-	int	nchild;
+	int	ncmds;
 
-	nchild = 0;
+	ncmds = 0;
 	while (curcmd)
 	{
-		nchild ++;
+		ncmds ++;
 		curcmd = curcmd->next;
 	}
-	return (nchild);
+	return (ncmds);
+}
+
+int	ft_is_builtin(char *cmd)
+{
+	char 	**bltn;
+	int		i;
+	int		res;
+
+	bltn = malloc(sizeof(char *) * 8);
+	if (!bltn)
+		return (false);
+	bltn[0] = "cd";
+	bltn[1] = "echo";
+	bltn[2] = "env";
+	bltn[3] = "exit";
+	bltn[4] = "export";
+	bltn[5] = "pwd";
+	bltn[6] = "unset";
+	bltn[7] = NULL;
+	res = false;
+	i = 0;
+	while (bltn[i])
+	{
+		if (ft_strcmp(cmd, bltn[i]) == 0)
+		{
+			res = true;
+			return (free(bltn), res);
+		}
+		i ++;
+	}
+	return (free(bltn), res);
 }
 
 int	process_cmdline(t_cd *pcd, char const *const in)
@@ -81,46 +112,84 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	char			**epaths;
 	size_t			epaths_len;
 	char			*cmdexe;
-	int				nchild;
+	int				ncmds;
 	int				*pids;
 	int				i;
-	// int				*wstatus;
+	int				*wstatus;
+	int				childless;
+	t_io			*curredir;
+	int				ret;
 
 	epaths = ft_env_paths(&epaths_len);
-	nchild = 0;
+	ncmds = 0;
 	pids = 0;
-	i = -1;
+	i = 0;
+	childless = false;
+	ret = 1;
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
 		curcmd = cmds;
-		nchild = count_children(curcmd);
-		pids = malloc(sizeof(int) * nchild);
-		if (!pids)
-			return (1);//return (NULL)? and free something?
+		ncmds = count_cmds(curcmd);
+		if (ncmds == 1 && ft_is_builtin(curcmd->args[0]))
+			childless = true;
+		if (!childless)
+		{
+			pids = malloc(sizeof(int) * ncmds);
+			if (!pids) //malloc must return a non-null pointer otherwise if ncmds=0, pids=NULL and !pids=true.
+				return (1);//return (NULL)? and free something?
+		}
 		while (curcmd)
 		{
+			//would getting cmdexe happen in children. And maybe put in small function?
+			/*cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
+			free(curcmd->args[0]);
+			curcmd->args[0] = cmdexe;*/
+
+			//if heredocs in parent, all must be stored in a char *buffer[N]
+
 			char **const	args = curcmd->args;
 			//function run cmd(subset_args).
-			if (args && args[0]) //wrong? redirections happen regardless of stat/access return.
+			if (args && args[0])
 			{
-				if (!msh_builtins(pcd, args))//wrong? this way I cant get cdmxe after in children.
+				if (childless)
 				{
-					//would getting cmdexe happen in children. And maybe put in small function?
-					cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
-					free(curcmd->args[0]);
-					curcmd->args[0] = cmdexe;
+					//do redirections backup
+					curcmd->stdio[0] = dup(STDIN_FILENO);
+					curcmd->stdio[1] = dup(STDOUT_FILENO);
+					curredir = curcmd->iolst;
+					while (curredir && (ret))
+					{
+						ret = redirections_setup(curredir);
+						curredir = curredir->next;
+					}
+					if (ret)
+						msh_builtins(pcd, curcmd->args);
+					//restore redirections
+					dup2(curcmd->stdio[0], STDIN_FILENO);
+					dup2(curcmd->stdio[1], STDOUT_FILENO);
+					close(curcmd->stdio[0]);
+					close(curcmd->stdio[1]);
+				}
+				else
+				{
+					if (!ft_is_builtin(args[0]))
+					{
+						cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
+						free(curcmd->args[0]);//prbbly bst nt rplce args[0] and instd save path (i.e. cmdexe) smwhre else
+						curcmd->args[0] = cmdexe;
+					}
+					//if (!msh_builtins(pcd, args))
 					
-					//if heredocs in parent, all must be stored in a char *buffer[N]
-
-					/*if (nchild == 0)
+					//put compose check here.............
+					/*if (ncmds == 0)
 					{
 						//cmdexe in child? then also here for simple cmd.
 						execve(args[0], args, environ);
 						perror(curcmd->args[0]);//what? wrong filename or options?
 						return (0);//return what and set exits status?
 					}*/
-					parent_setup(curcmd, pids, ++i);
-					//child_setup gets called from parent but 
+					parent_setup(pcd, curcmd, pids, i++);
+					//child_setup gets called from parent but
 					//could be better to call here?
 					//also, should get cmdexe in child?
 
@@ -133,23 +202,24 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 			//free pids?
 			curcmd = curcmd->next;
 		}
-		//close opened fds?
-				// wstatus = malloc(sizeof(int) * nchild);
-				// if (!wstatus)
-				// {
-				// 	//free? and return(?);
-				// }
-				// i = 0;
-				// while (i < nchild)
-				// {
-				// 	waitpid (pids[i], &wstatus[i], 0);
-				// 	if (WIFEXITED(wstatus[i]))
-				// 		pcd->exit_status = WEXITSTATUS(wstatus[i]);
-				// 	i ++;
-				// }
-				// free (wstatus);
-				// free(pids);
-		return (1);
+		if (!childless)
+		{
+			wstatus = malloc(sizeof(int) * ncmds);
+			if (!wstatus)
+			{
+				//free pids, epaths etc?  cleanup cmds? and return(?);
+			}
+			i = 0;
+			while (i < ncmds)
+			{
+				waitpid (pids[i], &wstatus[i], 0);
+				if (WIFEXITED(wstatus[i]))
+					pcd->exit_status = WEXITSTATUS(wstatus[i]);
+				i ++;
+			}
+			free (wstatus);
+			free(pids); //if pids free pids.
+		}
 	}
 	//free epaths?
 	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);

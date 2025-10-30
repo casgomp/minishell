@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 18:15:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/29 20:08:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ typedef struct s_cmd
 	// Rapha: after talking about how bash handles pipes and redirects
 	// (always done in the child) we don't need to save and original states...
 	//if it's for storing orig. stdio then t_stdio (see below) is redundant.
-	// int				stdio[3];
+	int				stdio[3];
 	t_io			*iolst;
 	t_io			*curio;
 	char			**args; //for execve. args[0] will also later be concatenated to an absolute path.
@@ -87,7 +87,8 @@ int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
 size_t	check_cpy_env(t_cd *pcd, bool env_init);
 //additions to input.c:
-int	count_children(t_cmd *curcmd);
+int	count_cmds(t_cmd *curcmd);
+int	ft_is_builtin(char *cmd);
 
 char	**ft_env_paths(size_t *len);
 char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len);
@@ -95,8 +96,8 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 //static int	access_check_path(char *pathstr);
 //static int	free_splitstrs(char **split);
 
-int		parent_setup(t_cmd *curcmd, int *pids, int i);
-int		child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
+int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
+int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
 int		redirections_setup(t_io *curredir);
 int		get_heredoc(int fd, char *limiter);
 

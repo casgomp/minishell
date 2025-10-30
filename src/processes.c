@@ -6,11 +6,12 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/28 18:15:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/29 20:08:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_builtins.h"
 #include "libft.h"
 
 #include <fcntl.h>
@@ -85,12 +86,14 @@ int	redirections_setup(t_io *curredir)
 	return (1);
 }
 
-int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
+int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
 	int		ret;
+	int		flag;
 	t_io	*curredir;
 
 	ret = 1;
+	flag = false;
 	if (fdpipe[0] != -1)
 		close(fdpipe[0]);
 	if (fdcl->pre1[0] != -1)
@@ -112,12 +115,19 @@ int	child_setup(t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 	}
 	if (ret == 0)
 		return (0); //should have cd as parameter so i can assign cd->exit_status = 1
-	execve(curcmd->args[0], curcmd->args, environ);
-	perror(curcmd->args[0]);//what? wrong filename or options?
-	return (0);//and set exits status?
+	if (ft_is_builtin(curcmd->args[0]))
+	{
+		if (msh_builtins(pcd, curcmd->args))
+			flag = true;
+	}
+	else
+		execve(curcmd->args[0], curcmd->args, environ);//environ is o longer called that?
+	if (!flag)
+		return (perror(curcmd->args[0]), 0); //perror what? wrong filename or options?
+	return (1);
 }
 
-int	parent_setup(t_cmd *curcmd, int *pids, int i)
+int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 {
 	static t_fdcl	fdcl = {{-1,-1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
@@ -143,8 +153,10 @@ int	parent_setup(t_cmd *curcmd, int *pids, int i)
 		return (perror("fork"), 1);
 	if (pids[i] == 0)
 	{
-		child_setup(curcmd, &fdcl, fdpipe);
-		return(perror(curcmd->args[0]),1 );//check return values.
+		if (child_setup(pcd, curcmd, &fdcl, fdpipe) == 1)
+			return (1);
+		else
+			return(perror(curcmd->args[0]), 0); //check return values. also, perror already in child setup.
 	}
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
