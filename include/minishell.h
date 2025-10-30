@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/29 20:08:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/30 19:38:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 
 int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
 int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
+int		open_files_setup(t_io *curredir);
 int		redirections_setup(t_io *curredir);
 int		get_heredoc(int fd, char *limiter);
 

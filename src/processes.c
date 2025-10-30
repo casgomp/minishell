@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/29 20:08:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/30 19:38:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,31 +49,40 @@ int	redirections_setup(t_io *curredir)
 	int		hdfdpipe[2];
 
 	fnmdlm = curredir->fname_delim;
-	if (curredir->tredirect == fd2file_trunc)
+	if (curredir->tredirect == fd2file_trunc || 
+		curredir->tredirect == fd2file_append ||
+		curredir->tredirect == file2fd)
 	{
-		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		/*curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (curredir->old_fd == -1)
-			return (perror(fnmdlm), 0);
+			return (perror(fnmdlm), 0);*/
 		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
 		close(curredir->old_fd);
 	}
-	else if (curredir->tredirect == fd2file_append)
-	{
-		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		if (curredir->old_fd == -1)
-			return (perror(fnmdlm), 0);
-		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
-		close(curredir->old_fd);
-	}
-	else if (curredir->tredirect == file2fd)
-	{
-		curredir->old_fd = open(fnmdlm, O_RDONLY);
-		if (curredir->old_fd == -1)
-			return (perror(fnmdlm), 0);
-		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
-		close(curredir->old_fd);
-	}
+	//needs revision
 	else if (curredir->tredirect == heredoc2fd)
+	{
+		dup2(hdfdpipe[0], curredir->new_fd);
+		close(curredir->old_fd);
+	}
+	return (1);
+}
+
+int	open_files_setup(t_io *curredir)
+{
+	char	*fnmdlm;
+	//int		hdfdpipe[2];
+
+	fnmdlm = curredir->fname_delim;
+	if (curredir->tredirect == fd2file_trunc)
+		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	else if (curredir->tredirect == fd2file_append)
+		curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	else if (curredir->tredirect == file2fd)
+		curredir->old_fd = open(fnmdlm, O_RDONLY);
+	else if (curredir->tredirect == heredoc2fd)
+		return (1);
+	/*
 	{
 		if (pipe(hdfdpipe) == -1)
 			return (perror("pipe"), 0);
@@ -82,18 +91,19 @@ int	redirections_setup(t_io *curredir)
 		close (hdfdpipe[1]);
 		dup2(hdfdpipe[0], curredir->new_fd);
 		close(curredir->old_fd);
-	}
+	}*/
+	if (curredir->old_fd == -1)
+		return(0);
 	return (1);
 }
 
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
 	int		ret;
-	int		flag;
 	t_io	*curredir;
+	int		hdfdpipe[2];
 
 	ret = 1;
-	flag = false;
 	if (fdpipe[0] != -1)
 		close(fdpipe[0]);
 	if (fdcl->pre1[0] != -1)
@@ -106,25 +116,70 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 		dup2(fdpipe[1], STDOUT_FILENO);
 		close(fdpipe[1]);
 	}
+
+	//
+
+	curredir = curcmd->iolst;
+	while (curredir && ret != 0)
+	{
+		if (curredir->tredirect == heredoc2fd)
+		{	
+			if (pipe(hdfdpipe) == -1)
+			{
+				perror("pipe");
+				exit (1);
+			}
+			if (get_heredoc(hdfdpipe[1], curredir->fname_delim) == 0)
+			{
+				perror("heredoc");//check returnvalues!;
+				exit (1);
+			}
+			close (hdfdpipe[1]);
+			curredir->old_fd = hdfdpipe[0];
+		}
+		curredir = curredir->next;
+	}
+
 	//should check_compose args here in child?.
 	curredir = curcmd->iolst;
 	while (curredir && (ret != 0))
 	{
-		ret = redirections_setup(curredir);
+		ret = open_files_setup(curredir);
 		curredir = curredir->next;
 	}
 	if (ret == 0)
-		return (0); //should have cd as parameter so i can assign cd->exit_status = 1
+	{
+		curredir = curcmd->iolst;
+		while (curredir && curredir->old_fd != -1)
+		{
+			close (curredir->old_fd);
+			curredir = curredir->next;
+		}
+		perror(curcmd->iolst->fname_delim);
+		exit(1);
+		//return (0); //should have cd as parameter so i can assign cd->exit_status = 1
+	}
+	curredir = curcmd->iolst;
+	while (curredir)
+	{
+		if (redirections_setup(curredir) == 0)
+		{
+			perror(curcmd->iolst->fname_delim);
+			exit(1);
+		}
+		curredir = curredir->next;
+	}
 	if (ft_is_builtin(curcmd->args[0]))
 	{
-		if (msh_builtins(pcd, curcmd->args))
-			flag = true;
+		msh_builtins(pcd, curcmd->args);
+		exit(0);
 	}
 	else
+	{
 		execve(curcmd->args[0], curcmd->args, environ);//environ is o longer called that?
-	if (!flag)
-		return (perror(curcmd->args[0]), 0); //perror what? wrong filename or options?
-	return (1);
+		perror(curcmd->args[0]); //perror what? wrong filename or options?
+		exit (127);
+	}
 }
 
 int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
@@ -154,9 +209,10 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 	if (pids[i] == 0)
 	{
 		if (child_setup(pcd, curcmd, &fdcl, fdpipe) == 1)
-			return (1);
+			exit(1);
+		/*	return (1);
 		else
-			return(perror(curcmd->args[0]), 0); //check return values. also, perror already in child setup.
+			return(perror(curcmd->args[0]), 0); //this perror is wrong.*/
 	}
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
