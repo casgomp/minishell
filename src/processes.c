@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/31 13:17:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 14:10:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 			close (curredir->old_fd);
 			curredir = curredir->next;
 		}
-		perror(curcmd->iolst->fname_delim);
+		perror(curredir->fname_delim);
 		exit(1); //msh_error?
 	}
 	//then set all redirections.

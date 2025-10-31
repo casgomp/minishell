@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/31 13:17:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 13:55:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,21 +164,26 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 					}
 					if (ret == 0)
 					{
-						t_io	*curredircls = curcmd->iolst;
-						while (curredircls && curredircls->old_fd != -1)
+						curredir = curcmd->iolst;
+						while (curredir && curredir->old_fd != -1)
 						{
-							close (curredircls->old_fd);
-							curredircls = curredircls->next;
+							close (curredir->old_fd);
+							curredir = curredir->next;
 						}
 						return (0); //and clean?? should have cd as parameter so i can assign cd->exit_status = 1
 					}
-					/*while (curredir && (ret))
+					curredir = curcmd->iolst;
+					while (curredir)
 					{
-						ret = redirections_setup(curredir);reset
+						if (redirections_setup(curredir) == 0)
+						{
+							perror(curcmd->iolst->fname_delim);
+							return (0); //msh_error?
+						}
 						curredir = curredir->next;
-					}*/
-					//if (ret)
-					else
+					}
+					//else
+					if (ret)
 						msh_builtins(pcd, curcmd->args);
 					//restore redirections
 					dup2(curcmd->stdio[0], STDIN_FILENO);
