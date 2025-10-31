@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/31 14:10:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 18:42:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,63 +20,43 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int	get_heredoc(int fd, char *limiter)
+int	child_cmd_execute(t_cd *pcd, char **args)
 {
-	char	*ret;
-	char	*prompt;
-	int		len;
-
-	len = ft_strlen(limiter);
-	prompt = "> ";
-	while (1)
+	if (ft_is_builtin(args[0]))
 	{
-		if (write(1, prompt, 2) == -1)
-			return (0);
-		ret = get_next_line(0);
-		if (!ret)
-			return (0);
-		if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\n')
-			return (free(ret), 1);
-		if (write(fd, ret, ft_strlen(ret)) == -1)
-			return (free(ret), 0);
-		free (ret);
+		msh_builtins(pcd, args);
+		exit(0);
 	}
+	else
+	{
+		execve(args[0], args, environ);//environ is no longer called that?
+		perror(args[0]);
+		exit (127);
+	}
+	return (1);
 }
 
 int	redirections_setup(t_io *curredir)
 {
-	char	*fnmdlm;
-	//int		hdfdpipe[2];
+	dup2(curredir->old_fd, curredir->new_fd);
+	close(curredir->old_fd);
+	return (1);
+}
 
-	fnmdlm = curredir->fname_delim;
-	if (curredir->tredirect == fd2file_trunc || 
-		curredir->tredirect == fd2file_append ||
-		curredir->tredirect == file2fd)
+int	fail_open_closefds(t_io *curredir)
+{
+	while (curredir && curredir->old_fd != -1)
 	{
-		/*curredir->old_fd = open(fnmdlm, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if (curredir->old_fd == -1)
-			return (perror(fnmdlm), 0);*/
-		dup2(curredir->old_fd, curredir->new_fd);//also check dup2 return and perror?
-		close(curredir->old_fd);
+		close (curredir->old_fd);
+		curredir = curredir->next;
 	}
-	/*needs revision
-	else if (curredir->tredirect == heredoc2fd)
-	{
-		dup2(hdfdpipe[0], curredir->new_fd);
-		close(curredir->old_fd);
-	}*/
-	else if (curredir->tredirect == heredoc2fd)
-	{
-		dup2(curredir->old_fd, curredir->new_fd);
-		close(curredir->old_fd);
-	}
+	perror(curredir->fname_delim);//msh_error?
 	return (1);
 }
 
 int	open_files_setup(t_io *curredir)
 {
 	char	*fnmdlm;
-	//int		hdfdpipe[2];
 
 	fnmdlm = curredir->fname_delim;
 	if (curredir->tredirect == fd2file_trunc)
@@ -87,29 +67,13 @@ int	open_files_setup(t_io *curredir)
 		curredir->old_fd = open(fnmdlm, O_RDONLY);
 	else if (curredir->tredirect == heredoc2fd)
 		return (1);
-	/*
-	{
-		if (pipe(hdfdpipe) == -1)
-			return (perror("pipe"), 0);
-		if (get_heredoc(hdfdpipe[1], fnmdlm) == 0)
-			return(perror("heredoc???"), 0);//check returnvalues!;
-		close (hdfdpipe[1]);
-		dup2(hdfdpipe[0], curredir->new_fd);
-		close(curredir->old_fd);
-	}*/
 	if (curredir->old_fd == -1)
 		return(0);
 	return (1);
 }
 
-int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
+int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 {
-	int		ret;
-	t_io	*curredir;
-	int		hdfdpipe[2];
-
-	ret = 1;
-	//first close pipes' ends that are not needed anymore and redirect pipe ends to stdin/stdout
 	if (fdpipe[0] != -1)
 		close(fdpipe[0]);
 	if (fdcl->pre1[0] != -1)
@@ -122,73 +86,40 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 		dup2(fdpipe[1], STDOUT_FILENO);
 		close(fdpipe[1]);
 	}
+	return (1);
+}
 
-	//then heredocs in curcmd
-	curredir = curcmd->iolst;
-	while (curredir && ret != 0)
-	{
-		if (curredir->tredirect == heredoc2fd)
-		{
-			//create pipes for any heredocs in curcmd.
-			if (pipe(hdfdpipe) == -1)
-			{
-				perror("pipe");
-				exit (1);
-			}
-			//write into the pipe.
-			if (get_heredoc(hdfdpipe[1], curredir->fname_delim) == 0)
-			{
-				perror("heredoc");//check returnvalues!;
-				exit (1);
-			}
-			//close heredoc pipe write end and assign read end to old_fd.
-			close (hdfdpipe[1]);
-			curredir->old_fd = hdfdpipe[0];
-		}
-		curredir = curredir->next;
-	}
+int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
+{
+	int		ret;
+	t_io	*curredir;
 
-	//then open all files until open fails, or all redirections are finished.
+	inchild_pipe_setup(fdcl, fdpipe);
+	heredoc_setup(curcmd->iolst);
+	ret = 1;
 	curredir = curcmd->iolst;
 	while (curredir && (ret != 0))
 	{
 		ret = open_files_setup(curredir);
 		curredir = curredir->next;
 	}
-	//if open failed for one of the files, close all previously opened fds and exit
 	if (ret == 0)
 	{
-		curredir = curcmd->iolst;
-		while (curredir && curredir->old_fd != -1)
-		{
-			close (curredir->old_fd);
-			curredir = curredir->next;
-		}
-		perror(curredir->fname_delim);
-		exit(1); //msh_error?
+		fail_open_closefds(curcmd->iolst);
+		exit(1);
 	}
-	//then set all redirections.
 	curredir = curcmd->iolst;
 	while (curredir)
 	{
 		if (redirections_setup(curredir) == 0)
 		{
-			perror(curcmd->iolst->fname_delim);
-			exit(1); //msh_error?
+			perror(curcmd->iolst->fname_delim); //msh_error?
+			exit(1);
 		}
 		curredir = curredir->next;
 	}
-	if (ft_is_builtin(curcmd->args[0]))
-	{
-		msh_builtins(pcd, curcmd->args);
-		exit(0);
-	}
-	else
-	{
-		execve(curcmd->args[0], curcmd->args, environ);//environ is mo longer called that?
-		perror(curcmd->args[0]); //perror what? wrong filename or options?
-		exit (127);
-	}
+	child_cmd_execute(pcd, curcmd->args);
+	return (1);
 }
 
 int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
@@ -196,7 +127,6 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 	static t_fdcl	fdcl = {{-1,-1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
 
-	//if heredocs, all must be stored in parent in a char *buffer[N]
 	if (fdcl.pre2[0] != -1)
 		close(fdcl.pre2[0]);
 	if (fdcl.pre1[1] != -1)
@@ -206,12 +136,6 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		if (pipe(fdpipe) == -1)
 			return (perror("pipe"), 1);
 	}
-	/*if (curcmd->next || curcmd->iolst)
-	{
-		pids[i] = fork();
-		if (pids[i] == -1)
-		return (perror("fork"), 1);
-	}*/
 	pids[i] = fork();
 	if (pids[i] == -1)
 		return (perror("fork"), 1);
@@ -219,9 +143,6 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 	{
 		child_setup(pcd, curcmd, &fdcl, fdpipe);
 		exit(1);
-		/*	return (1);
-		else
-			return(perror(curcmd->args[0]), 0); //this perror is wrong.*/
 	}
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];

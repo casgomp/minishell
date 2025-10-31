@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/31 13:17:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 18:42:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	compose_check_path(const char *path, char *cmdexe, char *pathstr, siz
 		ft_strlcat(pathstr, "/", bufferlen);
 	}
 	ft_strlcat(pathstr, cmdexe, bufferlen);
-	if(stat(pathstr, &statbuf) != -1)
+	if (stat(pathstr, &statbuf) != -1)
 		return(1);
 	return(0);
 }

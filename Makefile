@@ -35,14 +35,15 @@ vpath %.c $(SRC_DIRS)
 MANDATORY_SRCS	:= 	minishell.c \
 					builtins1.c \
 					builtins2.c \
+					heredocs.c \
 					input.c \
-					paths.c \
-					processes.c \
 					msh_sqed_functions.c \
 					msh_ioredirect.c \
 					msh_compile_cmds.c \
 					msh_compile_cmds_utils.c \
 					msh_compile_cmds_utils2.c \
+					paths.c \
+					processes.c \
 					utils.c \
 
 BONUS_SRCS		:=  

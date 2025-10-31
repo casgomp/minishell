@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/31 13:55:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 18:42:50 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,42 +24,27 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-/*static void	print_info_cmds(t_cmd *const cmds) //just for debugging
+void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 {
-	t_cmd	*currcmd = cmds;
+	int	*wstatus;
+	int	i;
 
-	while (currcmd)
+	wstatus = malloc(sizeof(int) * ncmds);
+	if (!wstatus)
 	{
-		ft_printf("print_info_cmds: args[0]=%s, ctrlchr=%c\n", currcmd->args[0], currcmd->ctrlchr);
-		t_io	*curredir = currcmd->iolst;
-		int i = 0;
-		while (curredir)
-		{
-			ft_printf("print_info_redir: loop %d; sign_enum=%d, fnm_delim=%s\n", i, curredir->tredirect, curredir->fname_delim);	
-			curredir = curredir->next;
-			i ++;
-		}
-		currcmd = currcmd->next;
+		//free pids, epaths etc?  cleanup cmds? and return(?);
 	}
-}*/
-/*
-int	count_children(t_cmd *curcmd)
-{
-	int	ncmds;
-
-	ncmds = 0;
-	ft_printf("count_children: ncmds= %d\n", ncmds);//debugging
-	if (curcmd->ctrlchr == '|')
-			ncmds ++;
-	while (curcmd)
+	i = 0;
+	while (i < ncmds)
 	{
-		if (curcmd->ctrlchr == '|' || curcmd->iolst)
-			ncmds ++;
-		curcmd = curcmd->next;
+		waitpid (pids[i], &wstatus[i], 0);
+		if (WIFEXITED(wstatus[i]))
+			pcd->exit_status = WEXITSTATUS(wstatus[i]);
+		i ++;
 	}
-	ft_printf("count_children: ncmds= %d\n", ncmds);//debugging
-	return (ncmds);
-}*/
+	free (wstatus);
+	free(pids); //if pids free pids.
+}
 
 int	count_cmds(t_cmd *curcmd)
 {
@@ -76,33 +61,34 @@ int	count_cmds(t_cmd *curcmd)
 
 int	ft_is_builtin(char *cmd)
 {
-	char 	**bltn;
-	int		i;
-	int		res;
-
-	bltn = malloc(sizeof(char *) * 8);
-	if (!bltn)
-		return (false);
-	bltn[0] = "cd";
-	bltn[1] = "echo";
-	bltn[2] = "env";
-	bltn[3] = "exit";
-	bltn[4] = "export";
-	bltn[5] = "pwd";
-	bltn[6] = "unset";
-	bltn[7] = NULL;
-	res = false;
+	int			i;
+	const char 	*bltn[] = {
+		"cd"
+		"echo",
+		"env",
+		"exit",
+		"export",
+		"pwd",
+		"unset",
+		NULL
+	};
 	i = 0;
 	while (bltn[i])
 	{
 		if (ft_strcmp(cmd, bltn[i]) == 0)
-		{
-			res = true;
-			return (free(bltn), res);
-		}
+			return (true);
 		i ++;
 	}
-	return (free(bltn), res);
+	return (false);
+}
+
+static int	reset_stdiofds(t_cmd *curcmd)
+{
+	dup2(curcmd->stdio[0], STDIN_FILENO);
+	dup2(curcmd->stdio[1], STDOUT_FILENO);
+	close(curcmd->stdio[0]);
+	close(curcmd->stdio[1]);
+	return (1);
 }
 
 int	process_cmdline(t_cd *pcd, char const *const in)
@@ -115,17 +101,14 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	int				ncmds;
 	int				*pids;
 	int				i;
-	int				*wstatus;
 	int				childless;
 	t_io			*curredir;
 	int				ret;
 
 	epaths = ft_env_paths(&epaths_len);
 	ncmds = 0;
-	pids = 0;
 	i = 0;
 	childless = false;
-	ret = 1;
 	if (cmds && cmds->args && cmds->args[0] && cmds->args[0][0] != '#')
 	{
 		curcmd = cmds;
@@ -136,60 +119,37 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 		{
 			pids = malloc(sizeof(int) * ncmds);
 			if (!pids) //malloc must return a non-null pointer otherwise if ncmds=0, pids=NULL and !pids=true.
-				return (1);//return (NULL)? and free something?
+				return (0);//return (NULL)? and free something?
 		}
 		while (curcmd)
 		{
-			//would getting cmdexe happen in children. And maybe put in small function?
-			/*cmdexe = compose_check_cmd(pcd, curcmd, epaths, epaths_len);
-			free(curcmd->args[0]);
-			curcmd->args[0] = cmdexe;*/
-
-			//if heredocs in parent, all must be stored in a char *buffer[N]
-
-			char **const	args = curcmd->args;
-			//function run cmd(subset_args).
+			char **const args = curcmd->args;
 			if (args && args[0])
 			{
+				//if (!childlessfunction())
 				if (childless)
 				{
 					//do redirections backup
 					curcmd->stdio[0] = dup(STDIN_FILENO);
 					curcmd->stdio[1] = dup(STDOUT_FILENO);
 					curredir = curcmd->iolst;
+					ret = 1;
 					while (curredir && (ret != 0))
 					{
 						ret = open_files_setup(curredir);
 						curredir = curredir->next;
 					}
 					if (ret == 0)
-					{
-						curredir = curcmd->iolst;
-						while (curredir && curredir->old_fd != -1)
-						{
-							close (curredir->old_fd);
-							curredir = curredir->next;
-						}
-						return (0); //and clean?? should have cd as parameter so i can assign cd->exit_status = 1
-					}
+						return (fail_open_closefds(curcmd->iolst), 0);//and clean?
 					curredir = curcmd->iolst;
 					while (curredir)
 					{
 						if (redirections_setup(curredir) == 0)
-						{
-							perror(curcmd->iolst->fname_delim);
-							return (0); //msh_error?
-						}
+							return (perror(curcmd->iolst->fname_delim), 0); //msh_error?
 						curredir = curredir->next;
 					}
-					//else
-					if (ret)
-						msh_builtins(pcd, curcmd->args);
-					//restore redirections
-					dup2(curcmd->stdio[0], STDIN_FILENO);
-					dup2(curcmd->stdio[1], STDOUT_FILENO);
-					close(curcmd->stdio[0]);
-					close(curcmd->stdio[1]);
+					msh_builtins(pcd, curcmd->args);
+					reset_stdiofds(curcmd);
 				}
 				else
 				{
@@ -199,50 +159,15 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 						free(curcmd->args[0]);//prbbly bst nt rplce args[0] and instd save path (i.e. cmdexe) smwhre else
 						curcmd->args[0] = cmdexe;
 					}
-					//if (!msh_builtins(pcd, args))
-					
-					//put compose check here.............
-					/*if (ncmds == 0)
-					{
-						//cmdexe in child? then also here for simple cmd.
-						execve(args[0], args, environ);
-						perror(curcmd->args[0]);//what? wrong filename or options?
-						return (0);//return what and set exits status?
-					}*/
 					parent_setup(pcd, curcmd, pids, i++);
-					//child_setup gets called from parent but
-					//could be better to call here?
-					//also, should get cmdexe in child?
-
-					// Dummy
-					//msh_error((char const *[]){"Command not found Dummy Error..."}, 1, -1);
-					//return (0);
 				}
 			}
-			//free stuff in curcmd?
-			//free pids?
 			curcmd = curcmd->next;
 		}
 		if (!childless)
-		{
-			wstatus = malloc(sizeof(int) * ncmds);
-			if (!wstatus)
-			{
-				//free pids, epaths etc?  cleanup cmds? and return(?);
-			}
-			i = 0;
-			while (i < ncmds)
-			{
-				waitpid (pids[i], &wstatus[i], 0);
-				if (WIFEXITED(wstatus[i]))
-					pcd->exit_status = WEXITSTATUS(wstatus[i]);
-				i ++;
-			}
-			free (wstatus);
-			free(pids); //if pids free pids.
-		}
+			wait_child_processes(pcd, pids, ncmds);
 	}
-	//free epaths?
+	//free epaths? free pids(or free them in wait_child_processes?
 	return (/*cleanup cmds with ft_splitstrs, pcd->exit_status = 0 ,*/ 1);
 }
 

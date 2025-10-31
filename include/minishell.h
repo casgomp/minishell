@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/31 13:17:31 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/31 18:42:51 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,11 @@ int		process_cmdline(t_cd *pcd, char const *const in);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
 size_t	check_cpy_env(t_cd *pcd, bool env_init);
-//additions to input.c:
-int	count_cmds(t_cmd *curcmd);
-int	ft_is_builtin(char *cmd);
+int		count_cmds(t_cmd *curcmd);
+int		ft_is_builtin(char *cmd);
+//newly added:
+//static int	reset_stdiofds(t_cmd *curcmd);
+void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 char	**ft_env_paths(size_t *len);
 char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len);
@@ -100,6 +102,11 @@ int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
 int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
 int		open_files_setup(t_io *curredir);
 int		redirections_setup(t_io *curredir);
-int		get_heredoc(int fd, char *limiter);
+int		inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe);
+int		fail_open_closefds(t_io *curredir);
+int		child_cmd_execute(t_cd *pcd, char **args);
+
+int		heredoc_prompt(int fd, char *limiter);
+int		heredoc_setup(t_io *curredir);
 
 #endif // MINISHELL_H
