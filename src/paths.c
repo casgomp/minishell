@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/31 18:42:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/01 17:11:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-static int	free_splitstrs(char **split)
+int	free_splitstrs(char **split)
 {
 	char **const	spltorig = split;
 
@@ -82,10 +82,10 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 		}
 	}
 	if (!check)
-		return (perror(pcmd), pcd->exit_status = 127, free_splitstrs(epaths), free(path), NULL);
+		return (perror(pcmd), pcd->exit_status = 127, free(path), NULL);
 	check = access_check_path(path);
 	if (!check)
-		return (perror(pcmd), pcd->exit_status = 126, free_splitstrs(epaths), free(path), NULL);
+		return (perror(pcmd), pcd->exit_status = 126, free(path), NULL);
 	return(pcd->exit_status = EXIT_SUCCESS, path);
 }
 

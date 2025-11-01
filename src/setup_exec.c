@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   processes.c                                        :+:      :+:    :+:   */
+/*   setup_exec.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/31 18:42:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/01 17:14:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,17 @@ int	child_cmd_execute(t_cd *pcd, char **args)
 	}
 	else
 	{
-		execve(args[0], args, environ);//environ is no longer called that?
-		perror(args[0]);
+		if (args[0])
+		{
+			execve(args[0], args, environ);//environ is no longer called that?
+			perror(args[0]);
+		}
 		exit (127);
 	}
 	return (1);
 }
 
-int	redirections_setup(t_io *curredir)
+int	apply_redirection(t_io *curredir)
 {
 	dup2(curredir->old_fd, curredir->new_fd);
 	close(curredir->old_fd);
@@ -72,6 +75,30 @@ int	open_files_setup(t_io *curredir)
 	return (1);
 }
 
+int	setup_redirections(t_io *iolst)
+{
+	t_io	*curredir;
+	int		ret;
+
+	curredir = iolst;
+	ret = 1;
+	while (curredir && ret != 0)
+	{
+		ret = open_files_setup(curredir);
+		curredir = curredir->next;
+	}
+	if (ret == 0)
+		return (fail_open_closefds(iolst), 0);
+	curredir = iolst;
+	while (curredir)
+	{
+		if (apply_redirection(curredir) == 0)
+			return (perror(iolst->fname_delim), 0);
+		curredir = curredir->next;
+	}
+	return (1);
+}
+
 int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 {
 	if (fdpipe[0] != -1)
@@ -91,33 +118,10 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
-	int		ret;
-	t_io	*curredir;
-
 	inchild_pipe_setup(fdcl, fdpipe);
 	heredoc_setup(curcmd->iolst);
-	ret = 1;
-	curredir = curcmd->iolst;
-	while (curredir && (ret != 0))
-	{
-		ret = open_files_setup(curredir);
-		curredir = curredir->next;
-	}
-	if (ret == 0)
-	{
-		fail_open_closefds(curcmd->iolst);
-		exit(1);
-	}
-	curredir = curcmd->iolst;
-	while (curredir)
-	{
-		if (redirections_setup(curredir) == 0)
-		{
-			perror(curcmd->iolst->fname_delim); //msh_error?
-			exit(1);
-		}
-		curredir = curredir->next;
-	}
+	if (!setup_redirections(curcmd->iolst))
+		exit (1);
 	child_cmd_execute(pcd, curcmd->args);
 	return (1);
 }
@@ -144,6 +148,10 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		child_setup(pcd, curcmd, &fdcl, fdpipe);
 		exit(1);
 	}
+	if (fdcl.pre1[0] != -1)
+		close(fdcl.pre1[0]);
+	if (fdpipe[1] != -1)
+		close(fdpipe[1]);
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
 	fdcl.pre1[0] = fdpipe[0];

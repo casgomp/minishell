@@ -43,7 +43,8 @@ MANDATORY_SRCS	:= 	minishell.c \
 					msh_compile_cmds_utils.c \
 					msh_compile_cmds_utils2.c \
 					paths.c \
-					processes.c \
+					process.c \
+					setup_exec.c \
 					utils.c \
 
 BONUS_SRCS		:=  
