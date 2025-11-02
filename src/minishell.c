@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/01 16:07:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/02 19:39:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <unistd.h>
+
+volatile sig_atomic_t g_signal_received = 0;
 
 int	ms_init(t_cd *pcd)
 {
@@ -34,6 +36,15 @@ int	ms_init(t_cd *pcd)
 		.expnd = '$', .dict = &msh_dict, .dict_data = pcd,
 		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
 	pcd->mshid = "msh";
+
+	//signals
+	if (pcd->interactive)
+	{
+		setup_signal(SIGINT, sigint_handler);
+		//setup_signal(SIGQUIT, sigint_handler);
+		setup_signal(SIGQUIT, SIG_IGN);
+	}
+	
 	return (1);
 }
 

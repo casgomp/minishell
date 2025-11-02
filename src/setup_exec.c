@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/01 17:14:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/02 19:39:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,9 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
+	//signals
+	g_signal_received = 0;
+
 	inchild_pipe_setup(fdcl, fdpipe);
 	heredoc_setup(curcmd->iolst);
 	if (!setup_redirections(curcmd->iolst))

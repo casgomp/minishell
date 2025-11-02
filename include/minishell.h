@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/01 17:11:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/02 19:39:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,12 @@
 # include "libft.h"
 
 # include <stdbool.h>
+# include <signal.h>
 
 extern char	**environ;
 # define ENV_XTRA_ELEMS 8
+
+extern volatile sig_atomic_t g_signal_received;
 
 typedef struct s_minishell_core_data
 {
@@ -120,5 +123,9 @@ int		child_cmd_execute(t_cd *pcd, char **args);
 //heredocs
 int		heredoc_prompt(int fd, char *limiter);
 int		heredoc_setup(t_io *curredir);
+
+//signals
+int		setup_signal(int signum, void(*handler)(int));
+void	sigint_handler(int sig);
 
 #endif // MINISHELL_H
