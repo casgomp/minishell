@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/02 19:39:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:33:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	ms_init(t_cd *pcd)
 	if (pcd->interactive)
 	{
 		setup_signal(SIGINT, sigint_handler);
-		//setup_signal(SIGQUIT, sigint_handler);
+		//setup_signal(SIGQUIT, sigint_handler); this one should be the one for interrupting ongoing process like cat waiting for input
 		setup_signal(SIGQUIT, SIG_IGN);
 	}
 	

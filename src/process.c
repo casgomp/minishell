@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/02 19:39:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:33:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 	wstatus = malloc(sizeof(int) * ncmds);
 	if (!wstatus)
 	{
-		//free pids, epaths etc?  cleanup cmds? and return(?);
+		//free pids, epaths etc?  cleanup cmds?;
+		return ;
 	}
 	i = 0;
 	while (i < ncmds)
@@ -37,6 +38,14 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 		waitpid (pids[i], &wstatus[i], 0);
 		if (WIFEXITED(wstatus[i]))
 			pcd->exit_status = WEXITSTATUS(wstatus[i]);
+		else if (WIFSIGNALED(wstatus[i]))
+		{
+			pcd->exit_status = 128 + WTERMSIG(wstatus[i]);
+			if (WTERMSIG(wstatus[i]) == SIGINT)
+				write(1, "\n", 1);
+			else if (WTERMSIG(wstatus[i]) == SIGQUIT)
+				write(1, "Quit (core dumped)\n", 19);
+		}
 		i ++;
 	}
 	free (wstatus);

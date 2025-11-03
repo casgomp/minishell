@@ -6,16 +6,19 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/02 19:39:24 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:33:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "libft.h"
+# define _POSIX_C_SOURCE 200809L
+# include "minishell.h"
+# include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+# include <errno.h>
+# include <signal.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
 
 int	heredoc_prompt(int fd, char *limiter)
 {
@@ -27,11 +30,17 @@ int	heredoc_prompt(int fd, char *limiter)
 	prompt = "> ";
 	while (1)
 	{
+		if (g_signal_received == SIGINT)
+			return (0);
 		if (write(1, prompt, 2) == -1)
 			return (0);
 		ret = get_next_line(0);
 		if (!ret)
-			return (0);
+		{
+			if (g_signal_received == SIGINT)
+				return (0);
+			return (1);
+		}
 		if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\n')
 			return (free(ret), 1);
 		if (write(fd, ret, ft_strlen(ret)) == -1)
@@ -42,26 +51,32 @@ int	heredoc_prompt(int fd, char *limiter)
 
 int	heredoc_setup(t_io *curredir)
 {
-	int		hdfdpipe[2];
+	int					hdfdpipe[2];
+	int					ret;
+	struct sigaction	sa;
 
+	if (!setup_signal_heredoc(&sa, sigint_handler_heredoc))
+		exit(1); //perror?
 	while (curredir)
 	{	
 		if (curredir->tredirect == heredoc2fd)
 		{
 			if (pipe(hdfdpipe) == -1)
 			{
-				perror("pipe");//msh_error?
+				//perror("pipe");//msh_error?
 				exit (1);
 			}
-			if (heredoc_prompt(hdfdpipe[1], curredir->fname_delim) == 0)
+			g_signal_received = 0;
+			ret = heredoc_prompt(hdfdpipe[1], curredir->fname_delim);
+			if (!ret)
 			{
-				perror("heredoc");//msh_error?
-				exit (1);
+				close (hdfdpipe[1]);
+				exit (128 + SIGINT);
 			}
-			close (hdfdpipe[1]);
 			curredir->old_fd = hdfdpipe[0];
 		}
 		curredir = curredir->next;
 	}
+	reset_handlers_heredoc(&sa);
 	return (1);
 }

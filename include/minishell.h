@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/02 19:39:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:33:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,5 +127,8 @@ int		heredoc_setup(t_io *curredir);
 //signals
 int		setup_signal(int signum, void(*handler)(int));
 void	sigint_handler(int sig);
+int		setup_signal_heredoc(struct sigaction *sa, void(*handler)(int)); //should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
+void	reset_handlers_heredoc(struct sigaction *sa);
+void	sigint_handler_heredoc(int sig);
 
 #endif // MINISHELL_H
