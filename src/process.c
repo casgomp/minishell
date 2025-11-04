@@ -6,32 +6,44 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/03 17:33:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/04 18:52:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "msh_builtins.h"
-#include "msh_compile_cmds.h"
+# define _POSIX_C_SOURCE 200809L
+# include "minishell.h"
+# include "msh_builtins.h"
+# include "msh_compile_cmds.h"
 
-#include "libft.h"
+# include "libft.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
+# include <signal.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <sys/wait.h>
 
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 {
 	int	*wstatus;
 	int	i;
+	struct sigaction	sa_ignore;//
+	struct sigaction	old_sigint;//
 
 	wstatus = malloc(sizeof(int) * ncmds);
 	if (!wstatus)
 	{
-		//free pids, epaths etc?  cleanup cmds?;
+		free (pids);
 		return ;
 	}
+
+	//setup_signal_waitpid?
+	ft_memset(&sa_ignore, 0, sizeof(sa_ignore));
+	sa_ignore.sa_handler = SIG_IGN;
+	sigemptyset(&sa_ignore.sa_mask);
+	sa_ignore.sa_flags = 0;
+	sigaction(SIGINT, &sa_ignore, &old_sigint);
+
 	i = 0;
 	while (i < ncmds)
 	{
@@ -48,6 +60,10 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 		}
 		i ++;
 	}
+
+	//reset waitpid signal?
+	sigaction(SIGINT, &old_sigint, NULL);
+
 	free (wstatus);
 	free(pids); //free pids here or in calling function?
 }

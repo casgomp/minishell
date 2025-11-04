@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/03 17:33:08 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/04 18:51:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,6 @@
 # include <stdio.h>
 # include <unistd.h>
 
-void	sigint_handler_heredoc(int sig)
-{
-	g_signal_received = sig;
-	write(1, "\n", 1);
-	close(STDIN_FILENO);
-}
-
 void	reset_handlers_heredoc(struct sigaction *sa)
 {
 	sa->sa_handler = SIG_DFL;
@@ -33,6 +26,26 @@ void	reset_handlers_heredoc(struct sigaction *sa)
 	//sa->sa_flags = 0;
 	sigaction(SIGINT, sa, NULL);
 	sigaction(SIGQUIT, sa, NULL);
+}
+
+void	sigint_handler_heredoc(int sig)
+{
+	g_signal_received = sig;
+	if (sig == SIGINT)
+		write(1, "^C", 2);
+	write(1, "\n", 1);
+	//rl_on_new_line();
+	//rl_replace_line("", 0);
+	close(STDIN_FILENO);
+}
+
+void	sigint_handler(int sig)
+{
+	g_signal_received = sig;
+	write (1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 int	setup_signal_heredoc(struct sigaction *sa, void(*handler)(int))
@@ -44,17 +57,8 @@ int	setup_signal_heredoc(struct sigaction *sa, void(*handler)(int))
 	if (sigaction(SIGINT, sa, NULL) == -1)
 		return (perror("sigaction"), 0);
 	sa->sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, sa, NULL);
+	sigaction(SIGQUIT, sa, NULL);//redundant? already ignored in parent.
 	return (1);
-}
-
-void	sigint_handler(int sig)
-{
-	g_signal_received = sig;
-	write (1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
 }
 
 int	setup_signal(int signum, void(*handler)(int))

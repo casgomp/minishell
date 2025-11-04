@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/03 17:33:02 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/04 18:52:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,11 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
-	//signals
 	g_signal_received = 0;
 
 	inchild_pipe_setup(fdcl, fdpipe);
-	heredoc_setup(curcmd->iolst);
+	if (!heredoc_setup(curcmd->iolst))
+		exit (130);//this is wrong because heredoc setup can also fail in pipe creation (i.e. exit(1)).
 	if (!setup_redirections(curcmd->iolst))
 		exit (1);
 	child_cmd_execute(pcd, curcmd->args);
