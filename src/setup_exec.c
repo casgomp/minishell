@@ -6,22 +6,27 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/04 18:52:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/05 17:36:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-#include "msh_builtins.h"
-#include "libft.h"
+# define _POSIX_C_SOURCE 200809L
+# include "minishell.h"
+# include "msh_builtins.h"
+# include "libft.h"
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
+# include <fcntl.h>
+# include <signal.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/types.h>
+# include <unistd.h>
 
 int	child_cmd_execute(t_cd *pcd, char **args)
 {
+	struct sigaction sa;
+
+	ft_memset(&sa, 0, sizeof(sa));
 	if (ft_is_builtin(args[0]))
 	{
 		msh_builtins(pcd, args);
@@ -31,6 +36,10 @@ int	child_cmd_execute(t_cd *pcd, char **args)
 	{
 		if (args[0])
 		{
+			sa.sa_handler = SIG_DFL;
+			sigemptyset(&sa.sa_mask);
+			sigaction(SIGINT, &sa, NULL);
+			sigaction(SIGQUIT, &sa, NULL);
 			execve(args[0], args, environ);//environ is no longer called that?
 			perror(args[0]);
 		}
