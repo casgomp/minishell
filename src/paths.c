@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/10/29 20:08:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/02 19:39:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-static int	free_splitstrs(char **split)
+int	free_splitstrs(char **split)
 {
 	char **const	spltorig = split;
 
@@ -51,7 +51,7 @@ static int	compose_check_path(const char *path, char *cmdexe, char *pathstr, siz
 		ft_strlcat(pathstr, "/", bufferlen);
 	}
 	ft_strlcat(pathstr, cmdexe, bufferlen);
-	if(stat(pathstr, &statbuf) != -1)
+	if (stat(pathstr, &statbuf) != -1)
 		return(1);
 	return(0);
 }
@@ -82,10 +82,10 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 		}
 	}
 	if (!check)
-		return (perror(pcmd), pcd->exit_status = 127, free_splitstrs(epaths), free(path), NULL);
+		return (perror(pcmd), pcd->exit_status = 127, free(path), NULL);
 	check = access_check_path(path);
 	if (!check)
-		return (perror(pcmd), pcd->exit_status = 126, free_splitstrs(epaths), free(path), NULL);
+		return (perror(pcmd), pcd->exit_status = 126, free(path), NULL);
 	return(pcd->exit_status = EXIT_SUCCESS, path);
 }
 
