@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 11:33:11 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/04 11:02:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	msh_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "echo"))
 		pcd->exit_status = (msh_echo(args));
 	else if (!ft_strcmp(args[0], "env"))
-		pcd->exit_status = (msh_env(pcd));
+		pcd->exit_status = (msh_env(pcd, (char *) NULL));
 	else if (!ft_strcmp(args[0], "exit"))
 		pcd->exit_status = (msh_exit(pcd, args));
 	else if (!ft_strcmp(args[0], "export"))
