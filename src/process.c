@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/05 17:36:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 19:07:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,12 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 		else if (WIFSIGNALED(wstatus[i]))
 		{
 			pcd->exit_status = 128 + WTERMSIG(wstatus[i]);
-			/*if (WTERMSIG(wstatus[i]) == SIGINT)
+			if (WTERMSIG(wstatus[i]) == SIGINT)
 				write(1, "\n", 1);
 			else if (WTERMSIG(wstatus[i]) == SIGQUIT)
-				write(1, "Quit (core dumped)\n", 19);*/
-			if (WTERMSIG(wstatus[i]) == SIGQUIT)
 			{
-				if (ncmds > 1)
-					write(1, "^\\", 2);
-				else
-					write(1, "^\\Quit (core dumped)\n", 21);
+				if (ncmds == 1)
+					write(1, "Quit (core dumped)\n", 19);//don't put this if we dont actually dump core
 			}
 		}
 		i ++;

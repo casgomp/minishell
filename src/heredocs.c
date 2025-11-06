@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/05 17:36:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 19:08:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,18 +54,25 @@ int	heredoc_prompt(int fd, char *limiter)
 
 static int	terminal_safe_heredoc_prompt(int fd, char *limiter)
 {
-	static struct termios	saved_termios;
-	struct termios			new_termios;
-	int						ret;
+	struct termios	saved_termios;
+	struct termios	new_termios;
+	int				ret;
+	int				terminal_modified;
 
-	if (tcgetattr(STDIN_FILENO, &saved_termios) == -1)
-		return (0);
-	new_termios = saved_termios;
-	new_termios.c_lflag &= ~ECHOCTL;
-	if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) == -1)
-		return (0);
+	terminal_modified = 0;
+	if (isatty(STDIN_FILENO))
+	{
+		if (tcgetattr(STDIN_FILENO, &saved_termios) == -1)
+			return (perror("tcgetattr"), 0);
+		new_termios = saved_termios;
+		new_termios.c_lflag &= ~ECHOCTL;
+		if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) == -1)
+			return (perror("tcsetattr"), 0);
+		terminal_modified = 1;
+	}
 	ret = heredoc_prompt(fd, limiter);
-	tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
+	if (isatty(STDIN_FILENO) && terminal_modified)
+		tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
 	return (ret);
 }
 

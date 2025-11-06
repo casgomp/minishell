@@ -1,2 +1,0 @@
-//this should show process id
-echo $$

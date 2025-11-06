@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/05 17:36:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 17:37:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	sigint_handler(int sig)
 	g_signal_received = sig;
 	write (1, "\n", 1);
 	if (sig == SIGINT)
-		write (1, "^C\n", 3);
+		;
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
