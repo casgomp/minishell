@@ -6,10 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:07:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 19:50:53 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# define _GNU_SOURCE
 # define _POSIX_C_SOURCE 200809L
 # include "minishell.h"
 # include "msh_builtins.h"
@@ -22,13 +23,14 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <sys/wait.h>
+# include <sys/types.h>
 
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 {
 	int	*wstatus;
 	int	i;
-	struct sigaction	sa_ignore;//
-	struct sigaction	old_sigint;//
+	struct sigaction	sa_ignore;
+	struct sigaction	old_sigint;
 
 	wstatus = malloc(sizeof(int) * ncmds);
 	if (!wstatus)
@@ -36,14 +38,11 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 		free (pids);
 		return ;
 	}
-
-	//setup_signal_waitpid?
 	ft_memset(&sa_ignore, 0, sizeof(sa_ignore));
 	sa_ignore.sa_handler = SIG_IGN;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &old_sigint);
-
 	i = 0;
 	while (i < ncmds)
 	{
@@ -55,18 +54,12 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 			pcd->exit_status = 128 + WTERMSIG(wstatus[i]);
 			if (WTERMSIG(wstatus[i]) == SIGINT)
 				write(1, "\n", 1);
-			else if (WTERMSIG(wstatus[i]) == SIGQUIT)
-			{
-				if (ncmds == 1)
-					write(1, "Quit (core dumped)\n", 19);//don't put this if we dont actually dump core
-			}
+			else if (WTERMSIG(wstatus[i]) == SIGQUIT && WCOREDUMP(wstatus[i]) && i == ncmds - 1)
+					write(1, "Quit (core dumped)\n", 19);
 		}
 		i ++;
 	}
-
-	//reset waitpid signal?
 	sigaction(SIGINT, &old_sigint, NULL);
-
 	free (wstatus);
 	free(pids); //free pids here or in calling function?
 }
