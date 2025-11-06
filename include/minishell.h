@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/03 17:33:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 19:11:06 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,9 @@ int		apply_redirection(t_io *curredir);
 int		child_cmd_execute(t_cd *pcd, char **args);
 
 //heredocs
-int		heredoc_prompt(int fd, char *limiter);
-int		heredoc_setup(t_io *curredir);
+int			heredoc_prompt(int fd, char *limiter);
+//static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
+int			heredoc_setup(t_io *curredir);
 
 //signals
 int		setup_signal(int signum, void(*handler)(int));

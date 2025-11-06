@@ -1,2 +1,2 @@
-// should print $ symbol
+# should print $ symbol
 echo $
