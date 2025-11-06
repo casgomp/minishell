@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/28 13:22:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/04 11:02:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int	msh_env(t_cd *pcd)
+int	msh_env(t_cd *pcd, char const *const prefix)
 {
 	char	**env2;
 
 	env2 = pcd->msh_env;
 	while (*env2)
+	{
+		if (prefix)
+			ft_printf("%s", prefix);
 		ft_printf("%s\n", *(env2++));
+	}
 	return (0);
 }
 
@@ -86,7 +90,7 @@ int	msh_export(t_cd *pcd, char **args)
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
-		return (msh_env(pcd));
+		return (msh_env(pcd, "export "));
 	ret = 0;
 	while (*(++args))
 	{
