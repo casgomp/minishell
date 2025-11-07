@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:14:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 19:36:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,9 @@ static int	msh_cd(char **args)
 		path = ft_strdup(args[1]);
 	if (path && !(!ft_strcmp(path, "")))
 	{
+		if (path[0] == '-')
+			return (msh_error((char const *[])
+				{__func__ + 4, "no options allowed"}, 2, -1), 2);
 		if (chdir(path) == -1)
 		{
 			msh_error((char const *[]){path, __func__ + 4}, 2, errno);
@@ -83,10 +86,12 @@ static int	msh_cd(char **args)
 	return (free(path), 0);
 }
 
-static int	msh_pwd(void)
+static int	msh_pwd(char **const args)
 {
 	char *const	cwd = getcwd((char *) NULL, 0);
 
+	if (args && args[1])
+		return (msh_error((char const *[]){__func__ + 4, "no options allowed"}, 2, -1), 2);
 	if (!cwd)
 		return (1);
 	ft_printf("%s\n", cwd);
@@ -107,7 +112,7 @@ int	msh_builtins(t_cd *pcd, char **const args)
 	else if (!ft_strcmp(args[0], "export"))
 		pcd->exit_status = (msh_export(pcd, args));
 	else if (!ft_strcmp(args[0], "pwd"))
-		pcd->exit_status = (msh_pwd());
+		pcd->exit_status = (msh_pwd(args));
 	else if (!ft_strcmp(args[0], "unset"))
 		pcd->exit_status = (msh_unset(pcd, args));
 	else
