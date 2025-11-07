@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:50:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/07 16:52:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,15 +121,15 @@ int		apply_redirection(t_io *curredir);
 int		child_cmd_execute(t_cd *pcd, char **args);
 
 //heredocs
-int			heredoc_prompt(int fd, char *limiter);
+int		heredoc_prompt(int fd, char *limiter);
 //static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
-int			heredoc_setup(t_io *curredir);
+int		heredoc_setup(t_io *curredir);
 
 //signals
 int		setup_signal(int signum, void(*handler)(int));
 void	sigint_handler(int sig);
-int		setup_signal_heredoc(struct sigaction *sa, void(*handler)(int)); //should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
-void	reset_handlers_heredoc(struct sigaction *sa);
+int		setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int)); //should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
+void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit);
 void	sigint_handler_heredoc(int sig);
 
 #endif // MINISHELL_H

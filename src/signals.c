@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:50:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/07 16:52:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,15 @@
 # include <stdio.h>
 # include <unistd.h>
 
-void	reset_handlers_heredoc(struct sigaction *sa)
+void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit)
 {
-	sa->sa_handler = SIG_DFL;
+	/*sa->sa_handler = SIG_DFL;
 	sigemptyset(&sa->sa_mask);
 	//sa->sa_flags = 0;
 	sigaction(SIGINT, sa, NULL);
-	sigaction(SIGQUIT, sa, NULL);
+	sigaction(SIGQUIT, sa, NULL);*/
+	sigaction(SIGINT, sa_old_int, NULL);
+	sigaction(SIGQUIT, sa_old_quit, NULL);
 }
 
 void	sigint_handler_heredoc(int sig)
@@ -36,7 +38,7 @@ void	sigint_handler_heredoc(int sig)
 	write(1, "\n", 1);
 	//rl_on_new_line();
 	//rl_replace_line("", 0);
-	close(STDIN_FILENO);
+	//close(STDIN_FILENO);
 }
 
 void	sigint_handler(int sig)
@@ -50,16 +52,22 @@ void	sigint_handler(int sig)
 	rl_redisplay();
 }
 
-int	setup_signal_heredoc(struct sigaction *sa, void(*handler)(int))
+int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int))
 {
-	ft_memset(sa, 0, sizeof(*sa));
-	sa->sa_handler = handler;
-	sigemptyset(&sa->sa_mask);
-	sa->sa_flags = 0;
-	if (sigaction(SIGINT, sa, NULL) == -1)
+	struct sigaction	new_sa;
+
+	if (sigaction(SIGINT, NULL, sa_old_int) == -1)
+		return (0); //correct return? perror?
+	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
+		return (0); //correct return? perror?
+	ft_memset(&new_sa, 0, sizeof(new_sa));
+	new_sa.sa_handler = handler;
+	sigemptyset(&new_sa.sa_mask);
+	new_sa.sa_flags = 0;
+	if (sigaction(SIGINT, &new_sa, NULL) == -1)
 		return (perror("sigaction"), 0);
-	sa->sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, sa, NULL);//redundant? already ignored in parent.
+	new_sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &new_sa, NULL);//redundant? already ignored in parent.
 	return (1);
 }
 

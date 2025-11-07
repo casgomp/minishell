@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:50:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/07 16:51:35 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,21 +80,33 @@ int	heredoc_setup(t_io *curredir)
 {
 	int					hdfdpipe[2];
 	int					ret;
-	struct sigaction	sa;
+	//struct sigaction	sa;
+	struct sigaction	sa_old_int;
+	struct sigaction	sa_old_quit;
+	bool				sig_modif;
 
-	if (!setup_signal_heredoc(&sa, sigint_handler_heredoc))
+	/*if (!setup_signal_heredoc(&sa, sigint_handler_heredoc))
 	{
 		return (0);
 		//exit(1); //perror?
-	}
+	}*/
+	sig_modif = false;
 	while (curredir)
 	{	
 		if (curredir->tredirect == heredoc2fd)
 		{
+			if (!sig_modif)
+			{
+				if (!setup_signal_heredoc(&sa_old_int, &sa_old_quit, sigint_handler_heredoc))
+					return (0);
+				sig_modif = true;
+			}
 			if (pipe(hdfdpipe) == -1)
 			{
 				//perror("pipe");//msh_error?
 				//exit (1);
+				if (sig_modif)
+					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
 				return (0);
 			}
 			g_signal_received = 0;
@@ -104,7 +116,11 @@ int	heredoc_setup(t_io *curredir)
 			{
 				//close (hdfdpipe[1]);
 				close (hdfdpipe[0]);//
-				reset_handlers_heredoc(&sa);
+				if (sig_modif)
+				{
+					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
+					sig_modif = false;
+				}
 				//exit (128 + SIGINT);
 				return (0);//
 			}
@@ -112,6 +128,7 @@ int	heredoc_setup(t_io *curredir)
 		}
 		curredir = curredir->next;
 	}
-	reset_handlers_heredoc(&sa);
+	if (sig_modif)
+		reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
 	return (1);
 }

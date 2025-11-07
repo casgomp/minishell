@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:50:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/07 15:19:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,9 +129,8 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
 	g_signal_received = 0;
 
-	//inchild_pipe_setup(fdcl, fdpipe);
-	if (!heredoc_setup(curcmd->iolst))
-		exit (130);//this is wrong because heredoc setup can also fail in pipe creation (i.e. exit(1)).
+	//if (!heredoc_setup(curcmd->iolst))
+		//exit (130);//this is wrong because heredoc setup can also fail in pipe creation (i.e. exit(1)).
 	inchild_pipe_setup(fdcl, fdpipe);
 	if (!setup_redirections(curcmd->iolst))
 		exit (1);
@@ -143,11 +142,20 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 {
 	static t_fdcl	fdcl = {{-1,-1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
+	t_io			*curredir;
 
 	if (fdcl.pre2[0] != -1)
 		close(fdcl.pre2[0]);
 	if (fdcl.pre1[1] != -1)
 		close(fdcl.pre1[1]);
+
+	//process heredoc in parent?????
+	if (!heredoc_setup(curcmd->iolst))
+	{
+		pcd->exit_status = 130;
+		return (0);
+	}
+
 	if (curcmd->ctrlchr == '|')
 	{
 		if (pipe(fdpipe) == -1)
@@ -165,6 +173,18 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		close(fdcl.pre1[0]);
 	if (fdpipe[1] != -1)
 		close(fdpipe[1]);
+
+	curredir = curcmd->iolst;
+	while (curredir)
+	{
+		if (curredir->old_fd != -1)
+		{
+			close (curredir->old_fd);
+			curredir->old_fd = -1;
+		}
+		curredir = curredir->next;
+	}
+
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
 	fdcl.pre1[0] = fdpipe[0];
