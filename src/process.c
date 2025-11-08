@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:50:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t ep
 	if (!ft_is_builtin(cmd->args[0]))
 	{
 		cmdexe = compose_check_cmd(pcd, cmd, epaths, epaths_len);
+		//if !cmdexe return 0?
 		free (cmd->args[0]);
 		cmd->args[0] = cmdexe;
 	}
@@ -98,14 +99,15 @@ static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t ep
 
 static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx)
 {
-	if (!cmd->args || !cmd->args[0])
-		return (1);
+	if (!cmd->args || !cmd->args[0])//maybe also if idx != ncmds - 1, because if last command empty it waits for a cmd in stdin. then i can return 0.
+		return (1);// cant return 0 because if last command empty it waits for a cmd in stdin...bash returns syntax error message and exit status 2.
 	if (ctx->childless)
 		return (execute_builtin(pcd, cmd));
 	else
 	{
 		prepare_external_cmd(pcd, cmd, ctx->epaths, ctx->epaths_len);
-		parent_setup(pcd, cmd, ctx->pids, (*idx)++);
+		if (!parent_setup(pcd, cmd, ctx->pids, (*idx)++))
+			return (0);
 		return (1);
 	}
 }

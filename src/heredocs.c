@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/07 16:51:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	heredoc_prompt(int fd, char *limiter)
 		{
 			if (g_signal_received == SIGINT)
 				return (0);
+			write (1, "\n", 1);
 			return (1);
 		}
 		if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\n')
@@ -76,7 +77,7 @@ static int	terminal_safe_heredoc_prompt(int fd, char *limiter)
 	return (ret);
 }
 
-int	heredoc_setup(t_io *curredir)
+int	heredoc_setup(t_io *curredir, t_cd *pcd)
 {
 	int					hdfdpipe[2];
 	int					ret;
@@ -85,11 +86,6 @@ int	heredoc_setup(t_io *curredir)
 	struct sigaction	sa_old_quit;
 	bool				sig_modif;
 
-	/*if (!setup_signal_heredoc(&sa, sigint_handler_heredoc))
-	{
-		return (0);
-		//exit(1); //perror?
-	}*/
 	sig_modif = false;
 	while (curredir)
 	{	
@@ -98,7 +94,7 @@ int	heredoc_setup(t_io *curredir)
 			if (!sig_modif)
 			{
 				if (!setup_signal_heredoc(&sa_old_int, &sa_old_quit, sigint_handler_heredoc))
-					return (0);
+					return (pcd->exit_status = 1, 0);
 				sig_modif = true;
 			}
 			if (pipe(hdfdpipe) == -1)
@@ -107,6 +103,7 @@ int	heredoc_setup(t_io *curredir)
 				//exit (1);
 				if (sig_modif)
 					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
+				pcd->exit_status = 1;
 				return (0);
 			}
 			g_signal_received = 0;
@@ -114,15 +111,14 @@ int	heredoc_setup(t_io *curredir)
 			close(hdfdpipe[1]);//
 			if (!ret)
 			{
-				//close (hdfdpipe[1]);
-				close (hdfdpipe[0]);//
+				close (hdfdpipe[0]);
 				if (sig_modif)
 				{
 					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
 					sig_modif = false;
 				}
-				//exit (128 + SIGINT);
-				return (0);//
+				pcd->exit_status = 128 + SIGINT;
+				return (0);
 			}
 			curredir->old_fd = hdfdpipe[0];
 		}

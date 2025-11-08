@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/07 16:52:31 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_
 	if (sigaction(SIGINT, &new_sa, NULL) == -1)
 		return (perror("sigaction"), 0);
 	new_sa.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &new_sa, NULL);//redundant? already ignored in parent.
+	sigaction(SIGQUIT, &new_sa, NULL);
 	return (1);
 }
 
@@ -78,7 +78,6 @@ int	setup_signal(int signum, void(*handler)(int))
 	ft_memset(&sa, 0, sizeof(sa));
 	sa.sa_handler = handler;
 	sigemptyset(&sa.sa_mask);
-	//sigfillset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	if (sigaction(signum, &sa, NULL) == -1)
 		return (perror("sigaction"), 0);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:51:01 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:28 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,11 @@ int	ms_init(t_cd *pcd)
 		.expnd = '$', .dict = &msh_dict, .dict_data = pcd,
 		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
 	pcd->mshid = "msh";
-
-	//signals
 	if (pcd->interactive)
 	{
 		setup_signal(SIGINT, sigint_handler);
-		//setup_signal(SIGQUIT, sigint_handler); this one should be the one for interrupting ongoing process like cat waiting for input
 		setup_signal(SIGQUIT, SIG_IGN);
 	}
-	
 	return (1);
 }
 

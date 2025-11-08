@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/07 15:19:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:01:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	child_cmd_execute(t_cd *pcd, char **args)
 {
 	struct sigaction sa;
 
+	if (!args || !args[0])
+		exit (127);
 	ft_memset(&sa, 0, sizeof(sa));
 	if (ft_is_builtin(args[0]))
 	{
@@ -128,9 +130,6 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
 {
 	g_signal_received = 0;
-
-	//if (!heredoc_setup(curcmd->iolst))
-		//exit (130);//this is wrong because heredoc setup can also fail in pipe creation (i.e. exit(1)).
 	inchild_pipe_setup(fdcl, fdpipe);
 	if (!setup_redirections(curcmd->iolst))
 		exit (1);
@@ -148,22 +147,16 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		close(fdcl.pre2[0]);
 	if (fdcl.pre1[1] != -1)
 		close(fdcl.pre1[1]);
-
-	//process heredoc in parent?????
-	if (!heredoc_setup(curcmd->iolst))
-	{
-		pcd->exit_status = 130;
+	if (!heredoc_setup(curcmd->iolst, pcd))
 		return (0);
-	}
-
 	if (curcmd->ctrlchr == '|')
 	{
 		if (pipe(fdpipe) == -1)
-			return (perror("pipe"), 1);
+			return (perror("pipe"), 0);
 	}
 	pids[i] = fork();
 	if (pids[i] == -1)
-		return (perror("fork"), 1);
+		return (perror("fork"), 0);
 	if (pids[i] == 0)
 	{
 		child_setup(pcd, curcmd, &fdcl, fdpipe);
@@ -173,7 +166,6 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		close(fdcl.pre1[0]);
 	if (fdpipe[1] != -1)
 		close(fdpipe[1]);
-
 	curredir = curcmd->iolst;
 	while (curredir)
 	{
@@ -184,7 +176,6 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		}
 		curredir = curredir->next;
 	}
-
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
 	fdcl.pre1[0] = fdpipe[0];
