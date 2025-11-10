@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/08 15:51:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/10 15:29:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd, char const *in)
 	if (!ctx->cmds || !ctx->cmds->args || !ctx->cmds->args[0] ||
 		 ctx->cmds->args[0][0] == '#')
 		 return (0);
-	ctx->epaths = ft_env_paths(&ctx->epaths_len);
+	ctx->epaths = ft_env_paths(pcd, &ctx->epaths_len);
 	ctx->ncmds = count_cmds(ctx->cmds);
 	ctx->childless = (ctx->ncmds == 1 && ft_is_builtin(ctx->cmds->args[0]));
 	if (!ctx->childless)

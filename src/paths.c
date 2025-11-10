@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/02 19:39:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/10 15:29:49 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,16 +89,28 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 	return(pcd->exit_status = EXIT_SUCCESS, path);
 }
 
-char	**ft_env_paths(size_t *len)
+char	**ft_env_paths(t_cd *pcd, size_t *len)
 {
 	char	**envvar;
 	char	*pathvarstr;
 	char	**paths;
 
-	envvar = environ;
-	while (ft_strncmp(*envvar, "PATH=", 5))
+	//envvar = environ;
+	/*while (ft_strncmp(*envvar, "PATH=", 5))
+		++ envvar;*/
+	//////////////////////////////////////////////////////
+	envvar = pcd->msh_env;
+	while (*envvar)
+	{
+		if (!ft_strncmp(*envvar, "PATH=", 5))
+			break;
 		++ envvar;
-	pathvarstr = ft_substr(*envvar, 5, ft_strlen(*envvar));
+	}
+	if (*envvar == NULL)
+		pathvarstr = ft_strdup("");
+	//////////////////////////////////////////////////////
+	else
+		pathvarstr = ft_substr(*envvar, 5, ft_strlen(*envvar));
 	if (!pathvarstr)
 		return ((char **) NULL);
 	paths = ft_split(pathvarstr, ':');

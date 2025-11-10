@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/08 15:51:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/10 15:29:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,7 @@ static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
 		free(prompt);
 		if (*pcmdline)
 			add_history(*pcmdline);
+		//if !validate_function for every syntax edge case, free pcmdline.
 	}
 	else
 	{
