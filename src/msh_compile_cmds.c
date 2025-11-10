@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:17:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/10 16:54:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,14 +93,14 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 	return (true);
 }
 
-t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split,
+static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 			t_sqed const sqed)
 {
 	t_tca		tca;
 	int			tokenidx;
 
-	tca.tosplit = to_split;
-	tca.tokens = rh_split_quotes(to_split, rh_sqed2qes(&sqed));
+	tca.tosplit = cmdline;
+	tca.tokens = rh_split_quotes(cmdline, rh_sqed2qes(&sqed));
 	tca.cmdlst = (t_cmd *) NULL;
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
@@ -120,3 +120,45 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const to_split,
 	}
 	return (cleanup_tca(&tca), tca.cmdlst);
 }
+
+static bool	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
+	char const *const cmdline)
+{
+	t_cmd const	*cmd = cmds;
+	while (cmd)
+	{
+		if (cmd->ctrlchr == '|')
+		{
+			if (!(cmd->args && cmd->args[0]))
+			{
+				msh_syntaxerror(pcd, "|", cmdline);
+				return false;
+			}
+			// // Possibly handle this case differently and
+			// // continue reading from prompt until msh_check_cmds 
+			// // is happy?
+			if (!cmd->next)
+			{
+				msh_syntaxerror(pcd, "newline", cmdline);
+				return false;
+			}
+		}
+		cmd = cmd->next;
+	}
+	return (true);
+}
+
+t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const cmdline,
+			t_sqed const sqed)
+{
+	t_cmd	*const cmds = msh_compile_cmds_core(pcd, cmdline,sqed);
+
+	if (!msh_check_cmds(pcd, cmds, cmdline))
+	{
+		// ...cleanup cmdlst == delete all cmds
+		//    nothing should be executed
+		;
+	}
+	return (cmds);
+}
+
