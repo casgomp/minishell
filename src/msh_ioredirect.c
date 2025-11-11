@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 16:14:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/06 20:25:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,23 @@ static bool	msh_ioredirect_from_fd(t_tca *ptca, const char *const token,
 	char const **const piooperator, t_llong *pfd_new)
 {
 	int	success;
+	int ioopstartpos;
 
+	ioopstartpos = ft_strlen(token) - 1;
+	while (ioopstartpos > 0 && ft_strchr("<>", token[ioopstartpos - 1]))
+		--ioopstartpos;
 	*pfd_new = ft_atoll_check_input(token, INT_MAX, &success);
-	if (*pfd_new < 0 || success <= 0 || !ft_strchr("<>", token[success]))
+	if (*pfd_new < 0 || success <= 0 || success != ioopstartpos)
 	{
 		*pfd_new = -1;
-		success = ft_strlen(token) - 1;
-		while (success > 0 && ft_strchr("<>", token[success - 1]))
-			--success;
-		if (!get_curarg(ptca))
-			return (false);
-		if (success > 0)
+		if (ioopstartpos > 0)
 		{
-			ptca->curarg->arg = ft_substr(token, 0, success);
-			*piooperator = &(token[success]);
+			if (!get_curarg(ptca))
+				return (false);
+			ptca->curarg->arg = ft_substr(token, 0, ioopstartpos);
 		}
 	}
+	*piooperator = &(token[ioopstartpos]);
 	return (true);
 }
 
