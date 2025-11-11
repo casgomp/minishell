@@ -4,3 +4,7 @@ export A=a B=b C3=3c
 unset X
 unset X Y Z
 env | sort
+#cmd after unset PATH causes SIGSEV:
+unset PATH ; env
+unset PATH ; env | sort 
+unset PATH ; export PATH=/home/pecastro/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin

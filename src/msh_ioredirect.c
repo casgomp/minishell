@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 20:25:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/11 10:57:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,24 @@ static void	msh_ioredirect_settype(t_tca *ptca,
 	ptca->curcmd->curio->new_fd = fd_new;
 }
 
+void	msh_syntaxerror(t_cd *pcd,
+	char const *const token, char const *const cmdline)
+{
+	char	buf[1024];
+
+	ft_sprintf(buf, "syntax error near unexpected token `%s'", token);
+	msh_error((char const *[]){buf, }, 1, -1);
+	if (!pcd->interactive && cmdline)
+	{
+		ft_sprintf(buf, "`%s'", cmdline);
+		msh_error((char const *[]){buf, }, 1, -1);
+	}
+	pcd->exit_status = 2;
+}
 static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 	t_sqed const sqed, char const *const iotarget)
 {
 	char **const	token_ws = msh_expand_wordsplit_token(iotarget, &sqed);
-	char			buf[1024];
 
 	if (iotarget && ((ft_strlen(iotarget) == 0)
 			|| !ft_strchr(sqed.metachr, iotarget[0])))
@@ -84,11 +97,15 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 		ptca->curcmd->curio->fname_delim = ft_strdup(token_ws[0]);
 		return (rh_free_simple_array((void **)token_ws), true);
 	}
-	ft_sprintf(buf, "syntax error near unexpected token `%s'", iotarget);
-	msh_error((char const *[]){buf, }, 1, -1);
-	ft_sprintf(buf, "`%s'", ptca->tosplit);
-	msh_error((char const *[]){buf, }, 1, -1);
-	pcd->exit_status = 2;
+	msh_syntaxerror(pcd, iotarget, ptca->tosplit);
+	// ft_sprintf(buf, "syntax error near unexpected token `%s'", iotarget);
+	// msh_error((char const *[]){buf, }, 1, -1);
+	// if (pcd->interactive)
+	// {
+	// 	ft_sprintf(buf, "`%s'", ptca->tosplit);
+	// 	msh_error((char const *[]){buf, }, 1, -1);
+	// }
+	// pcd->exit_status = 2;
 	return (false);
 }
 

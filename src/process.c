@@ -6,10 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/06 19:07:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# define _GNU_SOURCE
 # define _POSIX_C_SOURCE 200809L
 # include "minishell.h"
 # include "msh_builtins.h"
@@ -22,13 +23,14 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <sys/wait.h>
+# include <sys/types.h>
 
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 {
 	int	*wstatus;
 	int	i;
-	struct sigaction	sa_ignore;//
-	struct sigaction	old_sigint;//
+	struct sigaction	sa_ignore;
+	struct sigaction	old_sigint;
 
 	wstatus = malloc(sizeof(int) * ncmds);
 	if (!wstatus)
@@ -36,14 +38,11 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 		free (pids);
 		return ;
 	}
-
-	//setup_signal_waitpid?
 	ft_memset(&sa_ignore, 0, sizeof(sa_ignore));
 	sa_ignore.sa_handler = SIG_IGN;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &old_sigint);
-
 	i = 0;
 	while (i < ncmds)
 	{
@@ -55,18 +54,12 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 			pcd->exit_status = 128 + WTERMSIG(wstatus[i]);
 			if (WTERMSIG(wstatus[i]) == SIGINT)
 				write(1, "\n", 1);
-			else if (WTERMSIG(wstatus[i]) == SIGQUIT)
-			{
-				if (ncmds == 1)
-					write(1, "Quit (core dumped)\n", 19);//don't put this if we dont actually dump core
-			}
+			else if (WTERMSIG(wstatus[i]) == SIGQUIT && WCOREDUMP(wstatus[i]) && i == ncmds - 1)
+					write(1, "Quit (core dumped)\n", 19);
 		}
 		i ++;
 	}
-
-	//reset waitpid signal?
 	sigaction(SIGINT, &old_sigint, NULL);
-
 	free (wstatus);
 	free(pids); //free pids here or in calling function?
 }
@@ -98,6 +91,7 @@ static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t ep
 	if (!ft_is_builtin(cmd->args[0]))
 	{
 		cmdexe = compose_check_cmd(pcd, cmd, epaths, epaths_len);
+		//if !cmdexe return 0?
 		free (cmd->args[0]);
 		cmd->args[0] = cmdexe;
 	}
@@ -105,14 +99,15 @@ static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t ep
 
 static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx)
 {
-	if (!cmd->args || !cmd->args[0])
-		return (1);
+	if (!cmd->args || !cmd->args[0])//maybe also if idx != ncmds - 1, because if last command empty it waits for a cmd in stdin. then i can return 0.
+		return (1);// cant return 0 because if last command empty it waits for a cmd in stdin...bash returns syntax error message and exit status 2.
 	if (ctx->childless)
 		return (execute_builtin(pcd, cmd));
 	else
 	{
 		prepare_external_cmd(pcd, cmd, ctx->epaths, ctx->epaths_len);
-		parent_setup(pcd, cmd, ctx->pids, (*idx)++);
+		if (!parent_setup(pcd, cmd, ctx->pids, (*idx)++))
+			return (0);
 		return (1);
 	}
 }

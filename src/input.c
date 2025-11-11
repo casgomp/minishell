@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:16:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/08 15:51:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,35 @@ int	process_cmdline(t_cd *pcd, char const *const in)
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
 	if (!init_cmd_ctx(&ctx, pcd, in))
 		return (0);
+	
+	/*
+	/////////////////////////////////////////////////////
+	//debugging loop to see what msh_compile_cmds returns
+	int	i = 0;
+	t_cmd *curcmd = ctx.cmds;
+	while (curcmd)
+	{
+		int	j = 0;
+		char **curargs = curcmd->args;
+		while (curargs[j])
+		{
+			ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
+			j ++;
+		}
+		curcmd = curcmd->next;
+		i ++;
+	}
+	/////////////////////////////////////////////////////
+	*/
+
 	ret = process_all_cmds(pcd, &ctx);
-	if (!ctx.childless)
+	if (!ctx.childless && ret)
 		wait_child_processes(pcd, ctx.pids, ctx.ncmds);
+	else if (!ctx.childless && !ret)
+	{
+		if (ctx.pids)
+			free(ctx.pids);
+	}
 	if (ctx.epaths) //free pids, cmds too?
 		free_splitstrs(ctx.epaths);
 	return (ret);

@@ -1,0 +1,5 @@
+# This one we got wrong in the mockup eval I did. 
+# It is not a command so cannot be tested here,
+# but I will put it here anyways so we remember:
+# In bash, pressing enter with empty line will
+# not be stored in history, but minishell does.

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:11:06 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/10 16:58:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,8 @@ typedef struct s_fdcl
 //input
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd, char const *const in);
+void	msh_syntaxerror(t_cd *pcd, char const *const token,
+	char const *const cmdline);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
 size_t	get_envsize(char **const env);
 size_t	check_cpy_env(t_cd *pcd, bool env_init);
@@ -121,15 +123,15 @@ int		apply_redirection(t_io *curredir);
 int		child_cmd_execute(t_cd *pcd, char **args);
 
 //heredocs
-int			heredoc_prompt(int fd, char *limiter);
+int		heredoc_prompt(int fd, char *limiter);
 //static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
-int			heredoc_setup(t_io *curredir);
+int		heredoc_setup(t_io *curredir, t_cd *pcd);
 
 //signals
 int		setup_signal(int signum, void(*handler)(int));
 void	sigint_handler(int sig);
-int		setup_signal_heredoc(struct sigaction *sa, void(*handler)(int)); //should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
-void	reset_handlers_heredoc(struct sigaction *sa);
+int		setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int)); //should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
+void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit);
 void	sigint_handler_heredoc(int sig);
 
 #endif // MINISHELL_H
