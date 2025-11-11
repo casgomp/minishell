@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/10 16:54:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/11 16:46:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,8 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 	tca.cmdlst = (t_cmd *) NULL;
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
-	while (tca.tokens && tca.tokens[tokenidx])
+	while (tca.tokens && (*tca.tokens) && tca.tokens[tokenidx]
+		&& tca.tokens[tokenidx][0] != '#')
 	{
 		if (!set_curcmd(&tca))
 			return (cleanup_tca(&tca), NULL);
@@ -148,10 +149,33 @@ static bool	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 	return (true);
 }
 
+/*
+static void cleanup_iolst(t_io **piolst)
+{
+	t_io	*iolst_head;
+	
+	if (!piolst)
+		return;
+	iolst_head = *piolst;
+	// while (iolst_head)
+}
+static void	cleanup_cmds(t_cmd **pcmds)
+{
+	(void) pcmds;
+	// t_cmd const	*const pcmds_orig = pcmds;
+	
+	// while (pcmds && (*pcmds))
+	// {
+	// 	rh_free_simple_array((void **)((*pcmds)->args));
+	// 	(*pcmds)->iolst.
+	// 	++(*pcmds);
+	// }
+}
+	*/
 t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const cmdline,
 			t_sqed const sqed)
 {
-	t_cmd	*const cmds = msh_compile_cmds_core(pcd, cmdline,sqed);
+	t_cmd	*const cmds = msh_compile_cmds_core(pcd, cmdline, sqed);
 
 	if (!msh_check_cmds(pcd, cmds, cmdline))
 	{
