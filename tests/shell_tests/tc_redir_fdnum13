@@ -1,0 +1,1 @@
+echo hiB 10>/dev/stdout
