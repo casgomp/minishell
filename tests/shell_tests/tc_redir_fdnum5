@@ -1,0 +1,1 @@
+echo hi3.append  1>>/dev/stdout
