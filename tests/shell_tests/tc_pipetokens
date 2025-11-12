@@ -1,0 +1,4 @@
+echo hi | cat
+echo hi| cat
+echo hi |cat
+echo hi|cat

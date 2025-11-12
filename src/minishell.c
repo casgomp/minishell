@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 14:37:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 17:47:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	ms_init(t_cd *pcd)
 	pcd->envrsvd = 0;
 	pcd->msh_env = environ;
 	check_cpy_env(pcd, true);
-	pcd->exit_status = 42;
+	pcd->exit_status = 0;
 	pcd->interactive = isatty(0);
 	pcd->fdscript = -1;
 	pcd->exit = false;

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 15:19:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 15:33:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static int	msh_process_metachar(t_cd *pcd, t_tca *ptca,
 	}
 	else
 	{
-		msh_syntaxerror(pcd, token, ptca->tosplit);
+		return (msh_syntaxerror(pcd, token, ptca->tosplit), -1);
 	}
 	return (1);
 }

@@ -1,0 +1,4 @@
+# check if heredoc also works with non-interactive mode
+echo hi contd |
+cat |
+cat
