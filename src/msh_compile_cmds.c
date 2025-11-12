@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 15:33:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 18:24:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 }
 
 static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
-	char const *const cmdline)
+	char const *const cmdline, t_cmd const **cleanincl)
 {
 	t_cmd const	*cmd = cmds;
 	while (cmd)
@@ -139,7 +139,10 @@ static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 		if (cmd->ctrlchr == '|')
 		{
 			if (!(cmd->args && cmd->args[0]))
+			{
+				*cleanincl = cmd;
 				return (msh_syntaxerror(pcd, "|", cmdline), MSH_SYNTAX_ERR);
+			}
 			// // Possibly handle this case differently and
 			// // continue reading from prompt until msh_check_cmds 
 			// // is happy?
@@ -169,27 +172,31 @@ static void cleanup_iolst(t_io **piolst_head)
 	(*piolst_head) = (t_io *) NULL;
 }
 
-static void	cleanup_cmds(t_cmd **pcmds_head)
+static void	cleanup_cmds(t_cmd **pcmds_head, t_cmd const *clean_incl)
 {
 	t_cmd	*cmd;
+	int		stop_cleanup;
 
+	stop_cleanup = 0;
 	if (!pcmds_head)
 		return ;
-	while (*pcmds_head)
+	while (*pcmds_head && stop_cleanup < 2)
 	{
 		rh_free_simple_array((void **)((*pcmds_head)->args));
 		cleanup_iolst(&((*pcmds_head)->iolst));
+		stop_cleanup += ((*pcmds_head) == clean_incl);
+		stop_cleanup += (stop_cleanup && ((*pcmds_head)->ctrlchr == '\n'));
 		cmd = (*pcmds_head)->next;
 		free(*pcmds_head);
 		(*pcmds_head) = cmd;
 	}
-	(*pcmds_head) = (t_cmd *) NULL;
 }
 
 t_cmd	*msh_compile_cmds(t_cd *pcd, /* char const *const cmdline, */
 			t_sqed const sqed)
 {
 	t_cmd	*cmds = (t_cmd *) NULL;
+	t_cmd const	*cleanincl = (t_cmd *) NULL;
 	char	*cmdln = (char *) NULL;
 	int		ret;
 	t_pt	pt;
@@ -198,16 +205,16 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, /* char const *const cmdline, */
 	while (true)
 	{
 		if (!get_cmdline_add_history(pcd, &cmdln, pt))
-			return (cleanup_cmds(&cmds), cmds);
+			return (cleanup_cmds(&cmds, cleanincl), cmds);
 		cmds = msh_compile_cmds_core(pcd, cmdln, cmds, sqed);
-		ret = msh_check_cmds(pcd, cmds, cmdln);
+		ret = msh_check_cmds(pcd, cmds, cmdln, &cleanincl);
 		free(cmdln);
 		cmdln = (char *) NULL;
 		if (ret == MSH_CMDS_OK)
 			break;
 		else if (ret == MSH_SYNTAX_ERR)
 		{
-			return (clear_fdinput(pcd, STDIN_FILENO), cleanup_cmds(&cmds), cmds);
+			return (clear_fdinput(pcd, STDIN_FILENO), cleanup_cmds(&cmds, cleanincl), cmds);
 		}
 		else if (ret == MSH_UNFINISHED_PIPE)
 		{

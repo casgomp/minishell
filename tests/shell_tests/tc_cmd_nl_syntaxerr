@@ -1,0 +1,4 @@
+# also try this in interactive mode - cleaning up the cmd lst might still be buggy
+clear
+echo hi | | echo bye
+echo ho
