@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/10 16:58:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/11 16:48:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd, char const *in);
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 //paths
-char	**ft_env_paths(size_t *len);
+char	**ft_env_paths(t_cd *pcd, size_t *len);
 char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len);
 //static int	compose_check_path(char **path, char *cmdexe, char *pathstr, size_t bufferlen);
 //static int	access_check_path(char *pathstr);
