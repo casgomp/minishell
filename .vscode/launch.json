@@ -35,6 +35,7 @@
       "request": "launch",
       "args": [
 		// "tests/shell_tests/tc_export1",
+			// "<tests/shell_tests/tc_echo_7"
 			// "nonexist",
 			// "<<", "eof"	doesn"t work
 		],	

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/11 16:48:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 15:18:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@ extern char	**environ;
 # define ENV_XTRA_ELEMS 8
 
 extern volatile sig_atomic_t g_signal_received;
+
+typedef enum e_prompt_type
+{
+	pt_std = 0,
+	pt_contd,
+}	t_pt;
 
 typedef struct s_minishell_core_data
 {
@@ -86,8 +92,8 @@ typedef struct s_fdcl
 }	t_fdcl;
 
 //input
-int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
-int		process_cmdline(t_cd *pcd, char const *const in);
+int		get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt);
+int		process_cmdline(t_cd *pcd/* , char const *const in */);
 void	msh_syntaxerror(t_cd *pcd, char const *const token,
 	char const *const cmdline);
 int		setup_stdin(t_cd *pcd, int const argc, char **const argv);
@@ -95,6 +101,7 @@ size_t	get_envsize(char **const env);
 size_t	check_cpy_env(t_cd *pcd, bool env_init);
 int		count_cmds(t_cmd *curcmd);
 int		ft_is_builtin(char *cmd);
+void	clear_fdinput(t_cd *pcd, int fd);
 
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
@@ -102,7 +109,7 @@ int		ft_is_builtin(char *cmd);
 //static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
 //static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx);
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
-int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd, char const *in);
+int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */);
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 //paths

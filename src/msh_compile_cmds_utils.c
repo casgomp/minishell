@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 16:06:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 13:07:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@ int	set_curcmd(t_tca *ptca)
 {
 	t_cmd	*newcmd;
 
+	ptca->curcmd = ptca->cmdlst;
+	while (ptca->curcmd && ptca->curcmd->next)
+		ptca->curcmd = ptca->curcmd->next;
 	if (!ptca->cmdlst || ptca->curcmd->ctrlchr)
 	{
 		newcmd = (t_cmd *)malloc(sizeof(t_cmd));

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/10 15:29:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 14:37:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 
 #include "libft.h"
 
-#include <stdlib.h>
 #include <readline/readline.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 volatile sig_atomic_t g_signal_received = 0;
@@ -55,16 +55,16 @@ int	ms_cleanup(t_cd *pcd)
 
 int	main(int argc, char *argv[])
 {
-	char	*in;
+	// char	*in;
 	t_cd	cd;
 
 	ms_init(&cd);
 	setup_stdin(&cd, argc, argv);
 	while (true && !cd.exit)
 	{
-		get_cmdline_add_history(&cd, &in);
-		process_cmdline(&cd, in);
-		free(in);
+		// get_cmdline_add_history(&cd, &in);
+		process_cmdline(&cd/* , in */);
+		// free(in);
 	}
 	ms_cleanup(&cd);
 	return (cd.exit_status);

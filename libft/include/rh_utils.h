@@ -6,13 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:11:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 11:00:15 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RH_UTILS_H
 # define RH_UTILS_H
 
-int	rh_free_simple_array(void **arr);
+void	rh_free_simple_array(void **arr);
 
 #endif // RH_UTILS_H

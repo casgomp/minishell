@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/11 16:46:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/12 15:19:00 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@
 #include "msh_builtins.h"
 #include "msh_compile_cmds.h"
 #include "msh_compile_cmds_intern.h"
+#include "msh_defs.h"
 
 #include <limits.h>
+#include <readline/readline.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 char	**msh_expand_wordsplit_token(char const *const token,
 	t_sqed const *const psqed)
@@ -67,6 +70,10 @@ static int	msh_process_metachar(t_cd *pcd, t_tca *ptca,
 		else
 			return (-1);
 	}
+	else
+	{
+		msh_syntaxerror(pcd, token, ptca->tosplit);
+	}
 	return (1);
 }
 
@@ -94,14 +101,15 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 }
 
 static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
-			t_sqed const sqed)
+			t_cmd *cmdlst_old, t_sqed const sqed)
 {
 	t_tca		tca;
 	int			tokenidx;
 
 	tca.tosplit = cmdline;
 	tca.tokens = rh_split_quotes(cmdline, rh_sqed2qes(&sqed));
-	tca.cmdlst = (t_cmd *) NULL;
+	tca.cmdlst = cmdlst_old;
+	// tca.curcmd = cmdlst_old;
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
 	while (tca.tokens && (*tca.tokens) && tca.tokens[tokenidx]
@@ -122,7 +130,7 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 	return (cleanup_tca(&tca), tca.cmdlst);
 }
 
-static bool	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
+static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 	char const *const cmdline)
 {
 	t_cmd const	*cmd = cmds;
@@ -131,57 +139,81 @@ static bool	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 		if (cmd->ctrlchr == '|')
 		{
 			if (!(cmd->args && cmd->args[0]))
-			{
-				msh_syntaxerror(pcd, "|", cmdline);
-				return false;
-			}
+				return (msh_syntaxerror(pcd, "|", cmdline), MSH_SYNTAX_ERR);
 			// // Possibly handle this case differently and
 			// // continue reading from prompt until msh_check_cmds 
 			// // is happy?
 			if (!cmd->next)
 			{
-				msh_syntaxerror(pcd, "newline", cmdline);
-				return false;
+				// return (msh_syntaxerror(pcd, "newline", cmdline), false);
+				return (MSH_UNFINISHED_PIPE);
 			}
 		}
 		cmd = cmd->next;
 	}
-	return (true);
+	return (MSH_CMDS_OK);
 }
 
-/*
-static void cleanup_iolst(t_io **piolst)
+static void cleanup_iolst(t_io **piolst_head)
 {
-	t_io	*iolst_head;
-	
-	if (!piolst)
-		return;
-	iolst_head = *piolst;
-	// while (iolst_head)
+	t_io	*elem;
+
+	if (!piolst_head)
+		return ;
+	while (*piolst_head)
+	{
+		elem = (*piolst_head)->next;
+		free(*piolst_head);
+		(*piolst_head) = elem;
+	}
+	(*piolst_head) = (t_io *) NULL;
 }
-static void	cleanup_cmds(t_cmd **pcmds)
+
+static void	cleanup_cmds(t_cmd **pcmds_head)
 {
-	(void) pcmds;
-	// t_cmd const	*const pcmds_orig = pcmds;
-	
-	// while (pcmds && (*pcmds))
-	// {
-	// 	rh_free_simple_array((void **)((*pcmds)->args));
-	// 	(*pcmds)->iolst.
-	// 	++(*pcmds);
-	// }
+	t_cmd	*cmd;
+
+	if (!pcmds_head)
+		return ;
+	while (*pcmds_head)
+	{
+		rh_free_simple_array((void **)((*pcmds_head)->args));
+		cleanup_iolst(&((*pcmds_head)->iolst));
+		cmd = (*pcmds_head)->next;
+		free(*pcmds_head);
+		(*pcmds_head) = cmd;
+	}
+	(*pcmds_head) = (t_cmd *) NULL;
 }
-	*/
-t_cmd	*msh_compile_cmds(t_cd *pcd, char const *const cmdline,
+
+t_cmd	*msh_compile_cmds(t_cd *pcd, /* char const *const cmdline, */
 			t_sqed const sqed)
 {
-	t_cmd	*const cmds = msh_compile_cmds_core(pcd, cmdline, sqed);
+	t_cmd	*cmds = (t_cmd *) NULL;
+	char	*cmdln = (char *) NULL;
+	int		ret;
+	t_pt	pt;
 
-	if (!msh_check_cmds(pcd, cmds, cmdline))
+	pt = (t_pt)pt_std;
+	while (true)
 	{
-		// ...cleanup cmdlst == delete all cmds
-		//    nothing should be executed
-		;
+		if (!get_cmdline_add_history(pcd, &cmdln, pt))
+			return (cleanup_cmds(&cmds), cmds);
+		cmds = msh_compile_cmds_core(pcd, cmdln, cmds, sqed);
+		ret = msh_check_cmds(pcd, cmds, cmdln);
+		free(cmdln);
+		cmdln = (char *) NULL;
+		if (ret == MSH_CMDS_OK)
+			break;
+		else if (ret == MSH_SYNTAX_ERR)
+		{
+			return (clear_fdinput(pcd, STDIN_FILENO), cleanup_cmds(&cmds), cmds);
+		}
+		else if (ret == MSH_UNFINISHED_PIPE)
+		{
+			pt = (t_pt)pt_contd;
+			continue ;
+		}
 	}
 	return (cmds);
 }
