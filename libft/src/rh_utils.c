@@ -6,23 +6,23 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:00:02 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 11:01:11 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 11:32:24 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
-void	rh_free_simple_array(void **arr)
+void	rh_free_simple_array(void ***arr)
 {
 	void	**elem;
 
-	if (arr)
+	if (*arr)
 	{
-		elem = arr;
+		elem = *arr;
 		while (*elem)
 			free(*(elem++));
-		free(arr);
-		arr = (void **) NULL;
+		free(*arr);
+		*arr = (void **) NULL;
 	}
 }
 // // Doesn't work in C, because ->next is not accepted on a nullptr

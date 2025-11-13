@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/08 15:05:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 12:33:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ static int	msh_exit(t_cd *pcd, char **args)
 	if (pcd->interactive)
 		ft_dprintf(2, "exit\n");
 	pcd->exit = true;
-	return (pcd->exit_status %= 256);
+	pcd->exit_status %= 256;
+	return (pcd->exit_status);
 }
 
 static int	msh_cd(char **args)

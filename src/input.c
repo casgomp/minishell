@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 17:42:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 12:27:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,9 @@ static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline, t_pt pt)
 
 int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 {
-	size_t	cmdln_len;
+	// size_t	cmdln_len;
+	char	*cmdlnsec;
+	char	**cmdlnsec_commt;
 
 	if (!pcmdline)
 		return (0);
@@ -162,15 +164,21 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 	if (pcd->interactive)
 		get_cmdline_addhist_prompt(pcd, pcmdline, pt);
 	else
-	{
-		*pcmdline = get_next_line(0);
-		if (*pcmdline)
+		while (true)
 		{
-			cmdln_len = ft_strlen(*pcmdline);
-			if (cmdln_len > 0 && (*pcmdline)[cmdln_len - 1] == '\n')
-				(*pcmdline)[cmdln_len - 1] = '\0';
+			cmdlnsec = get_next_line(0);
+			if (!cmdlnsec)
+				break ;
+			if (cmdlnsec[0] == '#')
+				continue ;
+			cmdlnsec_commt = rh_split_quotes(
+				cmdlnsec, rh_sqed2qes_cmmt(&pcd->default_sqed));
+			if (!(*pcmdline))
+				*pcmdline = "";
+			*pcmdline = ft_strjoin(*pcmdline, cmdlnsec_commt[0]);
+			rh_free_simple_array((void ***)&cmdlnsec_commt);
+			free (cmdlnsec);
 		}
-	}
 	if (!*pcmdline)
 	{
 		pcd->exit = true;

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 17:47:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 11:02:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,10 @@ int	ms_init(t_cd *pcd)
 int	ms_cleanup(t_cd *pcd)
 {
 	rl_clear_history();
+	msh_compile_cmds(pcd, pcd->default_sqed);
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
-	rh_free_simple_array((void **)pcd->msh_env);
+	rh_free_simple_array((void ***)&(pcd->msh_env));
 	return (1);
 }
 

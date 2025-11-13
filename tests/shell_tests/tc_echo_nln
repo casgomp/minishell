@@ -1,0 +1,10 @@
+# prints hi and ho on two lines
+echo 'hi
+ho'
+
+# prints hi and ho on one, then on two lines
+export TESTSTR_NLN='hi
+ho'
+echo $TESTSTR_NLN
+echo "$TESTSTR_NLN"
+unset TESTSTR_NLN
