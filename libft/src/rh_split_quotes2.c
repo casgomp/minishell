@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/20 15:07:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 14:06:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ int	set_tsl(t_splprms *const ptsp, int idx)
 
 static int	transform_prep(t_splprms *const ptsp)
 {
-	if (ptsp->activeq)
-		return (0);
+	// if (ptsp->activeq)
+	// 	return (0);
 	ptsp->split = (char **)malloc((ptsp->n_slelem + 1) * sizeof(char *));
 	if (!ptsp->split)
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/13 13:56:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 21:39:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,15 +116,26 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 	while (tca.tokens && (*tca.tokens) && tca.tokens[tokenidx])
 	{
 		if (tca.tokens[tokenidx][0] == '#')
-			tca.curcmd->ctrlchr = '\n';
+		{
+			// bool stop = false;
+			int tkidx2 = tokenidx;
+			while (tca.tokens[tkidx2]/*  && !stop */)
+			{
+				free(tca.tokens[tkidx2]);				
+				// stop = tca.tokens[tkidx2][ft_strlen(tca.tokens[tkidx2])-1] == '\n';
+				tca.tokens[tkidx2++] = (char *) NULL;
+			}
+			if (tokenidx == 0)
+				break ;
+		}
 		else
 		{
 			if (!set_curcmd(&tca))
 				return (cleanup_tca(&tca), NULL);
 			if (!msh_process_simplecmd_token(pcd, &tca, &tokenidx, sqed))
 				return (cleanup_tca(&tca), (t_cmd *) NULL);
+			++tokenidx;				
 		}
-		++tokenidx;
 		if (tca.curcmd->ctrlchr || !tca.tokens[tokenidx])
 		{
 			if (!convert_arglst(&tca))

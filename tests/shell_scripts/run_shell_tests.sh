@@ -2,6 +2,7 @@
 
 OLDWD="$(pwd)"
 WORKDIR="/tmp/mshtest_$(date +%F_%T)"
+#WORKDIR="/tmp/mshtest_$(date +%F)"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 MSHBIN="$SCRIPT_DIR/../../minishell"
 SHELL_TESTCASE_DIR="$SCRIPT_DIR/../shell_tests"
@@ -33,18 +34,18 @@ printf "################################################################\n"
 WORKDIRS="${WORKDIR%5-*}*"
 WORKDIRS="$(ls -dt1 $WORKDIRS | tail -n+3)"
 if [[ ! -z "$WORKDIRS" ]]; then
-	printf "\n\nDo you want to cleanup all old output data in:\n"
-	printf "(The 2 latest ones will be kept in any case)\n"
-	echo "$WORKDIRS"
-	PS3="Please select an option (number): "
-	select ANS in YES no; do
-		if [[ "$ANS" == "YES" ]]; then
+#	printf "\n\nDo you want to cleanup all old output data in:\n"
+#	printf "(The 2 latest ones will be kept in any case)\n"
+#	echo "$WORKDIRS"
+#	PS3="Please select an option (number): "
+#	select ANS in YES no; do
+#		if [[ "$ANS" == "YES" ]]; then
 			rm -r $WORKDIRS
-			printf "\nStill available output dirs:\n"
-			ls -1 -d /tmp/ms* # | tail -n +3
-		fi
-		break	
-	done
+#			printf "\nStill available output dirs:\n"
+#			ls -1 -d /tmp/ms* # | tail -n +3
+#		fi
+#		break	
+#	done
 fi
 
 mkdir -p "$WORKDIR"
