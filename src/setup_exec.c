@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 11:10:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 18:20:53 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "msh_builtins.h"
 #include "libft.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
@@ -22,31 +23,33 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int	child_cmd_execute(t_cd *pcd, char **args)
+int	child_cmd_execute(t_cd *pcd, t_cmd *curcmd)
 {
 	struct sigaction	sa;
 
-	if (!args || !args[0])
+	if (!curcmd->args || !curcmd->args[0])
 		exit (127);
 	ft_memset(&sa, 0, sizeof(sa));
-	if (ft_is_builtin(args[0]))
+	if (ft_is_builtin(curcmd->args[0]))
 	{
-		msh_builtins(pcd, args);
+		msh_builtins(pcd, curcmd->args);
 		exit(0);
 	}
 	else
 	{
-		if (args[0])
+		if (curcmd->args[0])
 		{
 			sa.sa_handler = SIG_DFL;
 			sigemptyset(&sa.sa_mask);
 			sigaction(SIGINT, &sa, NULL);
 			sigaction(SIGQUIT, &sa, NULL);
-			execve(args[0], args, pcd->msh_env);
-			perror(args[0]);
+			execve(curcmd->path, curcmd->args, pcd->msh_env);
+			perror(curcmd->args[0]);
 		}
-		exit (127);
+		//free curcmd->path?
+		//exit (???);
 	}
+	//free curcmd->path?
 	return (1);
 }
 
@@ -64,7 +67,8 @@ int	fail_open_closefds(t_io *curredir)
 		close (curredir->old_fd);
 		curredir = curredir->next;
 	}
-	perror(curredir->fname_delim);
+	//ft_printf("fail_open_closefds?\n");
+	msh_error((char const *[]){curredir->fname_delim, "No such file or directory\n"}, 2, 0);
 	return (1);
 }
 
@@ -81,7 +85,6 @@ int	open_files_setup(t_io *curredir)
 		curredir->old_fd = open(fnmdlm, O_RDONLY);
 	else if (curredir->tredirect == heredoc2fd)
 		return (1);
-	printf("curredir->old_fd = %d\n", curredir->old_fd);
 	if (curredir->old_fd == -1)
 		return (0);
 	return (1);
@@ -128,14 +131,46 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 	return (1);
 }
 
+//void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len)
+int	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess)
+{
+	//char	*cmdexe;
+
+	if (!ft_is_builtin(cmd->args[0]))
+	{
+		//cmdexe = compose_check_cmd(pcd, cmd, epaths, epaths_len);
+		if (!compose_check_cmd(pcd, cmd, ctx, path_noaccess))
+		{
+			//printf("prepare_external_cmd: errno = %d\n", errno);
+			return (0);
+		}
+		//free (cmd->args[0]);
+		//cmd->args[0] = cmdexe;
+	}
+	return (1);
+}
+
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx)
 {
+	char	*path_noaccess;
+
+	path_noaccess = NULL;
 	g_signal_received = 0;
 	inchild_pipe_setup(fdcl, fdpipe);
 	if (!setup_redirections(curcmd->iolst))
 		exit (1);
-	prepare_external_cmd(pcd, curcmd, ctx->epaths, ctx->epaths_len);
-	child_cmd_execute(pcd, curcmd->args);
+	if (!prepare_external_cmd(pcd, curcmd, ctx, &path_noaccess))
+	{
+		//ft_printf("child_stup: errno = %d, exit_status = %d\n", errno, pcd->exit_status);
+		if (pcd->exit_status == 126)
+			msh_error((char const *[]){path_noaccess, "Permission denied"}, 2, 0);
+		else if (pcd->exit_status == 127)
+			msh_error((char const *[]){curcmd->args[0], "command not found"}, 2, 0);
+		exit (pcd->exit_status); //free path_noaccess?
+	}
+	//child_cmd_execute(pcd, curcmd->args);
+	else
+		child_cmd_execute(pcd, curcmd);
 	return (1);
 }
 

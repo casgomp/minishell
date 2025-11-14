@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 11:10:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 17:06:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,19 +84,6 @@ static int	execute_builtin(t_cd *pcd, t_cmd *cmd)
 	return (1);
 }
 
-void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len)
-{
-	char	*cmdexe;
-
-	if (!ft_is_builtin(cmd->args[0]))
-	{
-		cmdexe = compose_check_cmd(pcd, cmd, epaths, epaths_len);
-		//if !cmdexe return 0?
-		free (cmd->args[0]);
-		cmd->args[0] = cmdexe;
-	}
-}
-
 static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx)
 {
 	//if (!cmd->args || !cmd->args[0])//maybe also if idx != ncmds - 1, because if last command empty it waits for a cmd in stdin. then i can return 0.
@@ -136,7 +123,7 @@ int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */)
 {
 	ctx->cmds = msh_compile_cmds(pcd, /* in, */ pcd->default_sqed);
 
-	/////////////////////////////////////////////////////
+	/*/////////////////////////////////////////////////////
 	//debugging loop to see what msh_compile_cmds returns
 	int	i = 0;
 	t_cmd *curcmd = ctx->cmds;
@@ -159,7 +146,7 @@ int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */)
 		curcmd = curcmd->next;
 		i ++;
 	}
-	/////////////////////////////////////////////////////
+	*//////////////////////////////////////////////////////
 
 	//if (!ctx->cmds || !ctx->cmds->args || !ctx->cmds->args[0])
 	if (!ctx->cmds || !ctx->cmds->args)

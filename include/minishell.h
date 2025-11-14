@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 11:07:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 17:02:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 # include <stdbool.h>
 # include <signal.h>
+# include <unistd.h>
 
 extern char	**environ;
 # define ENV_XTRA_ELEMS 8
@@ -72,6 +73,7 @@ typedef struct s_cmd
 	t_io			*iolst;
 	t_io			*curio;
 	char			**args;
+	char			*path;
 	char			ctrlchr;
 	struct s_cmd	*next;
 }	t_cmd;
@@ -107,7 +109,7 @@ void	clear_fdinput(t_cd *pcd, int fd);
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
 //static int	execute_builtin(t_cd *pcd, t_cmd *cmd);
-void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
+//void		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
 //static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx);
 
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
@@ -116,8 +118,9 @@ void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 //paths
 char	**ft_env_paths(t_cd *pcd, size_t *len);
-char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
-			size_t epaths_len);
+//char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
+//			size_t epaths_len);
+int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noaccess);
 //static int	compose_check_path(char **path, char *cmdexe,
 			// char *pathstr, size_t bufferlen);
 //static int	access_check_path(char *pathstr);
@@ -128,12 +131,13 @@ int		free_splitstrs(char **split);
 int		parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i);
 //int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
 int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx);
+int		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess);
 int		inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe);
 int		setup_redirections(t_io *iolst);
 int		open_files_setup(t_io *curredir);
 int		fail_open_closefds(t_io *curredir);
 int		apply_redirection(t_io *curredir);
-int		child_cmd_execute(t_cd *pcd, char **args);
+int		child_cmd_execute(t_cd *pcd, t_cmd *curcmd);
 
 //heredocs
 int		heredoc_prompt(int fd, char *limiter);
