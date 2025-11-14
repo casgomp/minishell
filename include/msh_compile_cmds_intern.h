@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:15:02 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 09:49:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ int		convert_arglst(t_tca *ptca);
 int		cleanup_arglst(t_tca *ptca);
 int		cleanup_tca(t_tca *ptca);
 char	**msh_expand_wordsplit_token(char const *const token,
-	t_sqed const *const psqed);
+			t_sqed const *const psqed);
 bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
-	int const	tokenidx, t_sqed const sqed);
+			int const	tokenidx, t_sqed const sqed);
 
 #endif // MSH_COMPILE_CMDS_INTERN_H

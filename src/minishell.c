@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/13 11:02:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 09:57:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-volatile sig_atomic_t g_signal_received = 0;
+volatile	sig_atomic_t
+	g_signal_received = 0;
 
 int	ms_init(t_cd *pcd)
 {
@@ -56,16 +57,13 @@ int	ms_cleanup(t_cd *pcd)
 
 int	main(int argc, char *argv[])
 {
-	// char	*in;
 	t_cd	cd;
 
 	ms_init(&cd);
 	setup_stdin(&cd, argc, argv);
 	while (true && !cd.exit)
 	{
-		// get_cmdline_add_history(&cd, &in);
-		process_cmdline(&cd/* , in */);
-		// free(in);
+		process_cmdline(&cd);
 	}
 	ms_cleanup(&cd);
 	return (cd.exit_status);

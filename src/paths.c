@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/10 15:29:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:08:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,13 @@ int	free_splitstrs(char **split)
 
 static int	access_check_path(char *pathstr)
 {
-	if(access(pathstr, X_OK) != -1)
-		return(1);
-	return(0);
+	if (access(pathstr, X_OK) != -1)
+		return (1);
+	return (0);
 }
 
-static int	compose_check_path(const char *path, char *cmdexe, char *pathstr, size_t bufferlen)
+static int	compose_check_path(const char *path, char *cmdexe, char *pathstr,
+			size_t bufferlen)
 {
 	struct stat	statbuf;
 
@@ -52,11 +53,12 @@ static int	compose_check_path(const char *path, char *cmdexe, char *pathstr, siz
 	}
 	ft_strlcat(pathstr, cmdexe, bufferlen);
 	if (stat(pathstr, &statbuf) != -1)
-		return(1);
-	return(0);
+		return (1);
+	return (0);
 }
 
-char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_len)
+char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
+			size_t epaths_len)
 {
 	char			**testpath;
 	char			*path;
@@ -71,7 +73,7 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 		return (pcd->exit_status = EXIT_FAILURE, NULL);
 	check = 0;
 	if (ft_strchr(pcmd, '/'))
-    	check = compose_check_path(NULL, pcmd, path, bufferlen);
+		check = compose_check_path(NULL, pcmd, path, bufferlen);
 	else
 	{
 		testpath = epaths;
@@ -86,7 +88,7 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 	check = access_check_path(path);
 	if (!check)
 		return (perror(pcmd), pcd->exit_status = 126, free(path), NULL);
-	return(pcd->exit_status = EXIT_SUCCESS, path);
+	return (pcd->exit_status = EXIT_SUCCESS, path);
 }
 
 char	**ft_env_paths(t_cd *pcd, size_t *len)
@@ -103,7 +105,7 @@ char	**ft_env_paths(t_cd *pcd, size_t *len)
 	while (*envvar)
 	{
 		if (!ft_strncmp(*envvar, "PATH=", 5))
-			break;
+			break ;
 		++ envvar;
 	}
 	if (*envvar == NULL)
