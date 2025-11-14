@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 15:20:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:30:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,8 @@ void	msh_error(char const **errstrs, int nstrs, int errnum)
 
 void	clear_fdinput(t_cd *pcd, int fd)
 {
-	char *ln;
-	
+	char	*ln;
+
 	if (!pcd->interactive)
 	{
 		ln = get_next_line(fd);

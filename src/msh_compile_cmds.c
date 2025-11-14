@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/13 21:39:34 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:33:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ static int	msh_process_metachar(t_cd *pcd, t_tca *ptca,
 		ptca->curcmd->ctrlchr = '|';
 	else if (!ft_strcmp(token, "\n"))
 		ptca->curcmd->ctrlchr = '\n';
+	else if (!ft_strcmp(token, ";"))
+		ptca->curcmd->ctrlchr = ';';
 	else if (ft_strchr("<>", token[tokenlen - 1]))
 	{
 		if (msh_process_ioredirector(pcd, ptca, tokenidx, sqed))
@@ -102,27 +104,24 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 }
 
 static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
-			t_cmd *cmdlst_old, t_sqed const sqed)
+			t_cmd *cmdlst_sofar, t_sqed const sqed)
 {
 	t_tca		tca;
 	int			tokenidx;
 
 	tca.tosplit = cmdline;
 	tca.tokens = rh_split_quotes(cmdline, rh_sqed2qes(&sqed));
-	tca.cmdlst = cmdlst_old;
-	// tca.curcmd = cmdlst_old;
+	tca.cmdlst = cmdlst_sofar;
 	tca.arglst = (t_cmdarg *) NULL;
 	tokenidx = 0;
 	while (tca.tokens && (*tca.tokens) && tca.tokens[tokenidx])
 	{
 		if (tca.tokens[tokenidx][0] == '#')
 		{
-			// bool stop = false;
 			int tkidx2 = tokenidx;
-			while (tca.tokens[tkidx2]/*  && !stop */)
+			while (tca.tokens[tkidx2])
 			{
 				free(tca.tokens[tkidx2]);				
-				// stop = tca.tokens[tkidx2][ft_strlen(tca.tokens[tkidx2])-1] == '\n';
 				tca.tokens[tkidx2++] = (char *) NULL;
 			}
 			if (tokenidx == 0)
@@ -209,8 +208,7 @@ static void	cleanup_cmds(t_cmd **pcmds_head, t_cmd const *clean_incl)
 	}
 }
 
-t_cmd	*msh_compile_cmds(t_cd *pcd, /* char const *const cmdline, */
-			t_sqed const sqed)
+t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed)
 {
 	t_cmd	*cmds = (t_cmd *) NULL;
 	t_cmd const	*cleanincl = (t_cmd *) NULL;

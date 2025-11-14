@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 09:57:46 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:33:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	ms_init(t_cd *pcd)
 	pcd->fdscript = -1;
 	pcd->exit = false;
 	pcd->default_sqed = (t_sqed){.q = "\"\'", .esc = '\\',
-		.blank = " \t", .metachr = "|<>\n", .ifs = " \t\n",
+		.blank = " \t", .metachr = "|<>\n;", .ifs = " \t\n",
 		.expnd = '$', .dict = &msh_dict, .dict_data = pcd,
 		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
 	pcd->mshid = "msh";
