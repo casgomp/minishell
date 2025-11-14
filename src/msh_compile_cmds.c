@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 10:33:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 16:59:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,39 +103,65 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 	return (true);
 }
 
-static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
+static bool	msh_compile_cmds_checkcmmt(t_tca *ptca, int tokenidx)
+{
+	int		tkidx;
+	int		offset;
+	char	*nln;
+
+	tkidx = tokenidx;
+	nln = (char *) NULL;
+	if (ptca->tokens[tokenidx][0] == '#')
+	{
+		while (ptca->tokens[tkidx] && !nln)
+		{
+			nln = ft_strchr(ptca->tokens[tkidx], '\n');
+			if (nln)
+				nln = ft_strdup(nln);
+			free(ptca->tokens[tkidx]);
+			ptca->tokens[tkidx++] = (char *) NULL;
+		}
+		if (nln)
+		{
+			ptca->tokens[--tkidx] = nln;
+			offset = tkidx;
+			while (offset > 0 && ptca->tokens[tkidx++])
+				ptca->tokens[tkidx - 1 - offset] = ptca->tokens[tkidx - 1];
+		}
+		// else
+			return (true);
+	}
+	return (false);
+}
+
+static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char *pcmdline,
 			t_cmd *cmdlst_sofar, t_sqed const sqed)
 {
 	t_tca		tca;
 	int			tokenidx;
 
-	tca.tosplit = cmdline;
-	tca.tokens = rh_split_quotes(cmdline, rh_sqed2qes(&sqed));
-	tca.cmdlst = cmdlst_sofar;
-	tca.arglst = (t_cmdarg *) NULL;
+	tca = (t_tca){.tosplit = pcmdline, .cmdlst = cmdlst_sofar,
+		.curcmd = (t_cmd *) NULL, .arglst = (t_cmdarg *) NULL,
+		.tokens = rh_split_quotes(pcmdline, rh_sqed2qes(&sqed))};
 	tokenidx = 0;
 	while (tca.tokens && (*tca.tokens) && tca.tokens[tokenidx])
 	{
-		if (tca.tokens[tokenidx][0] == '#')
+		if (!msh_compile_cmds_checkcmmt(&tca, tokenidx))
 		{
-			int tkidx2 = tokenidx;
-			while (tca.tokens[tkidx2])
-			{
-				free(tca.tokens[tkidx2]);				
-				tca.tokens[tkidx2++] = (char *) NULL;
-			}
-			if (tokenidx == 0)
-				break ;
-		}
-		else
-		{
-			if (!set_curcmd(&tca))
-				return (cleanup_tca(&tca), NULL);
-			if (!msh_process_simplecmd_token(pcd, &tca, &tokenidx, sqed))
+			// if (tca.tokens[tokenidx][0] == '\n')
+			// {
+			// 	free (*pcmdline);
+			// 	*pcmdline = ft_strdup(&tca.tokens[tokenidx][1]);
+			// 	// tca.tosplit = *pcmdline;
+			// 	// rh_free_simple_array((void ***)&tca.tokens);
+			// 	// tca.tokens = rh_split_quotes(*pcmdline, rh_sqed2qes(&sqed));
+			// }
+			if (!(set_curcmd(&tca)
+					&& msh_process_simplecmd_token(pcd, &tca, &tokenidx, sqed)))
 				return (cleanup_tca(&tca), (t_cmd *) NULL);
-			++tokenidx;				
+			++tokenidx;
 		}
-		if (tca.curcmd->ctrlchr || !tca.tokens[tokenidx])
+		if (tca.curcmd && (tca.curcmd->ctrlchr || !tca.tokens[tokenidx]))
 		{
 			if (!convert_arglst(&tca))
 				return (cleanup_tca(&tca), (t_cmd *) NULL);
@@ -145,35 +171,7 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char const *const cmdline,
 	return (cleanup_tca(&tca), tca.cmdlst);
 }
 
-static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
-	char const *const cmdline, t_cmd const **cleanincl)
-{
-	t_cmd const	*cmd = cmds;
-	
-	while (cmd)
-	{
-		if (cmd->ctrlchr == '|')
-		{
-			if (!(cmd->args && cmd->args[0]))
-			{
-				*cleanincl = cmd;
-				return (msh_syntaxerror(pcd, "|", cmdline), MSH_SYNTAX_ERR);
-			}
-			// // Possibly handle this case differently and
-			// // continue reading from prompt until msh_check_cmds 
-			// // is happy?
-			if (!cmd->next)
-			{
-				// return (msh_syntaxerror(pcd, "newline", cmdline), false);
-				return (MSH_UNFINISHED_PIPE);
-			}
-		}
-		cmd = cmd->next;
-	}
-	return (MSH_CMDS_OK);
-}
-
-static void cleanup_iolst(t_io **piolst_head)
+static void	cleanup_iolst(t_io **piolst_head)
 {
 	t_io	*elem;
 
@@ -188,76 +186,122 @@ static void cleanup_iolst(t_io **piolst_head)
 	(*piolst_head) = (t_io *) NULL;
 }
 
-static void	cleanup_cmds(t_cmd **pcmds_head, t_cmd const *clean_incl)
+static void	cleanup_cmds(t_cmd **pcmds_head/* , t_cmd const *clean_incl */)
 {
 	t_cmd	*cmd;
-	int		stop_cleanup;
+	// int		stop_cleanup;
+	bool	stop_clean;
 
-	stop_cleanup = 0;
+	stop_clean = false;
 	if (!pcmds_head)
 		return ;
-	while (*pcmds_head && stop_cleanup < 2)
+	while (*pcmds_head && !stop_clean /* stop_cleanup < 2 */)
 	{
 		rh_free_simple_array((void ***)(&((*pcmds_head)->args)));
 		cleanup_iolst(&((*pcmds_head)->iolst));
-		stop_cleanup += ((*pcmds_head) == clean_incl);
-		stop_cleanup += (stop_cleanup && ((*pcmds_head)->ctrlchr == '\n'));
+		// stop_cleanup += ((*pcmds_head) == clean_incl);
+		// stop_cleanup += (stop_cleanup && ((*pcmds_head)->ctrlchr == '\n'));
+		stop_clean = ((*pcmds_head)->ctrlchr == '\n');
 		cmd = (*pcmds_head)->next;
 		free(*pcmds_head);
 		(*pcmds_head) = cmd;
 	}
 }
 
+static bool	msh_check_cmds_status(t_cd *const pcd, int ret, t_pt *ppt,
+		t_cmd **pcmds)
+{
+	if (ret == MSH_CMDS_OK)
+		return (true);
+	else if (ret == MSH_SYNTAX_ERR)
+	{
+		cleanup_cmds(pcmds);
+		if (!(pcd->interactive))
+		{
+			clear_fdinput(STDIN_FILENO);			
+			pcd->exit = true;
+		}
+	}
+	else if (ret == MSH_UNFINISHED_PIPE)
+	{
+		*ppt = (t_pt)pt_contd;
+	}
+	return (false);
+}
+
+static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
+	char const *const cmdline/* , t_cmd const **cleanincl */)
+{
+	t_cmd const	*cmd = cmds;
+
+	while (cmd)
+	{
+		if (cmd->ctrlchr == '|')
+		{
+			if (!(cmd->args && cmd->args[0]))
+			{
+				// *cleanincl = cmd;
+				return (msh_syntaxerror(pcd, "|", cmdline), MSH_SYNTAX_ERR);
+			}
+			if (!cmd->next)
+			{
+				return (MSH_UNFINISHED_PIPE);
+			}
+		}
+		cmd = cmd->next;
+	}
+	return (MSH_CMDS_OK);
+}
+
+static bool	get_cmdlnsections(t_cd *pcd, t_pt pt,
+		char ***const pcmdlnsec, int *const pcmdlnsecidx)
+{
+	char	*cmdln;
+
+	if (!((*pcmdlnsec) && (*pcmdlnsec)[(*pcmdlnsecidx)]))
+	{
+		if (!get_cmdline_add_history(pcd, &cmdln, pt))
+			return (false);
+		(*pcmdlnsec) = rh_split_quotes(cmdln,
+				rh_sqed2qes_cmdln(&pcd->default_sqed));
+		if (!((*pcmdlnsec) && (*pcmdlnsec)[0]))
+		{
+			rh_free_simple_array((void ***)pcmdlnsec);
+			return (false);
+		}
+		(*pcmdlnsecidx) = 0;
+		free(cmdln);
+	}
+	return (true);
+}
+
 t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed)
 {
-	t_cmd	*cmds = (t_cmd *) NULL;
-	t_cmd const	*cleanincl = (t_cmd *) NULL;
-	char	*cmdln = (char *) NULL;
+	t_cmd		*cmds;
+	char		*cmdln;
 	static char	**cmdlnsec = (char **) NULL;
 	static int	cmdlnsecidx = 0;
-	int		ret;
-	t_pt	pt;
+	int			ret;
+	t_pt		pt;
 
+	cmdln = (char *) NULL;
+	cmds = (t_cmd *) NULL;
 	pt = (t_pt)pt_std;
 	while (!pcd->exit)
 	{
-		if (!(cmdlnsec && cmdlnsec[cmdlnsecidx]))
+		if (!get_cmdlnsections(pcd, pt, &cmdlnsec, &cmdlnsecidx))
 		{
-			if (!get_cmdline_add_history(pcd, &cmdln, pt))
-				return (cleanup_cmds(&cmds, cleanincl), cmds);
-			cmdlnsec = rh_split_quotes(cmdln, rh_sqed2qes_cmdln(&pcd->default_sqed));
-			if (!(cmdlnsec && cmdlnsec[0]))
-			{
-				rh_free_simple_array((void ***)&cmdlnsec);
-				return (cleanup_cmds(&cmds, cleanincl), cmds);
-			}
-			cmdlnsecidx = 0;
-			free(cmdln);
+			if (!pcd->interactive && ret == MSH_UNFINISHED_PIPE)
+				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
+			return (cleanup_cmds(&cmds), cmds);
 		}
 		cmdln = cmdlnsec[cmdlnsecidx++];
 		cmds = msh_compile_cmds_core(pcd, cmdln, cmds, sqed);
-		ret = msh_check_cmds(pcd, cmds, cmdln, &cleanincl);
-		if (ret == MSH_CMDS_OK)
+		ret = msh_check_cmds(pcd, cmds, cmdln);
+		if (msh_check_cmds_status(pcd, ret, &pt, &cmds))
 			break;
-		else if (ret == MSH_SYNTAX_ERR)
-		{
-			// return (clear_fdinput(pcd, STDIN_FILENO), cleanup_cmds(&cmds, cleanincl), cmds);
-			clear_fdinput(pcd, STDIN_FILENO);
-			cleanup_cmds(&cmds, NULL);
-			if (pcd->interactive && cmdlnsec[cmdlnsecidx])
-				continue ;
-			pcd->exit = true;
-		}
-		else if (ret == MSH_UNFINISHED_PIPE)
-		{
-			pt = (t_pt)pt_contd;
-			continue ;
-		}
 	}
 	if (cmdlnsec && (!cmdlnsec[cmdlnsecidx] || pcd->exit))
-	{
 		rh_free_simple_array((void ***)&cmdlnsec);
-	}
 	return (cmds);
 }
-

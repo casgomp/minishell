@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/06 19:16:35 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 13:44:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,26 @@
 int	msh_env(t_cd *pcd, char const *const prefix)
 {
 	char	**env2;
+	char 	*buf;
+	char	*equalchar;
 
 	env2 = pcd->msh_env;
 	while (*env2)
 	{
 		if (prefix)
-			ft_printf("%s", prefix);
-		ft_printf("%s\n", *(env2++));
+		{
+			buf = malloc((ft_strlen(*env2) + 2) * sizeof(char));
+			if (!buf)
+				return (1);
+			buf = ft_strdup(*env2);
+			equalchar = ft_strchr(buf, '=');
+			*equalchar = '\0';
+			ft_printf("%s%s%s%s%c\n",
+				prefix, buf, "=\"", equalchar + 1, '"');
+		}
+		else
+			ft_printf("%s\n", *(env2));
+		++env2;
 	}
 	return (0);
 }
@@ -90,7 +103,7 @@ int	msh_export(t_cd *pcd, char **args)
 	if (!(args && args[0]))
 		return (1);
 	if (!args[1])
-		return (msh_env(pcd, "export "));
+		return (msh_env(pcd, "declare -x "));
 	ret = 0;
 	while (*(++args))
 	{

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 10:30:21 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 14:35:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,17 +78,14 @@ void	msh_error(char const **errstrs, int nstrs, int errnum)
 		ft_dprintf(2, "\n");
 }
 
-void	clear_fdinput(t_cd *pcd, int fd)
+void	clear_fdinput(int fd)
 {
 	char	*ln;
 
-	if (!pcd->interactive)
+	ln = get_next_line(fd);
+	while (ln)
 	{
+		free(ln);
 		ln = get_next_line(fd);
-		while (ln)
-		{
-			free(ln);
-			ln = get_next_line(fd);
-		}
 	}
 }

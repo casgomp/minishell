@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 09:59:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 14:35:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ size_t	get_envsize(char **const env);
 size_t	check_cpy_env(t_cd *pcd, bool env_init);
 int		count_cmds(t_cmd *curcmd);
 int		ft_is_builtin(char *cmd);
-void	clear_fdinput(t_cd *pcd, int fd);
+void	clear_fdinput(int fd);
 
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
