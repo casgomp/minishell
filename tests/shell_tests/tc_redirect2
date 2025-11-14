@@ -1,4 +1,6 @@
-rm stderr_tmp
+echo ls
+ls
+rm -v stderr_tmp
 echo hello2 1>stderr_tmp
 rm stderr_tmp
 echo hello2.1 1> /dev/null

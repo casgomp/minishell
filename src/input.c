@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 10:45:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 11:08:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,13 @@ int	ft_is_builtin(char *cmd)
 	return (false);
 }
 
-int	process_cmdline(t_cd *pcd, char const *const in)
+int	process_cmdline(t_cd *pcd/* , char const *const in */)
 {
 	t_cmd_ctx	ctx;
 	int			ret;
 
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
-	if (!init_cmd_ctx(&ctx, pcd, in))
+	if (!init_cmd_ctx(&ctx, pcd/* , in */))
 		return (0);
 	ret = process_all_cmds(pcd, &ctx);
 	if (!ctx.childless && ret)
@@ -112,18 +112,19 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 	return (1);
 }
 
-static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
+static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline, t_pt pt)
 {
-	t_qed	qed;
-	char	*prompt;
+	t_qed		qed;
+	char		*prompt;
+	char const	*const prompts[] = {"$USER@minishell$ ", "> "};
 
 	qed = rh_sqed2qed(&(pcd->default_sqed));
-	prompt = rh_rmqed("$USER@minishell$ ", &qed);
+	prompt = rh_rmqed(prompts[(int)pt], &qed);
 	if (prompt)
 	{
 		*pcmdline = readline(prompt);
 		free(prompt);
-		if (*pcmdline)
+		if (*pcmdline && (*pcmdline)[0])
 			add_history(*pcmdline);
 		//if !validate_function for every syntax edge case, free pcmdline.
 	}
@@ -134,25 +135,34 @@ static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
 	}
 }
 
-int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
+int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 {
-	size_t		cmdln_len;
+	// size_t	cmdln_len;
+	char	*cmdlnsec;
+	// char	**cmdlnsec_commt;
 
 	if (!pcmdline)
 		return (0);
 	*pcmdline = (char *) NULL;
 	if (pcd->interactive)
-		get_cmdline_addhist_prompt(pcd, pcmdline);
+		get_cmdline_addhist_prompt(pcd, pcmdline, pt);
 	else
-	{
-		*pcmdline = get_next_line(0);
-		if (*pcmdline)
+		while (true)
 		{
-			cmdln_len = ft_strlen(*pcmdline);
-			if (cmdln_len > 0 && (*pcmdline)[cmdln_len - 1] == '\n')
-				(*pcmdline)[cmdln_len - 1] = '\0';
+			cmdlnsec = get_next_line(0);
+			if (!cmdlnsec)
+				break ;
+			// if (cmdlnsec[0] == '#')
+			// 	continue ;
+			// cmdlnsec_commt = rh_split_quotes(
+			// 	cmdlnsec, rh_sqed2qes_cmmt(&pcd->default_sqed));
+			if (!(*pcmdline))
+				*pcmdline = "";
+			// *pcmdline = ft_strjoin(*pcmdline, cmdlnsec_commt[0]);
+			*pcmdline = ft_strjoin(*pcmdline, cmdlnsec);
+			// rh_free_simple_array((void ***)&cmdlnsec_commt);
+			free (cmdlnsec);
 		}
-	}
 	if (!*pcmdline)
 	{
 		pcd->exit = true;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   msh_rmquotes_expand_utils2.c                       :+:      :+:    :+:   */
+/*   msh_compile_cmds_utils2.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 15:17:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 10:51:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	cleanup_arglst(t_tca *ptca)
 
 int	cleanup_tca(t_tca *ptca)
 {
-	rh_free_simple_array((void **)ptca->tokens);
+	rh_free_simple_array((void ***)&(ptca->tokens));
 	ptca->tokens = (char **) NULL;
 	if (!cleanup_arglst(ptca))
 		return (0);

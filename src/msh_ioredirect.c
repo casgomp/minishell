@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/11 10:57:00 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 13:31:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 static bool	msh_ioredirect_from_fd(t_tca *ptca, const char *const token,
 	char const **const piooperator, t_llong *pfd_new)
 {
-	int	success;
-	int ioopstartpos;
+	int		success;
+	int 	ioopstartpos;
 
 	ioopstartpos = ft_strlen(token) - 1;
 	while (ioopstartpos > 0 && ft_strchr("<>", token[ioopstartpos - 1]))
@@ -95,7 +95,7 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 			return (false);
 		}
 		ptca->curcmd->curio->fname_delim = ft_strdup(token_ws[0]);
-		return (rh_free_simple_array((void **)token_ws), true);
+		return (rh_free_simple_array((void ***)&token_ws), true);
 	}
 	msh_syntaxerror(pcd, iotarget, ptca->tosplit);
 	// ft_sprintf(buf, "syntax error near unexpected token `%s'", iotarget);
@@ -116,12 +116,20 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	char const *const	iotarget = ptca->tokens[tokenidx + 1];
 	char const			*iooperator;
 	t_llong				fd_new;
+	char				buf[256];
 
 	if (!get_iolstelem(ptca))
 		return (false);
 	iooperator = token;
 	if (!msh_ioredirect_from_fd(ptca, token, &iooperator, &fd_new))
 		return (false);
+	if (fd_new > 1023)
+	{
+		ft_sprintf(buf,"%d", fd_new);
+		pcd->exit_status = 1;
+		msh_error((char const *[]){buf, "Bad file descriptor"}, 2, -1);
+		return (false);
+	}
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);

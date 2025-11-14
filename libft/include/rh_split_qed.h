@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/27 14:34:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/13 12:13:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,7 @@ t_qed	rh_sqed2qed(t_sqed const *const psqed);
 t_qed	rh_sqed2qed_rmonly(t_sqed const *const psqed);
 t_qes	rh_sqed2qes(t_sqed const *const psqed);
 t_qes	rh_sqed2qes_ws(t_sqed const *const psqed);
+t_qes	rh_sqed2qes_cmdln(t_sqed const *const psqed);
+t_qes	rh_sqed2qes_cmmt(t_sqed const *const psqed);
 
 #endif // RH_SPLIT_QED_H

@@ -6,25 +6,25 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 10:45:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 11:10:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# define _POSIX_C_SOURCE 200809L
-# include "minishell.h"
-# include "msh_builtins.h"
-# include "libft.h"
+// # define _POSIX_C_SOURCE 200809L
+#include "minishell.h"
+#include "msh_builtins.h"
+#include "libft.h"
 
-# include <fcntl.h>
-# include <signal.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <sys/types.h>
-# include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int	child_cmd_execute(t_cd *pcd, char **args)
 {
-	struct sigaction sa;
+	struct sigaction	sa;
 
 	if (!args || !args[0])
 		exit (127);
@@ -64,7 +64,7 @@ int	fail_open_closefds(t_io *curredir)
 		close (curredir->old_fd);
 		curredir = curredir->next;
 	}
-	perror(curredir->fname_delim);//msh_error?
+	perror(curredir->fname_delim);
 	return (1);
 }
 
@@ -83,7 +83,7 @@ int	open_files_setup(t_io *curredir)
 		return (1);
 	printf("curredir->old_fd = %d\n", curredir->old_fd);
 	if (curredir->old_fd == -1)
-		return(0);
+		return (0);
 	return (1);
 }
 
@@ -142,7 +142,7 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *
 //int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 {
-	static t_fdcl	fdcl = {{-1,-1}, {-1, -1}};
+	static t_fdcl	fdcl = {{-1, -1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
 	t_io			*curredir;
 

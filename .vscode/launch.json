@@ -1,6 +1,34 @@
 {
   "version": "0.2.0",
   "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+		// "tests/shell_tests/tc_export1",
+			// "<tests/shell_tests/tc_redir_fdnum"
+			// "<tests/shell_tests/tc_echo_nln"
+			// "<tests/shell_tests/tc_pipetokens"
+			// "nonexist",
+			// "<<", "eof"	doesn"t work
+		],	
+    //   "stopAtEntry": true,
+      "externalConsole": false,
+      "cwd": "${workspaceFolder}",
+	//   "environment": [{ "name": "SHELL", "value": "whatever" }, { "name": "42", "value": "forty2" }],
+      "program": "${workspaceFolder}/${workspaceFolderBasename}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+	  "preLaunchTask": "42 build with Makefile",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
 	{
 		"name": "(gdb) Run test program",
 		"type": "cppdbg",
@@ -29,30 +57,5 @@
 			}
 		]
 	},
-    {
-      "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
-      "request": "launch",
-      "args": [
-		// "tests/shell_tests/tc_export1",
-			// "nonexist",
-			// "<<", "eof"	doesn"t work
-		],	
-    //   "stopAtEntry": true,
-      "externalConsole": false,
-      "cwd": "${workspaceFolder}",
-	//   "environment": [{ "name": "SHELL", "value": "whatever" }, { "name": "42", "value": "forty2" }],
-      "program": "${workspaceFolder}/${workspaceFolderBasename}",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-	  "preLaunchTask": "42 build with Makefile",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    }
   ]
 }
