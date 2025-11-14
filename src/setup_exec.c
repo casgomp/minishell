@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/08 15:01:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:45:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	child_cmd_execute(t_cd *pcd, char **args)
 			sigemptyset(&sa.sa_mask);
 			sigaction(SIGINT, &sa, NULL);
 			sigaction(SIGQUIT, &sa, NULL);
-			execve(args[0], args, environ);//environ is no longer called that?
+			execve(args[0], args, pcd->msh_env);
 			perror(args[0]);
 		}
 		exit (127);
@@ -81,6 +81,7 @@ int	open_files_setup(t_io *curredir)
 		curredir->old_fd = open(fnmdlm, O_RDONLY);
 	else if (curredir->tredirect == heredoc2fd)
 		return (1);
+	printf("curredir->old_fd = %d\n", curredir->old_fd);
 	if (curredir->old_fd == -1)
 		return(0);
 	return (1);
@@ -127,17 +128,19 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 	return (1);
 }
 
-int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe)
+int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx)
 {
 	g_signal_received = 0;
 	inchild_pipe_setup(fdcl, fdpipe);
 	if (!setup_redirections(curcmd->iolst))
 		exit (1);
+	prepare_external_cmd(pcd, curcmd, ctx->epaths, ctx->epaths_len);
 	child_cmd_execute(pcd, curcmd->args);
 	return (1);
 }
 
-int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
+//int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
+int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 {
 	static t_fdcl	fdcl = {{-1,-1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
@@ -154,12 +157,12 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
 		if (pipe(fdpipe) == -1)
 			return (perror("pipe"), 0);
 	}
-	pids[i] = fork();
-	if (pids[i] == -1)
+	ctx->pids[i] = fork();
+	if (ctx->pids[i] == -1)
 		return (perror("fork"), 0);
-	if (pids[i] == 0)
+	if (ctx->pids[i] == 0)
 	{
-		child_setup(pcd, curcmd, &fdcl, fdpipe);
+		child_setup(pcd, curcmd, &fdcl, fdpipe, ctx);
 		exit(1);
 	}
 	if (fdcl.pre1[0] != -1)

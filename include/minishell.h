@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/11 16:48:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 10:45:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,9 @@ int		ft_is_builtin(char *cmd);
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
 //static int	execute_builtin(t_cd *pcd, t_cmd *cmd);
-//static void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
+void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
 //static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx);
+
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
 int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd, char const *in);
 void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
@@ -113,8 +114,10 @@ char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths, size_t epaths_l
 int		free_splitstrs(char **split);
 
 //setup_exec
-int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
-int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
+//int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
+int		parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i);
+//int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
+int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx);
 int		inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe);
 int		setup_redirections(t_io *iolst);
 int		open_files_setup(t_io *curredir);
