@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 18:45:17 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 16:19:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,23 +57,55 @@ static int	compose_check_path(const char *path, char *cmdexe, char *pathstr,
 	return (errno);
 }
 
-//char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
-//			size_t epaths_len)
-int	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noaccess)
+int	compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess)
 {
-	char			**testpath;
-	char			*path;
-	char			*pcmd;
-	size_t			bufferlen;
 	int				check;
 	int				flag;
+	char			**testpath;
 
-	pcmd = curcmd->args[0];
-	bufferlen = ctx->epaths_len + ft_strlen(pcmd) + 1;
-	path = ft_calloc(bufferlen, sizeof(char));
-	if (!path)
-		return (pcd->exit_status = 1, 0);
 	check = 0;
+	flag = 0;
+	if (ft_strchr(cmd->args[0], '/'))
+		check = compose_check_path(NULL, cmd->args[0], cmd->path, cmd->bufferlen, pcd);
+	else
+	{
+		pcd->exit_status = 127;
+		testpath = ctx->epaths;
+		while (*testpath && check != 1)
+		{
+			check = compose_check_path(*testpath, cmd->args[0], cmd->path, cmd->bufferlen, pcd);
+			if (check == 13 && flag == 0)
+			{
+				flag = 1;
+				*path_noaccess = ft_strdup(cmd->path);
+				pcd->exit_status = 126;
+			}
+			++testpath;
+		}
+	}
+	return (check);
+}
+
+//char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
+//			size_t epaths_len)
+int	compose_check_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess)
+{
+	//char			**testpath;
+	//char			*path;
+	char			*pcmd;
+	//size_t			bufferlen;
+	//int				check;
+	//int				flag;
+
+	pcmd = cmd->args[0];
+	cmd->bufferlen = ctx->epaths_len + ft_strlen(pcmd) + 1;
+	//path = ft_calloc(bufferlen, sizeof(char));
+	//if (!path)
+		//return (pcd->exit_status = 1, 0);
+	cmd->path = ft_calloc(cmd->bufferlen, sizeof(char));
+	if (!cmd->path)
+		return (pcd->exit_status = 1, 0);
+	/*check = 0;
 	flag = 0;
 	if (ft_strchr(pcmd, '/'))
 		check = compose_check_path(NULL, pcmd, path, bufferlen, pcd);
@@ -93,14 +125,13 @@ int	compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noac
 			}
 			++testpath;
 		}
-	}
-	/*if (errno == ENOENT)
-		msh_error((char const *[]){path_noaccess, "Permission denied"}, 2, ENOENT);
-	else if (errno == EACCES)
-		msh_error((char const *[]){path_noaccess, "Permission denied"}, 2, EACCES);*/
-	if (check != 1) //free path_no_access
-		return (free(path), 0);
-	return (curcmd->path = ft_strdup(path), free(path), 1);//free path_no_access
+	}*/
+	//if (check != 1)
+		//return (free(path), 0);
+	//if (check != 1)
+	if (compose_check_cmd_get_path(pcd, ctx, cmd, path_noaccess) != 1)
+		return (0);
+	return (1);
 }
 
 char	**ft_env_paths(t_cd *pcd, size_t *len)
@@ -109,10 +140,6 @@ char	**ft_env_paths(t_cd *pcd, size_t *len)
 	char	*pathvarstr;
 	char	**paths;
 
-	//envvar = environ;
-	/*while (ft_strncmp(*envvar, "PATH=", 5))
-		++ envvar;*/
-	//////////////////////////////////////////////////////
 	envvar = pcd->msh_env;
 	while (*envvar)
 	{
@@ -122,7 +149,6 @@ char	**ft_env_paths(t_cd *pcd, size_t *len)
 	}
 	if (*envvar == NULL)
 		pathvarstr = ft_strdup("");
-	//////////////////////////////////////////////////////
 	else
 		pathvarstr = ft_substr(*envvar, 5, ft_strlen(*envvar));
 	if (!pathvarstr)

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 13:02:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 16:19:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,7 @@ int	heredoc_prompt(int fd, char *limiter)
 		{
 			if (g_signal_received == SIGINT)
 				return (0);
-			write (1, "\n", 1);
-			return (1);
+			return (write (1, "\n", 1), 1);
 		}
 		if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\n')
 			return (free(ret), 1);

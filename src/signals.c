@@ -6,10 +6,11 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 13:02:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 16:19:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# define _GNU_SOURCE
 # define _POSIX_C_SOURCE 200809L
 # include "minishell.h"
 
@@ -17,6 +18,8 @@
 //# include <readline/history.h>
 # include <signal.h>
 # include <stdio.h>
+# include <sys/wait.h>
+# include <sys/types.h>
 # include <unistd.h>
 
 void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit)
@@ -28,6 +31,18 @@ void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_o
 	sigaction(SIGQUIT, sa, NULL);*/
 	sigaction(SIGINT, sa_old_int, NULL);
 	sigaction(SIGQUIT, sa_old_quit, NULL);
+}
+
+void	sigint_handler_wait(t_cd *pcd, int wstatus, int ncmds, int idx, int *sgntcnt)
+{
+	pcd->exit_status = 128 + WTERMSIG(wstatus);
+	if (WTERMSIG(wstatus) == SIGINT && !*sgntcnt)
+	{
+		*sgntcnt = 1;
+		write(1, "\n", 1);
+	}
+	else if (WTERMSIG(wstatus) == SIGQUIT && WCOREDUMP(wstatus) && idx == ncmds - 1)
+		write(1, "Quit (core dumped)\n", 19);
 }
 
 void	sigint_handler_heredoc(int sig)
@@ -51,6 +66,18 @@ void	sigint_handler(int sig)
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
+
+void	setup_signal_wait(struct sigaction *old_sigint)
+{
+	struct sigaction	sa_ignore;
+
+	ft_memset(&sa_ignore, 0, sizeof(sa_ignore));
+	sa_ignore.sa_handler = SIG_IGN;
+	sigemptyset(&sa_ignore.sa_mask);
+	sa_ignore.sa_flags = 0;
+	sigaction(SIGINT, &sa_ignore, old_sigint);
+}
+
 
 int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int))
 {

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/14 18:20:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 16:19:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,7 @@ int	child_cmd_execute(t_cd *pcd, t_cmd *curcmd)
 		//free curcmd->path?
 		//exit (???);
 	}
-	//free curcmd->path?
-	return (1);
+	return (1);//free curcmd->path?
 }
 
 int	apply_redirection(t_io *curredir)
@@ -68,7 +67,7 @@ int	fail_open_closefds(t_io *curredir)
 		curredir = curredir->next;
 	}
 	//ft_printf("fail_open_closefds?\n");
-	msh_error((char const *[]){curredir->fname_delim, "No such file or directory\n"}, 2, 0);
+	msh_error((char const *[]){curredir->fname_delim}, 1, errno);
 	return (1);
 }
 
@@ -100,15 +99,10 @@ int	setup_redirections(t_io *iolst)
 	while (curredir && ret != 0)
 	{
 		ret = open_files_setup(curredir);
-		curredir = curredir->next;
-	}
-	if (ret == 0)
-		return (fail_open_closefds(iolst), 0);
-	curredir = iolst;
-	while (curredir)
-	{
+		if (ret == 0)
+			return (fail_open_closefds(iolst), 0);
 		if (apply_redirection(curredir) == 0)
-			return (perror(iolst->fname_delim), 0);
+			return (msh_error((char const *[]){iolst->fname_delim}, 1, errno), 0);
 		curredir = curredir->next;
 	}
 	return (1);
@@ -134,18 +128,13 @@ int	inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe)
 //void	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len)
 int	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess)
 {
-	//char	*cmdexe;
-
 	if (!ft_is_builtin(cmd->args[0]))
 	{
-		//cmdexe = compose_check_cmd(pcd, cmd, epaths, epaths_len);
 		if (!compose_check_cmd(pcd, cmd, ctx, path_noaccess))
 		{
 			//printf("prepare_external_cmd: errno = %d\n", errno);
 			return (0);
 		}
-		//free (cmd->args[0]);
-		//cmd->args[0] = cmdexe;
 	}
 	return (1);
 }
@@ -161,17 +150,40 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *
 		exit (1);
 	if (!prepare_external_cmd(pcd, curcmd, ctx, &path_noaccess))
 	{
-		//ft_printf("child_stup: errno = %d, exit_status = %d\n", errno, pcd->exit_status);
 		if (pcd->exit_status == 126)
 			msh_error((char const *[]){path_noaccess, "Permission denied"}, 2, 0);
 		else if (pcd->exit_status == 127)
 			msh_error((char const *[]){curcmd->args[0], "command not found"}, 2, 0);
-		exit (pcd->exit_status); //free path_noaccess?
+		if (path_noaccess)
+			free(path_noaccess);
+		exit (pcd->exit_status);
 	}
-	//child_cmd_execute(pcd, curcmd->args);
 	else
 		child_cmd_execute(pcd, curcmd);
+	if (path_noaccess)
+			free(path_noaccess);
 	return (1);
+}
+
+void	parent_reset_after_fork(t_fdcl *fdcl, int *fdpipe, t_io *curredir)
+{
+	if (fdcl->pre1[0] != -1)
+		close(fdcl->pre1[0]);
+	if (fdpipe[1] != -1)
+		close(fdpipe[1]);
+	while (curredir)
+	{
+		if (curredir->old_fd != -1)
+		{
+			close (curredir->old_fd);
+			curredir->old_fd = -1;
+		}
+		curredir = curredir->next;
+	}
+	fdcl->pre2[0] = fdcl->pre1[0];
+	fdcl->pre2[1] = fdcl->pre1[1];
+	fdcl->pre1[0] = fdpipe[0];
+	fdcl->pre1[1] = fdpipe[1];
 }
 
 //int	parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i)
@@ -179,7 +191,7 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 {
 	static t_fdcl	fdcl = {{-1, -1}, {-1, -1}};
 	int				fdpipe[2] = {-1, -1};
-	t_io			*curredir;
+	//t_io			*curredir;
 
 	if (fdcl.pre2[0] != -1)
 		close(fdcl.pre2[0]);
@@ -200,7 +212,7 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 		child_setup(pcd, curcmd, &fdcl, fdpipe, ctx);
 		exit(1);
 	}
-	if (fdcl.pre1[0] != -1)
+	/*if (fdcl.pre1[0] != -1)
 		close(fdcl.pre1[0]);
 	if (fdpipe[1] != -1)
 		close(fdpipe[1]);
@@ -217,6 +229,7 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 	fdcl.pre2[0] = fdcl.pre1[0];
 	fdcl.pre2[1] = fdcl.pre1[1];
 	fdcl.pre1[0] = fdpipe[0];
-	fdcl.pre1[1] = fdpipe[1];
+	fdcl.pre1[1] = fdpipe[1];*/
+	parent_reset_after_fork(&fdcl, fdpipe, curcmd->iolst);
 	return (1);
 }

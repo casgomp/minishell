@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/15 09:04:17 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 16:20:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ typedef struct s_cmd
 	t_io			*curio;
 	char			**args;
 	char			*path;
+	size_t			bufferlen;
 	char			ctrlchr;
 	struct s_cmd	*next;
 }	t_cmd;
@@ -109,12 +110,10 @@ void	clear_fdinput(int fd);
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
 //static int	execute_builtin(t_cd *pcd, t_cmd *cmd);
-//void		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, char **epaths, size_t epaths_len);
 //static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx);
-
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
 int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd);
-void	wait_child_processes(t_cd *pcd, int *pids, int ncmds);
+int		wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 //paths
 char	**ft_env_paths(t_cd *pcd, size_t *len);
@@ -125,10 +124,12 @@ int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noa
 			// char *pathstr, size_t bufferlen);
 //static int	access_check_path(char *pathstr);
 int		free_splitstrs(char **split);
+int		compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess);
 
 //setup_exec
 //int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
 int		parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i);
+void	parent_reset_after_fork(t_fdcl *fdcl, int *fdpipe, t_io *curredir);
 //int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
 int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx);
 int		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess);
@@ -144,14 +145,15 @@ int		heredoc_prompt(int fd, char *limiter);
 //static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
 int		heredoc_setup(t_io *curredir, t_cd *pcd);
 
-//signals
+//signals...should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
 int		setup_signal(int signum, void (*handler)(int));
-void	sigint_handler(int sig);
-//should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
 int		setup_signal_heredoc(struct sigaction *sa_old_int,
 			struct sigaction *sa_old_quit, void (*handler)(int));
+void	setup_signal_wait(struct sigaction *old_sigint);
+void	sigint_handler(int sig);
+void	sigint_handler_heredoc(int sig);
+void	sigint_handler_wait(t_cd *pcd, int wstatus, int ncmds, int idx, int *sgntcnt);
 void	reset_handlers_heredoc(struct sigaction *sa_old_int,
 			struct sigaction *sa_old_quit);
-void	sigint_handler_heredoc(int sig);
 
 #endif // MINISHELL_H
