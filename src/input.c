@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 15:59:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 23:28:51 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 	if (pcd->interactive)
 		get_cmdline_addhist_prompt(pcd, pcmdline, pt);
 	else
+	{
 		while (true)
 		{
 			cmdlnsec = get_next_line(0);
@@ -172,10 +173,8 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 			*pcmdline = ft_strjoin(*pcmdline, cmdlnsec);
 			free (cmdlnsec);
 		}
-	if (!*pcmdline)
-	{
-		pcd->exit = true;
-		return (0);
 	}
+	if (!*pcmdline)
+		return (pcd->exit = true, 0);
 	return (1);
 }

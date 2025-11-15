@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:23:31 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 13:44:43 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 23:23:02 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 int	msh_env(t_cd *pcd, char const *const prefix)
 {
 	char	**env2;
-	char 	*buf;
+	char	*buf;
 	char	*equalchar;
 
 	env2 = pcd->msh_env;
