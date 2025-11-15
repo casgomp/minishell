@@ -8,7 +8,7 @@
       "args": [
 		// "tests/shell_tests/tc_export1",
 			// "<tests/shell_tests/tc_redir_fdnum"
-			"<tests/shell_tests/tc_echo7"
+			"<tests/shell_tests/tc_quotes_cmts"
 			// "<tests/shell_tests/tc_cmd_nl_syntaxerr"
 			// "nonexist",
 			// "<<", "eof"	doesn"t work

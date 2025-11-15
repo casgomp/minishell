@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 10:54:45 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 23:16:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_qes	rh_sqed2qes(t_sqed const *const psqed)
 	return ((t_qes){
 		.q = psqed->q,
 		.esc = psqed->esc,
+		.lncmt = psqed->lncmt,
 		.blank = psqed->blank,
 		.metachr = psqed->metachr
 	});
@@ -53,6 +54,7 @@ t_qes	rh_sqed2qes_ws(t_sqed const *const psqed)
 	return ((t_qes){
 		.q = psqed->q,
 		.esc = psqed->esc,
+		.lncmt = '\0',
 		.blank = psqed->ifs,
 		.metachr = ""});
 }
@@ -62,17 +64,8 @@ t_qes	rh_sqed2qes_cmdln(t_sqed const *const psqed)
 	return ((t_qes){
 		.q = psqed->q,
 		.esc = psqed->esc,
-		.blank = "\n;",
-		.metachr = "",
-	});
-}
-
-t_qes	rh_sqed2qes_cmmt(t_sqed const *const psqed)
-{
-	return ((t_qes){
-		.q = psqed->q,
-		.esc = psqed->esc,
-		.blank = "#",
+		.lncmt = psqed->lncmt,
+		.blank = "\n",
 		.metachr = "",
 	});
 }
