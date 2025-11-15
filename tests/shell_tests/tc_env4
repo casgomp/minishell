@@ -1,0 +1,17 @@
+#cmd after unset PATH
+#'Warning: don't use env, because it's a builtin in msh and an external cmd in bash!"
+echo -n 'bash prints "No such file or directory" if relative path to executable is used. ignore:'
+date +%N | grep -Po '\d{3}$'
+echo -n 'bash prints "command not found" if $PATH is searched. ignore:'
+date +%N | grep -Po '\d{3}$'
+echo -n 'e.g. "$> ./wkjhw" vs. "$> wkjhw". ignore:'
+date +%N | grep -Po '\d{3}$'
+unset PATH
+echo one
+unset PATH
+echo 3 2 | sort
+unset PATH
+export PATH=/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+cat filex
+unset PATH
+cat filex #correctly doesn't find cat, but prints cat: Success to terminal.
