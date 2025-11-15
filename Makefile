@@ -21,7 +21,7 @@ SRC_DIRS        := src src/utils
 LIBFT			:= $(LIBFT_DIR)/libft.a
 
 # === FLAGS ===
-CFLAGS          := -Wall -Wextra -Werror -O3 -MD
+CFLAGS          := -Wall -Wextra -Werror -MD
 CFLAGS			+= -g3 -O0
 CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/$(INC_DIR)
 LDFLAGS         :=  -L$(LIBFT_DIR)
