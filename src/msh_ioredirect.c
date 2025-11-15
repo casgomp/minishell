@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 16:59:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/15 22:14:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	msh_syntaxerror(t_cd *pcd,
 	char const *const token, char const *const cmdline)
 {
 	char	buf[1024];
+	char	*nln;
 
 	if (token)
 	{
@@ -77,6 +78,9 @@ void	msh_syntaxerror(t_cd *pcd,
 	}
 	if (!pcd->interactive && cmdline)
 	{
+		nln = ft_strchr(cmdline, '\n');
+		if (nln)
+			*nln = '\0';
 		if (token)
 			ft_sprintf(buf, "`%s'", cmdline);
 		else
