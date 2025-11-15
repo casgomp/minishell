@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/15 23:28:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 00:13:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,16 @@ int	ft_is_builtin(char *cmd)
 		"unset",
 		NULL
 	};
-	i = 0;
-	while (bltn[i])
+
+	if (cmd)
 	{
-		if (ft_strcmp(cmd, bltn[i]) == 0)
-			return (true);
-		i ++;
+		i = 0;
+		while (bltn[i])
+		{
+			if (ft_strcmp(cmd, bltn[i]) == 0)
+				return (true);
+			i ++;
+		}
 	}
 	return (false);
 }
@@ -68,27 +72,6 @@ int	process_cmdline(t_cd *pcd/* , char const *const in */)
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
 	if (!init_cmd_ctx(&ctx, pcd/* , in */))
 		return (0);
-	
-	/*
-	/////////////////////////////////////////////////////
-	//debugging loop to see what msh_compile_cmds returns
-	int	i = 0;
-	t_cmd *curcmd = ctx.cmds;
-	while (curcmd)
-	{
-		int	j = 0;
-		char **curargs = curcmd->args;
-		while (curargs[j])
-		{
-			ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
-			j ++;
-		}
-		curcmd = curcmd->next;
-		i ++;
-	}
-	/////////////////////////////////////////////////////
-	*/
-
 	ret = process_all_cmds(pcd, &ctx);
 	if (!ctx.childless && ret)
 		wait_child_processes(pcd, ctx.pids, ctx.ncmds);
