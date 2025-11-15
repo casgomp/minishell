@@ -107,7 +107,8 @@
 	"rh_split_qed.h": "c",
 	"msh_builtins.h": "c",
 	"types.h": "c",
-	"signal.h": "c"
+	"signal.h": "c",
+	"wait.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "keyhr.42-c-format",
