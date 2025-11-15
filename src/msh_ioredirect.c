@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/13 13:31:01 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 16:59:25 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,15 +70,22 @@ void	msh_syntaxerror(t_cd *pcd,
 {
 	char	buf[1024];
 
-	ft_sprintf(buf, "syntax error near unexpected token `%s'", token);
-	msh_error((char const *[]){buf, }, 1, -1);
+	if (token)
+	{
+		ft_sprintf(buf, "syntax error near unexpected token `%s'", token);
+		msh_error((char const *[]){buf, }, 1, -1);
+	}
 	if (!pcd->interactive && cmdline)
 	{
-		ft_sprintf(buf, "`%s'", cmdline);
-		msh_error((char const *[]){buf, }, 1, -1);
+		if (token)
+			ft_sprintf(buf, "`%s'", cmdline);
+		else
+			ft_sprintf(buf, "syntax error: %s", cmdline);
+		msh_error((char const *[]){buf, }, 1, -1);		
 	}
 	pcd->exit_status = 2;
 }
+
 static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 	t_sqed const sqed, char const *const iotarget)
 {

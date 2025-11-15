@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 17:34:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/14 18:01:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,13 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 	{
 		while (s[idx] && ft_strchr(qes.blank, s[idx]))
 			++idx;
+		// if (s[idx] == '#' && (!tsp.tsl || tsp.tsl->len))
+		// {
+		// 	while (s[idx] && s[idx] != '\n')
+		// 		++idx;
+			// while (s[idx] == '\n')
+			// 	++idx;
+		// }
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup_splt(&tsp), (char **) NULL);
 		if (preproc_qesstr(s, &idx, &qes, &tsp) == 2)

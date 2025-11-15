@@ -1,0 +1,4 @@
+#some comment
+echo hi1; echo ho
+echo hi2 ; echo ho
+echo hi3;echo ho

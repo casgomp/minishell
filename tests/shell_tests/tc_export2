@@ -1,0 +1,1 @@
+export | sort | grep -Pv '(_=|SHLVL=)'
