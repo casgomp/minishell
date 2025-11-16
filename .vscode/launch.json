@@ -7,6 +7,7 @@
       "request": "launch",
       "args": [
 			// "<tests/shell_tests/tc_echo11"
+			// "<tests/shell_tests/tc_heredoc"
 			// "<tests/shell_tests/tc_quotes_cmts"
 			// "tests/shell_tests/tc_export1",
 			// "<tests/shell_tests/tc_redir_fdnum"

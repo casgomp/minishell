@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 00:13:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 18:10:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,21 +112,20 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 	return (1);
 }
 
-static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline, t_pt pt)
+static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
 {
 	t_qed		qed;
 	char		*prompt;
 	char const	*const prompts[] = {"$USER@minishell$ ", "> "};
 
 	qed = rh_sqed2qed(&(pcd->default_sqed));
-	prompt = rh_rmqed(prompts[(int)pt], &qed);
+	prompt = rh_rmqed(prompts[(int)pcd->pt], &qed);
 	if (prompt)
 	{
 		*pcmdline = readline(prompt);
 		free(prompt);
 		if (*pcmdline && (*pcmdline)[0])
 			add_history(*pcmdline);
-		//if !validate_function for every syntax edge case, free pcmdline.
 	}
 	else
 	{
@@ -135,7 +134,7 @@ static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline, t_pt pt)
 	}
 }
 
-int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
+int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 {
 	char	*cmdlnsec;
 
@@ -143,7 +142,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt)
 		return (0);
 	*pcmdline = (char *) NULL;
 	if (pcd->interactive)
-		get_cmdline_addhist_prompt(pcd, pcmdline, pt);
+		get_cmdline_addhist_prompt(pcd, pcmdline);
 	else
 	{
 		while (true)

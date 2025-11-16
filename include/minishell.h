@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 01:13:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 18:09:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_minishell_core_data
 	size_t	envrsvd;
 	int		exit_status;
 	bool	interactive;
+	t_pt	pt;
 	int		fdscript;
 	bool	exit;
 	t_sqed	default_sqed;
@@ -81,7 +82,7 @@ typedef struct s_fdcl
 }	t_fdcl;
 
 //input
-int		get_cmdline_add_history(t_cd *pcd, char **pcmdline, t_pt pt);
+int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd);
 void	msh_syntaxerror(t_cd *pcd, char const *const token,
 			char const *const cmdline);
@@ -95,7 +96,8 @@ void	clear_fdinput(int fd);
 //process
 //static int	reset_stdiofds(t_cmd *curcmd);
 //static int	execute_builtin(t_cd *pcd, t_cmd *cmd);
-//static int	process_single_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, int *idx);
+//static int	process_single_cmd(t_cd *pcd, t_cmd *cmd,
+	// t_cmd_ctx *ctx, int *idx);
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
 int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd);
 int		wait_child_processes(t_cd *pcd, int *pids, int ncmds);
@@ -122,7 +124,8 @@ int		apply_redirection(t_io *curredir);
 int		child_cmd_execute(t_cd *pcd, t_cmd *curcmd);
 
 //heredocs
-int		heredoc_prompt(int fd, char *limiter);
+// int		heredoc_prompt(int fd, char *limiter);
+int		heredoc_prompt(t_cd *pcd, int fd, char *limiter);
 //static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
 int		heredoc_setup(t_io *curredir, t_cd *pcd);
 

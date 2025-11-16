@@ -1,0 +1,12 @@
+# check if heredoc also works with non-interactive mode
+echo start
+/usr/bin/cat << "EOF"
+This is
+a multi-line
+heredoc with
+
+
+empty lines
+
+EOF
+echo end

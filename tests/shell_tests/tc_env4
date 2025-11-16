@@ -1,8 +1,8 @@
 #cmd after unset PATH
 #'Warning: don't use env, because it's a builtin in msh and an external cmd in bash!"
-echo -n 'bash prints "No such file or directory" if relative path to executable is used. ignore:'
+echo -n 'bash prints "bash: <cmdname>: No such file or directory" if relative path to executable is used. ignore:'
 date +%N | grep -Po '\d{3}$'
-echo -n 'bash prints "command not found" if $PATH is searched. ignore:'
+echo -n 'perror prints "command not found" if $PATH is searched. ignore:'
 date +%N | grep -Po '\d{3}$'
 echo -n 'e.g. "$> ./wkjhw" vs. "$> wkjhw". ignore:'
 date +%N | grep -Po '\d{3}$'

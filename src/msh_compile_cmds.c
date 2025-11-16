@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 13:28:31 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 18:16:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,8 +199,7 @@ static void	cleanup_cmds(t_cmd **pcmds_head/* , t_cmd const *clean_incl */)
 	}
 }
 
-static bool	msh_check_cmds_status(t_cd *const pcd, int ret, t_pt *ppt,
-		t_cmd **pcmds)
+static bool	msh_check_cmds_status(t_cd *const pcd, int ret, t_cmd **pcmds)
 {
 	if (!pcd->exit && ret == (t_cs)cs_cmds_ok)
 		return (true);
@@ -214,7 +213,7 @@ static bool	msh_check_cmds_status(t_cd *const pcd, int ret, t_pt *ppt,
 	}
 	else if (ret == (t_cs)cs_unfinished_pipe)
 	{
-		*ppt = (t_pt)pt_contd;
+		pcd->pt = (t_pt)pt_contd;
 	}
 	if (pcd->exit)
 		cleanup_cmds(pcmds);
@@ -246,14 +245,14 @@ static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 	return ((t_cs)cs_cmds_ok);
 }
 
-static bool	get_cmdlnsections(t_cd *pcd, t_pt pt,
+static bool	get_cmdlnsections(t_cd *pcd,
 		char ***const pcmdlnsec, int *const pcmdlnsecidx)
 {
 	char	*cmdln;
 
 	if (!((*pcmdlnsec) && (*pcmdlnsec)[(*pcmdlnsecidx)]))
 	{
-		if (!get_cmdline_add_history(pcd, &cmdln, pt))
+		if (!get_cmdline_add_history(pcd, &cmdln))
 			return (false);
 		(*pcmdlnsec) = rh_split_quotes(cmdln,
 				rh_sqed2qes_cmdln(&pcd->default_sqed));
@@ -268,31 +267,34 @@ static bool	get_cmdlnsections(t_cd *pcd, t_pt pt,
 	return (true);
 }
 
-t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed)
+t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed, char **pcmdlnsec)
 {
 	t_cmd		*cmds;
 	char		*cmdln;
 	static char	**cmdlnsec = (char **) NULL;
 	static int	cmdlnsecidx = 0;
 	int			ret;
-	t_pt		pt;
 
 	cmdln = (char *) NULL;
 	cmds = (t_cmd *) NULL;
 	ret = (t_cs)cs_uninitialised;
-	pt = (t_pt)pt_std;
 	while (!pcd->exit)
 	{
-		if (!get_cmdlnsections(pcd, pt, &cmdlnsec, &cmdlnsecidx))
+		if (!get_cmdlnsections(pcd, &cmdlnsec, &cmdlnsecidx))
 		{
 			if (!pcd->interactive && ret == (t_cs)cs_unfinished_pipe)
 				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
 			return (cleanup_cmds(&cmds), cmds);
 		}
+		if (pcmdlnsec)
+		{
+			*pcmdlnsec = ft_strdup(cmdlnsec[cmdlnsecidx++]);
+			return (cmds);
+		}
 		cmdln = cmdlnsec[cmdlnsecidx++];
 		cmds = msh_compile_cmds_core(pcd, cmdln, cmds, sqed);
 		ret = msh_check_cmds(pcd, cmds, cmdln);
-		if (msh_check_cmds_status(pcd, ret, &pt, &cmds))
+		if (msh_check_cmds_status(pcd, ret, &cmds))
 			break;
 	}
 	if (cmdlnsec && (!cmdlnsec[cmdlnsecidx] || pcd->exit))

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 13:42:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 16:34:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static bool	msh_ioredirect_from_fd(t_tca *ptca, const char *const token,
 	char const **const piooperator, t_llong *pfd_new)
 {
 	int		success;
-	int 	ioopstartpos;
+	int		ioopstartpos;
 
 	ioopstartpos = ft_strlen(token) - 1;
 	while (ioopstartpos > 0 && ft_strchr("<>", token[ioopstartpos - 1]))
@@ -85,7 +85,7 @@ void	msh_syntaxerror(t_cd *pcd,
 			ft_sprintf(buf, "`%s'", cmdline);
 		else
 			ft_sprintf(buf, "syntax error: %s", cmdline);
-		msh_error((char const *[]){buf, }, 1, -1);		
+		msh_error((char const *[]){buf, }, 1, -1);
 		pcd->exit = true;
 	}
 	pcd->exit_status = 2;
@@ -94,7 +94,7 @@ void	msh_syntaxerror(t_cd *pcd,
 static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 	t_sqed const sqed, char const *iotarget)
 {
-	char **token_ws;
+	char	**token_ws;
 
 	if (iotarget && ((ft_strlen(iotarget) == 0)
 			|| !ft_strchr(sqed.metachr, iotarget[0])))
@@ -132,7 +132,7 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 		return (false);
 	if (fd_new > 1023)
 	{
-		ft_sprintf(buf,"%d", fd_new);
+		ft_sprintf(buf, "%d", fd_new);
 		pcd->exit_status = 1;
 		msh_error((char const *[]){buf, "Bad file descriptor"}, 2, -1);
 		return (false);
@@ -140,11 +140,11 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);
-	if ((ptca->curcmd->curio->tredirect == (t_rd)rd_default)
-		|| (!ptca->curcmd->curio->fname_delim))
-	{
-		pcd->exit_status = 130;
-		msh_error((char const *[]){"Internal Error", }, 1, -1);
-	}
+	// if ((ptca->curcmd->curio->tredirect == (t_rd)rd_default)
+	// 	|| (!ptca->curcmd->curio->fname_delim))
+	// {
+	// 	pcd->exit_status = 130;
+	// 	msh_error((char const *[]){"Internal Error", }, 1, -1);
+	// }
 	return (true);
 }

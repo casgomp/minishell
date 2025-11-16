@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 12:22:55 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 19:18:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int	ms_init(t_cd *pcd)
 	check_cpy_env(pcd, true);
 	pcd->exit_status = 0;
 	pcd->interactive = isatty(0);
+	pcd->pt = (t_pt)pt_std;
 	pcd->fdscript = -1;
 	pcd->exit = false;
 	pcd->default_sqed = (t_sqed){.q = "\"\'", .rmqe = false, .esc = '\\',
@@ -48,7 +49,7 @@ int	ms_init(t_cd *pcd)
 int	ms_cleanup(t_cd *pcd)
 {
 	rl_clear_history();
-	msh_compile_cmds(pcd, pcd->default_sqed);
+	msh_compile_cmds(pcd, pcd->default_sqed, (char **) NULL);
 	if (pcd->fdscript != -1)
 		close(pcd->fdscript);
 	rh_free_simple_array((void ***)&(pcd->msh_env));
