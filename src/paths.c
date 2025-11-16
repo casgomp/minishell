@@ -32,20 +32,23 @@ int	free_splitstrs(char **split)
 	return (1);
 }
 
-static int	compose_check_path(const char *path, char *cmdexe, char *pathstr,
-			size_t bufferlen, t_cd *pcd)
+/*static int	compose_check_path(const char *path, char *cmdexe, char *pathstr,
+			size_t bufferlen, t_cd *pcd)*/
+static int	compose_check_path(const char *path, char *cmdexe, t_cmd *cmd, t_cd *pcd)
 {
+	char		*pathstr;
 	struct stat	statbuf;
 
+	pathstr = cmd->path;
 	if (!(cmdexe && pathstr))
 		return (0);
 	pathstr[0] = '\0';
 	if (path && *path)
 	{
-		ft_strlcat(pathstr, path, bufferlen);
-		ft_strlcat(pathstr, "/", bufferlen);
+		ft_strlcat(pathstr, path, cmd->bufferlen);
+		ft_strlcat(pathstr, "/", cmd->bufferlen);
 	}
-	ft_strlcat(pathstr, cmdexe, bufferlen);
+	ft_strlcat(pathstr, cmdexe, cmd->bufferlen);
 	if (stat(pathstr, &statbuf) != -1)
 	{
 		if (access(pathstr, X_OK) == -1)
@@ -57,78 +60,51 @@ static int	compose_check_path(const char *path, char *cmdexe, char *pathstr,
 	return (errno);
 }
 
+void	cmd_no_permissions(t_cd *pcd, t_cmd *cmd, bool *flag, char **path_noaccess)
+{
+	*flag = 1;
+	*path_noaccess = ft_strdup(cmd->path);
+	pcd->exit_status = 126;
+}
+
 int	compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess)
 {
 	int				check;
-	int				flag;
+	bool			flag;
 	char			**testpath;
 
 	check = 0;
 	flag = 0;
+	pcd->exit_status = 127;
 	if (ft_strchr(cmd->args[0], '/'))
-		check = compose_check_path(NULL, cmd->args[0], cmd->path, cmd->bufferlen, pcd);
+	{
+		check = compose_check_path(NULL, cmd->args[0], cmd, pcd);
+		if (check == 13)
+			cmd_no_permissions(pcd, cmd, &flag, path_noaccess);
+	}
 	else
 	{
-		pcd->exit_status = 127;
 		testpath = ctx->epaths;
 		while (*testpath && check != 1)
 		{
-			check = compose_check_path(*testpath, cmd->args[0], cmd->path, cmd->bufferlen, pcd);
+			check = compose_check_path(*testpath, cmd->args[0], cmd, pcd);
 			if (check == 13 && flag == 0)
-			{
-				flag = 1;
-				*path_noaccess = ft_strdup(cmd->path);
-				pcd->exit_status = 126;
-			}
+				cmd_no_permissions(pcd, cmd, &flag, path_noaccess);
 			++testpath;
 		}
 	}
 	return (check);
 }
 
-//char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
-//			size_t epaths_len)
 int	compose_check_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess)
 {
-	//char			**testpath;
-	//char			*path;
 	char			*pcmd;
-	//size_t			bufferlen;
-	//int				check;
-	//int				flag;
 
 	pcmd = cmd->args[0];
 	cmd->bufferlen = ctx->epaths_len + ft_strlen(pcmd) + 1;
-	//path = ft_calloc(bufferlen, sizeof(char));
-	//if (!path)
-		//return (pcd->exit_status = 1, 0);
 	cmd->path = ft_calloc(cmd->bufferlen, sizeof(char));
 	if (!cmd->path)
 		return (pcd->exit_status = 1, 0);
-	/*check = 0;
-	flag = 0;
-	if (ft_strchr(pcmd, '/'))
-		check = compose_check_path(NULL, pcmd, path, bufferlen, pcd);
-	else
-	{
-		pcd->exit_status = 127;
-		testpath = ctx->epaths;
-		while (*testpath && check != 1)
-		{
-			check = compose_check_path(*testpath, pcmd, path, bufferlen, pcd);
-			//ft_printf("compose_check_cmd: check/errno = %d\n", check);
-			if (check == 13 && flag == 0)
-			{
-				flag = 1;
-				*path_noaccess = ft_strdup(path);
-				pcd->exit_status = 126;
-			}
-			++testpath;
-		}
-	}*/
-	//if (check != 1)
-		//return (free(path), 0);
-	//if (check != 1)
 	if (compose_check_cmd_get_path(pcd, ctx, cmd, path_noaccess) != 1)
 		return (0);
 	return (1);

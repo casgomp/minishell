@@ -14,6 +14,8 @@
 # define _DEFAULT_SOURCE
 # define _BSD_SOURCE
 # include "minishell.h"
+# include "msh_builtins.h"
+# include "msh_compile_cmds.h"
 # include "libft.h"
 
 # include <errno.h>
@@ -76,54 +78,61 @@ static int	terminal_safe_heredoc_prompt(int fd, char *limiter)
 	return (ret);
 }
 
+void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old)
+{
+	msh_error((char const *[]){"pipe"}, 1, errno);
+	if (sa_old->sig_modif)
+		reset_handlers_heredoc(&sa_old->sa_int, &sa_old->sa_quit);
+	pcd->exit_status = 1;
+}
+
+int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *hdfdpipe)
+{
+	int	ret;
+
+	ret = terminal_safe_heredoc_prompt(hdfdpipe[1], curredir->fname_delim);
+	close(hdfdpipe[1]);//
+	if (!ret)
+	{
+		close (hdfdpipe[0]);
+		if (sa_old->sig_modif)
+		{
+			reset_handlers_heredoc(&sa_old->sa_int, &sa_old->sa_quit);
+			sa_old->sig_modif = false;
+		}
+		pcd->exit_status = 128 + SIGINT;
+		return (0);
+	}
+	curredir->old_fd = hdfdpipe[0];
+	return(1);
+}
+
+
 int	heredoc_setup(t_io *curredir, t_cd *pcd)
 {
 	int					hdfdpipe[2];
-	int					ret;
-	//struct sigaction	sa;
-	struct sigaction	sa_old_int;
-	struct sigaction	sa_old_quit;
-	bool				sig_modif;
+	t_sa				sa_old;
 
-	sig_modif = false;
+	sa_old.sig_modif = false;
 	while (curredir)
 	{	
 		if (curredir->tredirect == heredoc2fd)
 		{
-			if (!sig_modif)
+			if (!sa_old.sig_modif)
 			{
-				if (!setup_signal_heredoc(&sa_old_int, &sa_old_quit, sigint_handler_heredoc))
+				if (!setup_signal_heredoc(&sa_old.sa_int, &sa_old.sa_quit, sigint_handler_heredoc))
 					return (pcd->exit_status = 1, 0);
-				sig_modif = true;
+				sa_old.sig_modif = true;
 			}
 			if (pipe(hdfdpipe) == -1)
-			{
-				//perror("pipe");//msh_error?
-				//exit (1);
-				if (sig_modif)
-					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
-				pcd->exit_status = 1;
-				return (0);
-			}
+				return (heredoc_setup_clean_pipe_fail(pcd, &sa_old), 0);
 			g_signal_received = 0;
-			ret = terminal_safe_heredoc_prompt(hdfdpipe[1], curredir->fname_delim);
-			close(hdfdpipe[1]);//
-			if (!ret)
-			{
-				close (hdfdpipe[0]);
-				if (sig_modif)
-				{
-					reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
-					sig_modif = false;
-				}
-				pcd->exit_status = 128 + SIGINT;
-				return (0);
-			}
-			curredir->old_fd = hdfdpipe[0];
+			if (!heredoc_setup_send_to_prompt(pcd, curredir, &sa_old, hdfdpipe))
+				return(0);
 		}
 		curredir = curredir->next;
 	}
-	if (sig_modif)
-		reset_handlers_heredoc(&sa_old_int, &sa_old_quit);
+	if (sa_old.sig_modif)
+		reset_handlers_heredoc(&sa_old.sa_int, &sa_old.sa_quit);
 	return (1);
 }
