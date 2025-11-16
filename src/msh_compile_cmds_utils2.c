@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/13 10:51:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 12:39:47 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ int	convert_arglst(t_tca *ptca)
 {
 	int	argidx;
 
+	if (ptca->curcmd->args && !ptca->arglst)
+		return (1);
 	ptca->curcmd->args = malloc((ptca->num_args + 1) * sizeof(char *));
 	if (!ptca->curcmd->args)
 		return (0);

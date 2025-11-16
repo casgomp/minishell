@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/14 16:59:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 13:28:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "msh_builtins.h"
 #include "msh_compile_cmds.h"
 #include "msh_compile_cmds_intern.h"
-#include "msh_defs.h"
 #include "rh_split_qed.h"
 
 #include <limits.h>
@@ -105,30 +104,30 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 
 static bool	msh_compile_cmds_checkcmmt(t_tca *ptca, int tokenidx)
 {
-	int		tkidx;
-	int		offset;
-	char	*nln;
+	// int		tkidx;
+	// int		offset;
+	// char	*nln;
 
-	tkidx = tokenidx;
-	nln = (char *) NULL;
+	// tkidx = tokenidx;
+	// nln = (char *) NULL;
 	if (ptca->tokens[tokenidx][0] == '#')
 	{
-		while (ptca->tokens[tkidx] && !nln)
-		{
-			nln = ft_strchr(ptca->tokens[tkidx], '\n');
-			if (nln)
-				nln = ft_strdup(nln);
-			free(ptca->tokens[tkidx]);
-			ptca->tokens[tkidx++] = (char *) NULL;
-		}
-		if (nln)
-		{
-			ptca->tokens[--tkidx] = nln;
-			offset = tkidx;
-			while (offset > 0 && ptca->tokens[tkidx++])
-				ptca->tokens[tkidx - 1 - offset] = ptca->tokens[tkidx - 1];
-		}
-		// else
+		// while (ptca->tokens[tkidx] && !nln)
+		// {
+		// 	nln = ft_strchr(ptca->tokens[tkidx], '\n');
+		// 	if (nln)
+		// 		nln = ft_strdup(nln);
+		// 	free(ptca->tokens[tkidx]);
+		// 	ptca->tokens[tkidx++] = (char *) NULL;
+		// }
+		// if (nln)
+		// {
+		// 	ptca->tokens[--tkidx] = nln;
+		// 	offset = tkidx;
+		// 	while (offset > 0 && ptca->tokens[tkidx++])
+		// 		ptca->tokens[tkidx - 1 - offset] = ptca->tokens[tkidx - 1];
+		// }
+		// // else
 			return (true);
 	}
 	return (false);
@@ -148,19 +147,11 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char *pcmdline,
 	{
 		if (!msh_compile_cmds_checkcmmt(&tca, tokenidx))
 		{
-			// if (tca.tokens[tokenidx][0] == '\n')
-			// {
-			// 	free (*pcmdline);
-			// 	*pcmdline = ft_strdup(&tca.tokens[tokenidx][1]);
-			// 	// tca.tosplit = *pcmdline;
-			// 	// rh_free_simple_array((void ***)&tca.tokens);
-			// 	// tca.tokens = rh_split_quotes(*pcmdline, rh_sqed2qes(&sqed));
-			// }
 			if (!(set_curcmd(&tca)
 					&& msh_process_simplecmd_token(pcd, &tca, &tokenidx, sqed)))
 				return (cleanup_tca(&tca), (t_cmd *) NULL);
-			++tokenidx;
 		}
+		++tokenidx;
 		if (tca.curcmd && (tca.curcmd->ctrlchr || !tca.tokens[tokenidx]))
 		{
 			if (!convert_arglst(&tca))
@@ -211,21 +202,22 @@ static void	cleanup_cmds(t_cmd **pcmds_head/* , t_cmd const *clean_incl */)
 static bool	msh_check_cmds_status(t_cd *const pcd, int ret, t_pt *ppt,
 		t_cmd **pcmds)
 {
-	if (ret == MSH_CMDS_OK)
+	if (!pcd->exit && ret == (t_cs)cs_cmds_ok)
 		return (true);
-	else if (ret == MSH_SYNTAX_ERR)
+	else if (ret == (t_cs)cs_syntax_err)
 	{
-		cleanup_cmds(pcmds);
 		if (!(pcd->interactive))
 		{
 			clear_fdinput(STDIN_FILENO);			
 			pcd->exit = true;
 		}
 	}
-	else if (ret == MSH_UNFINISHED_PIPE)
+	else if (ret == (t_cs)cs_unfinished_pipe)
 	{
 		*ppt = (t_pt)pt_contd;
 	}
+	if (pcd->exit)
+		cleanup_cmds(pcmds);
 	return (false);
 }
 
@@ -233,24 +225,25 @@ static int	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 	char const *const cmdline/* , t_cmd const **cleanincl */)
 {
 	t_cmd const	*cmd = cmds;
+	char		buf[64];
 
 	while (cmd)
 	{
-		if (cmd->ctrlchr == '|')
+		if (ft_strchr("|;", cmd->ctrlchr))
 		{
 			if (!(cmd->args && cmd->args[0]))
 			{
-				// *cleanincl = cmd;
-				return (msh_syntaxerror(pcd, "|", cmdline), MSH_SYNTAX_ERR);
+				ft_sprintf(buf,"%c", cmd->ctrlchr);
+				return (msh_syntaxerror(pcd, buf, cmdline), (t_cs)cs_syntax_err);
 			}
-			if (!cmd->next)
+			if (cmd->ctrlchr == '|' && !cmd->next)
 			{
-				return (MSH_UNFINISHED_PIPE);
+				return ((t_cs)cs_unfinished_pipe);
 			}
 		}
 		cmd = cmd->next;
 	}
-	return (MSH_CMDS_OK);
+	return ((t_cs)cs_cmds_ok);
 }
 
 static bool	get_cmdlnsections(t_cd *pcd, t_pt pt,
@@ -286,12 +279,13 @@ t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed)
 
 	cmdln = (char *) NULL;
 	cmds = (t_cmd *) NULL;
+	ret = (t_cs)cs_uninitialised;
 	pt = (t_pt)pt_std;
 	while (!pcd->exit)
 	{
 		if (!get_cmdlnsections(pcd, pt, &cmdlnsec, &cmdlnsecidx))
 		{
-			if (!pcd->interactive && ret == MSH_UNFINISHED_PIPE)
+			if (!pcd->interactive && ret == (t_cs)cs_unfinished_pipe)
 				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
 			return (cleanup_cmds(&cmds), cmds);
 		}

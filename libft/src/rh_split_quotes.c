@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/15 23:17:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 13:53:51 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 	while (s[*pidx]
 		&& ((!ptsp->activeq
 				&& !ft_strchr(pqes->q, s[*pidx])
-				&& !(pqes->lncmt == s[*pidx])
+				&& !(pqes->lncmt[0] == s[*pidx])
 				&& !ft_strchr(pqes->blank, s[*pidx])
 				&& !ft_strchr(pqes->metachr, s[*pidx]))
 			|| (ptsp->activeq && s[*pidx] != ptsp->activeq)))
@@ -106,9 +106,16 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 			++idx;
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup_splt(&tsp), (char **) NULL);
-		if (s[idx] == qes.lncmt)
+		if (s[idx] == qes.lncmt[0])
 		{
-			while (s[idx] && s[idx] != '\n')
+			if (idx == 0
+				|| ft_strchr(&qes.lncmt[1], s[idx - 1])
+				|| ft_strchr(qes.metachr, s[idx - 1]))
+			{
+				while (s[idx] && s[idx] != '\n')
+					++idx;
+			}
+			else
 				++idx;
 		}
 		if (preproc_qesstr(s, &idx, &qes, &tsp) == 2)

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/15 22:14:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 13:42:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,18 +86,20 @@ void	msh_syntaxerror(t_cd *pcd,
 		else
 			ft_sprintf(buf, "syntax error: %s", cmdline);
 		msh_error((char const *[]){buf, }, 1, -1);		
+		pcd->exit = true;
 	}
 	pcd->exit_status = 2;
 }
 
 static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
-	t_sqed const sqed, char const *const iotarget)
+	t_sqed const sqed, char const *iotarget)
 {
-	char **const	token_ws = msh_expand_wordsplit_token(iotarget, &sqed);
+	char **token_ws;
 
 	if (iotarget && ((ft_strlen(iotarget) == 0)
 			|| !ft_strchr(sqed.metachr, iotarget[0])))
 	{
+		token_ws = msh_expand_wordsplit_token(iotarget, &sqed);
 		if (!token_ws || token_ws[0] == (char *) NULL
 			|| token_ws[1] != (char *) NULL)
 		{
@@ -108,15 +110,9 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 		ptca->curcmd->curio->fname_delim = ft_strdup(token_ws[0]);
 		return (rh_free_simple_array((void ***)&token_ws), true);
 	}
+	if (!iotarget)
+		iotarget = "newline";
 	msh_syntaxerror(pcd, iotarget, ptca->tosplit);
-	// ft_sprintf(buf, "syntax error near unexpected token `%s'", iotarget);
-	// msh_error((char const *[]){buf, }, 1, -1);
-	// if (pcd->interactive)
-	// {
-	// 	ft_sprintf(buf, "`%s'", ptca->tosplit);
-	// 	msh_error((char const *[]){buf, }, 1, -1);
-	// }
-	// pcd->exit_status = 2;
 	return (false);
 }
 

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/15 16:20:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 01:13:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,16 @@
 # define MINISHELL_H
 
 # include "libft.h"
+# include "msh_divdefs.h"
 
 # include <stdbool.h>
 # include <signal.h>
 # include <unistd.h>
 
 extern char	**environ;
-# define ENV_XTRA_ELEMS 8
 
 extern volatile
 sig_atomic_t g_signal_received;
-
-typedef enum e_prompt_type
-{
-	pt_std = 0,
-	pt_contd,
-}	t_pt;
 
 typedef struct s_minishell_core_data
 {
@@ -42,15 +36,6 @@ typedef struct s_minishell_core_data
 	bool	exit;
 	t_sqed	default_sqed;
 }	t_cd;
-
-typedef enum e_redirect
-{
-	fd2file_trunc,
-	fd2file_append,
-	file2fd,
-	heredoc2fd,
-	rd_default,
-}	t_rd;
 
 typedef struct s_io
 {
@@ -117,11 +102,7 @@ int		wait_child_processes(t_cd *pcd, int *pids, int ncmds);
 
 //paths
 char	**ft_env_paths(t_cd *pcd, size_t *len);
-//char	*compose_check_cmd(t_cd *pcd, t_cmd *curcmd, char **epaths,
-//			size_t epaths_len);
 int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noaccess);
-//static int	compose_check_path(char **path, char *cmdexe,
-			// char *pathstr, size_t bufferlen);
 //static int	access_check_path(char *pathstr);
 int		free_splitstrs(char **split);
 int		compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess);

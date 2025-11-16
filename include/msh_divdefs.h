@@ -1,20 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   msh_defs.h                                         :+:      :+:    :+:   */
+/*   msh_divdefs.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 12:19:29 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 12:21:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/16 01:12:25 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MSH_DEFS_H
-# define MSH_DEFS_H
+#ifndef MSH_DIVDEFS_H
+# define MSH_DIVDEFS_H
 
-# define MSH_CMDS_OK 0x0
-# define MSH_UNFINISHED_PIPE 0x1
-# define MSH_SYNTAX_ERR 0x2
+# define ENV_XTRA_ELEMS 8
 
-#endif // MSH_DEFS_H
+typedef enum e_redirect
+{
+	fd2file_trunc,
+	fd2file_append,
+	file2fd,
+	heredoc2fd,
+	rd_default,
+}	t_rd;
+
+typedef enum e_prompt_type
+{
+	pt_std = 0,
+	pt_contd,
+}	t_pt;
+
+typedef enum e_cmd_status
+{
+	cs_uninitialised = 0,
+	cs_cmds_ok,
+	cs_unfinished_pipe,
+	cs_syntax_err,
+}	t_cs;
+
+#endif // MSH_DIVDEFS_H
