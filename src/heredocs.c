@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/17 16:22:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 16:32:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		pcd->pt = (t_pt)pt_contd;
 		msh_compile_cmds(pcd, pcd->default_sqed, &ret);
 		if (!heredoc_check_retval(pcd, ret, limiter))
-			return (0);
+			return (1);
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
 			return (free(ret), 1);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)
@@ -106,7 +106,7 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 {
 	int	ret;
 
-	ret = terminal_safe_heredoc_prompt(hdfdpipe[1], curredir->fname_delim);
+	ret = terminal_safe_heredoc_prompt(pcd, hdfdpipe[1], curredir->fname_delim);
 	close(hdfdpipe[1]);//
 	if (!ret)
 	{
