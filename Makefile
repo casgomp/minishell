@@ -40,6 +40,7 @@ MANDATORY_SRCS	:= 	minishell.c \
 					msh_sqed_functions.c \
 					msh_ioredirect.c \
 					msh_compile_cmds.c \
+					msh_compile_cmds2.c \
 					msh_compile_cmds_utils.c \
 					msh_compile_cmds_utils2.c \
 					paths.c \

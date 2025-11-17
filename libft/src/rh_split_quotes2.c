@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 16:52:30 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:35:03 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,19 @@
 #include "rh_split_qed_intern.h"
 
 #include <stdlib.h>
+
+void	postproc_metachars(char const *const s, int *const pidx,
+								t_splprms *ptsp)
+{
+	char const	metac = s[*pidx];
+
+	if ((ptsp->tsl->len == 0) || (metac == '>'))
+	{
+		while (s[ptsp->tsl->start + ptsp->tsl->len] == metac)
+			++(ptsp->tsl->len);
+		*pidx = ptsp->tsl->start + ptsp->tsl->len;
+	}
+}
 
 void	cleanup_splt(t_splprms *const ptsp)
 {

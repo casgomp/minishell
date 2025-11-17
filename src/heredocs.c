@@ -6,24 +6,24 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/17 16:32:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:20:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# define _POSIX_C_SOURCE 200809L
-# define _DEFAULT_SOURCE
-# define _BSD_SOURCE
-# include "minishell.h"
-# include "msh_builtins.h"
-# include "msh_compile_cmds.h"
-# include "libft.h"
+#define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
+#define _BSD_SOURCE
+#include "minishell.h"
+#include "msh_builtins.h"
+#include "msh_compile_cmds.h"
+#include "libft.h"
 
-# include <errno.h>
-# include <signal.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <termios.h>
-# include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
 
 static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 	char const *const limiter)
@@ -39,10 +39,10 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 			ft_sprintf(buf, "here-document delimited by "
 				"end-of-file (wanted `%s')", limiter);
 			msh_error((char const *[]){"warning", buf, }, 2, -1);
-			return (false);			
+			return (false);
 		}
 	}
-	return (true);	
+	return (true);
 }
 
 int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)

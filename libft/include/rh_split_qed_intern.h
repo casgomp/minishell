@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 16:48:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:37:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ typedef struct s_splitparams
 	char		activeq;
 }	t_splprms;
 
+void	postproc_metachars(char const *const s, int *const pidx,
+			t_splprms *ptsp);
 int		set_tsl(t_splprms *const ptsp, int idx);
 char	**transform_list(t_splprms *const ptsp, char const *const s);
 void	cleanup_splt(t_splprms *const ptsp);

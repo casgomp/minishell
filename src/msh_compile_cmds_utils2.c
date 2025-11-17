@@ -6,34 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 12:39:47 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:43:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "msh_compile_cmds_intern.h"
 
 #include <stdlib.h>
-
-int	convert_arglst(t_tca *ptca)
-{
-	int	argidx;
-
-	if (ptca->curcmd->args && !ptca->arglst)
-		return (1);
-	ptca->curcmd->args = malloc((ptca->num_args + 1) * sizeof(char *));
-	if (!ptca->curcmd->args)
-		return (0);
-	ptca->curcmd->args[ptca->num_args] = (char *) NULL;
-	argidx = -1;
-	ptca->curarg = ptca->arglst;
-	while (ptca->num_args)
-	{
-		ptca->curcmd->args[++argidx] = ptca->curarg->arg;
-		ptca->curarg = ptca->curarg->next;
-		--ptca->num_args;
-	}
-	return (1);
-}
 
 int	cleanup_arglst(t_tca *ptca)
 {
@@ -56,4 +35,38 @@ int	cleanup_tca(t_tca *ptca)
 	if (!cleanup_arglst(ptca))
 		return (0);
 	return (1);
+}
+
+void	cleanup_iolst(t_io **piolst_head)
+{
+	t_io	*elem;
+
+	if (!piolst_head)
+		return ;
+	while (*piolst_head)
+	{
+		elem = (*piolst_head)->next;
+		free(*piolst_head);
+		(*piolst_head) = elem;
+	}
+	(*piolst_head) = (t_io *) NULL;
+}
+
+void	cleanup_cmds(t_cmd **pcmds_head)
+{
+	t_cmd	*cmd;
+	bool	stop_clean;
+
+	stop_clean = false;
+	if (!pcmds_head)
+		return ;
+	while (*pcmds_head && !stop_clean)
+	{
+		rh_free_simple_array((void ***)(&((*pcmds_head)->args)));
+		cleanup_iolst(&((*pcmds_head)->iolst));
+		stop_clean = ((*pcmds_head)->ctrlchr == '\n');
+		cmd = (*pcmds_head)->next;
+		free(*pcmds_head);
+		(*pcmds_head) = cmd;
+	}
 }

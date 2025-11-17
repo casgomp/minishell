@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 17:13:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:23:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ size_t	check_cpy_env(t_cd *pcd, bool env_init)
 
 void	msh_error(char const **errstrs, int nstrs, int errnum)
 {
-	char const mshid[] = "msh";
+	char const	mshid[] = "msh";
 
 	ft_dprintf(2, "%s: ", mshid);
 	while (nstrs--)
@@ -78,16 +78,4 @@ void	msh_error(char const **errstrs, int nstrs, int errnum)
 	}
 	else
 		ft_dprintf(2, "\n");
-}
-
-void	clear_fdinput(int fd)
-{
-	char	*ln;
-
-	ln = get_next_line(fd);
-	while (ln)
-	{
-		free(ln);
-		ln = get_next_line(fd);
-	}
 }

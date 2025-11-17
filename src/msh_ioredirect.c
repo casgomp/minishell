@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 16:34:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 17:24:02 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,5 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);
-	// if ((ptca->curcmd->curio->tredirect == (t_rd)rd_default)
-	// 	|| (!ptca->curcmd->curio->fname_delim))
-	// {
-	// 	pcd->exit_status = 130;
-	// 	msh_error((char const *[]){"Internal Error", }, 1, -1);
-	// }
 	return (true);
 }

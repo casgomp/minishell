@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/12 13:07:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:42:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,26 @@ int	get_curarg(t_tca *ptca)
 	*(ptca->curarg) = (t_cmdarg){
 		.arg = (char *) NULL, .next = (t_cmdarg *) NULL};
 	++(ptca->num_args);
+	return (1);
+}
+
+int	convert_arglst(t_tca *ptca)
+{
+	int	argidx;
+
+	if (ptca->curcmd->args && !ptca->arglst)
+		return (1);
+	ptca->curcmd->args = malloc((ptca->num_args + 1) * sizeof(char *));
+	if (!ptca->curcmd->args)
+		return (0);
+	ptca->curcmd->args[ptca->num_args] = (char *) NULL;
+	argidx = -1;
+	ptca->curarg = ptca->arglst;
+	while (ptca->num_args)
+	{
+		ptca->curcmd->args[++argidx] = ptca->curarg->arg;
+		ptca->curarg = ptca->curarg->next;
+		--ptca->num_args;
+	}
 	return (1);
 }

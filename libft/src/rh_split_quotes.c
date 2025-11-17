@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 16:53:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 20:34:48 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,6 @@ static void	advance_qesstr(char const *const s, int *const pidx,
 	}
 }
 
-static void	postproc_metachars(char const *const s, int *const pidx,
-								t_splprms *ptsp)
-{
-	char const	metac = s[*pidx];
-
-	if ((ptsp->tsl->len == 0) || (metac == '>'))
-	{
-		while (s[ptsp->tsl->start + ptsp->tsl->len] == metac)
-			++(ptsp->tsl->len);
-		*pidx = ptsp->tsl->start + ptsp->tsl->len;
-	}
-}
-
 static void	postproc_qesstr(char const *const s, int *const pidx,
 									t_qes const *const pqes, t_splprms *ptsp)
 {
@@ -83,15 +70,23 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 			postproc_metachars(s, pidx, ptsp);
 	}
 }
-// ^^^^^^^^ Optionally ^^^^^^^^
-// ... if postproc_metachars is passed as a fnctn ptr:
-// if (postproc_metachars
-// 	   && s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
-// 	postproc_metachars(s, pidx, ptsp);
 
-// Same as ft_split, but takes a string containing quote chars
-// (typically "\\"\\'") that will cancel the effect of the split char
-// in the section between the quote chars
+void	advance_comment(char const *const s, int *const pidx, t_qes const qes)
+{
+	if (s[(*pidx)] == qes.lncmt[0])
+	{
+		if ((*pidx) == 0
+			|| ft_strchr(&qes.lncmt[1], s[(*pidx) - 1])
+			|| ft_strchr(qes.metachr, s[(*pidx) - 1]))
+		{
+			while (s[(*pidx)] && s[(*pidx)] != '\n')
+				++(*pidx);
+		}
+		else
+			++(*pidx);
+	}
+}
+
 char	**rh_split_quotes(char const *const s, t_qes const qes)
 {
 	t_splprms	tsp;
@@ -107,23 +102,12 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 		while (s[idx] && ft_strchr(qes.blank, s[idx]))
 		{
 			++idx;
-			if (qes.blank && qes.blank[0] == '\n')
-				break;
+			if (qes.soloblnk)
+				break ;
 		}
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup_splt(&tsp), (char **) NULL);
-		if (s[idx] == qes.lncmt[0])
-		{
-			if (idx == 0
-				|| ft_strchr(&qes.lncmt[1], s[idx - 1])
-				|| ft_strchr(qes.metachr, s[idx - 1]))
-			{
-				while (s[idx] && s[idx] != '\n')
-					++idx;
-			}
-			else
-				++idx;
-		}
+		advance_comment(s, &idx, qes);
 		if (preproc_qesstr(s, &idx, &qes, &tsp) == 2)
 			continue ;
 		advance_qesstr(s, &idx, &qes, &tsp);

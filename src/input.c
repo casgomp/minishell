@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 18:10:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 21:08:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	count_cmds(t_cmd *curcmd)
 int	ft_is_builtin(char *cmd)
 {
 	int			i;
-	const char 	*bltn[] = {
+	const char	*bltn[] = {
 		"cd",
 		"echo",
 		"env",
@@ -64,13 +64,13 @@ int	ft_is_builtin(char *cmd)
 	return (false);
 }
 
-int	process_cmdline(t_cd *pcd/* , char const *const in */)
+int	process_cmdline(t_cd *pcd)
 {
 	t_cmd_ctx	ctx;
 	int			ret;
 
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
-	if (!init_cmd_ctx(&ctx, pcd/* , in */))
+	if (!init_cmd_ctx(&ctx, pcd))
 		return (0);
 	ret = process_all_cmds(pcd, &ctx);
 	if (!ctx.childless && ret)
@@ -80,8 +80,9 @@ int	process_cmdline(t_cd *pcd/* , char const *const in */)
 		if (ctx.pids)
 			free(ctx.pids);
 	}
-	if (ctx.epaths) //free pids, cmds too?
+	if (ctx.epaths) //free pids too?
 		free_splitstrs(ctx.epaths);
+	cleanup_cmds(&ctx.cmds);
 	return (ret);
 }
 
@@ -114,9 +115,9 @@ int	setup_stdin(t_cd *pcd, int const argc, char **const argv)
 
 static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
 {
-	t_qed		qed;
-	char		*prompt;
-	char const	*const prompts[] = {"$USER@minishell$ ", "> "};
+	t_qed				qed;
+	char				*prompt;
+	char const *const	prompts[] = {"$USER@minishell$ ", "> "};
 
 	qed = rh_sqed2qed(&(pcd->default_sqed));
 	prompt = rh_rmqed(prompts[(int)pcd->pt], &qed);
@@ -136,7 +137,7 @@ static void	get_cmdline_addhist_prompt(t_cd *pcd, char **pcmdline)
 
 int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 {
-	char	*cmdlnsec;
+	char	*cmdlnsection;
 
 	if (!pcmdline)
 		return (0);
@@ -147,13 +148,13 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 	{
 		while (true)
 		{
-			cmdlnsec = get_next_line(0);
-			if (!cmdlnsec)
+			cmdlnsection = get_next_line(0);
+			if (!cmdlnsection)
 				break ;
 			if (!(*pcmdline))
 				*pcmdline = "";
-			*pcmdline = ft_strjoin(*pcmdline, cmdlnsec);
-			free (cmdlnsec);
+			*pcmdline = ft_strjoin(*pcmdline, cmdlnsection);
+			free (cmdlnsection);
 		}
 	}
 	if (!*pcmdline)
