@@ -81,6 +81,13 @@ typedef struct s_fdcl
 	int	pre2[2];
 }	t_fdcl;
 
+typedef struct s_signal_action_old
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+	bool				sig_modif;
+}	t_sa;
+
 //input
 int		get_cmdline_add_history(t_cd *pcd, char **pcmdline);
 int		process_cmdline(t_cd *pcd);
@@ -108,6 +115,7 @@ int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noa
 //static int	access_check_path(char *pathstr);
 int		free_splitstrs(char **split);
 int		compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess);
+void	cmd_no_permissions(t_cd *pcd, t_cmd *cmd, bool *flag, char **path_noaccess);
 
 //setup_exec
 //int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
@@ -128,6 +136,8 @@ int		child_cmd_execute(t_cd *pcd, t_cmd *curcmd);
 int		heredoc_prompt(t_cd *pcd, int fd, char *limiter);
 //static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
 int		heredoc_setup(t_io *curredir, t_cd *pcd);
+int		heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *hdfdpipe);
+void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old);
 
 //signals...should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
 int		setup_signal(int signum, void (*handler)(int));
