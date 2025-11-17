@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 16:38:01 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 12:22:19 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 17:00:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ t_qes	rh_sqed2qes(t_sqed const *const psqed)
 		.esc = psqed->esc,
 		.lncmt = psqed->lncmt,
 		.blank = psqed->blank,
-		.metachr = psqed->metachr
+		.metachr = psqed->metachr,
+		.soloblnk = psqed->soloblnk,
 	});
 }
 
@@ -56,6 +57,7 @@ t_qes	rh_sqed2qes_ws(t_sqed const *const psqed)
 		.esc = psqed->esc,
 		.lncmt = "",
 		.blank = psqed->ifs,
+		.soloblnk = psqed->soloblnk,
 		.metachr = ""});
 }
 
@@ -66,6 +68,7 @@ t_qes	rh_sqed2qes_cmdln(t_sqed const *const psqed)
 		.esc = psqed->esc,
 		.lncmt = psqed->lncmt,
 		.blank = "\n",
+		.soloblnk = true,
 		.metachr = "",
 	});
 }

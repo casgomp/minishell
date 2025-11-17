@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 11:51:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 16:58:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_quotes_esc_split
 	char	esc;
 	char	*lncmt;
 	char	*blank;
+	bool	soloblnk;
 	char	*metachr;
 }	t_qes;
 char	**rh_split_quotes(char const *const s, t_qes const qes);
@@ -62,6 +63,7 @@ typedef struct s_split_quotes_esc_dict
 	char	*blank;
 	char	*metachr;
 	char	*ifs;
+	bool	soloblnk;
 
 	char	expnd;
 	void	*dict_data;

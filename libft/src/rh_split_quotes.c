@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 13:53:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 16:53:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ static void	postproc_qesstr(char const *const s, int *const pidx,
 				&& (ft_strchr(pqes->blank, s[*pidx])
 					|| ft_strchr(pqes->metachr, s[*pidx])))))
 	{
+		ptsp->tsl->complete = true;
 		ptsp->tsl->len = *pidx - ptsp->tsl->start;
 		if (s[*pidx] && ft_strchr(pqes->metachr, s[*pidx]))
 			postproc_metachars(s, pidx, ptsp);
@@ -96,14 +97,19 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 	t_splprms	tsp;
 	int			idx;
 
-	tsp = (t_splprms){(char **) NULL, (t_startlen *) NULL, NULL, 0, '\0'};
+	tsp = (t_splprms){.split = (char **) NULL, .tsl_orig = (t_startlen *) NULL,
+		.tsl = (t_startlen *) NULL, .n_slelem = 0, .activeq = '\0'};
 	if (!(s && qes.blank))
 		return (cleanup_splt(&tsp), (char **) NULL);
 	idx = 0;
 	while (s[idx])
 	{
 		while (s[idx] && ft_strchr(qes.blank, s[idx]))
+		{
 			++idx;
+			if (qes.blank && qes.blank[0] == '\n')
+				break;
+		}
 		if (s[idx] && !set_tsl(&tsp, idx))
 			return (cleanup_splt(&tsp), (char **) NULL);
 		if (s[idx] == qes.lncmt[0])

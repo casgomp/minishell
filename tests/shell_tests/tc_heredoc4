@@ -1,6 +1,6 @@
 # check if heredoc also works with non-interactive mode
 echo start
-/usr/bin/cat << "EOF"
+/usr/bin/cat << "EOF4"
 This is
 a multi-line
 heredoc with
@@ -8,5 +8,5 @@ heredoc with
 
 empty lines
 
-EOF
+EOF4
 echo end

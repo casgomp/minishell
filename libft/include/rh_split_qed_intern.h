@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/10/22 18:53:22 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 16:48:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ typedef struct s_startlen
 {
 	int					start;
 	size_t				len;
+	bool				complete;
 	struct s_startlen	*next;
 }	t_startlen;
 

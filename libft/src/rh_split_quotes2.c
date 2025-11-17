@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 13:54:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 16:52:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	cleanup_splt(t_splprms *const ptsp)
 
 int	set_tsl(t_splprms *const ptsp, int idx)
 {
-	if (!(ptsp->tsl_orig) || (ptsp->tsl)->len)
+	if (!(ptsp->tsl_orig) || (ptsp->tsl)->complete)
 	{
 		if (!(ptsp->tsl_orig))
 		{
@@ -48,7 +48,8 @@ int	set_tsl(t_splprms *const ptsp, int idx)
 			ptsp->tsl->next = malloc(sizeof(t_startlen));
 			ptsp->tsl = ptsp->tsl->next;
 		}
-		*(ptsp->tsl) = (t_startlen){idx, 0, (t_startlen *) NULL};
+		*(ptsp->tsl) = (t_startlen){.start = idx, .len = 0,
+			.complete = false, .next = (t_startlen *) NULL};
 		++(ptsp->n_slelem);
 	}
 	return (ptsp->tsl != (t_startlen *) NULL);
