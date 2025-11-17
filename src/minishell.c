@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 17:11:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 17:16:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	ms_init(t_cd *pcd)
 		.metachr = "|<>\n;", .ifs = " \t\n", .expnd = '$',
 		.dict = &msh_dict, .dict_data = pcd,
 		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
-	pcd->mshid = "msh";
 	if (pcd->interactive)
 	{
 		setup_signal(SIGINT, sigint_handler);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/16 18:09:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/17 17:16:21 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ sig_atomic_t g_signal_received;
 
 typedef struct s_minishell_core_data
 {
-	char	*mshid;
 	char	**msh_env;
 	size_t	envrsvd;
 	int		exit_status;
