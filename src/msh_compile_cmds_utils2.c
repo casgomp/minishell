@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/18 17:13:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 17:22:26 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	cleanup_iolst(t_io **piolst_head)
 	while (*piolst_head)
 	{
 		elem = (*piolst_head)->next;
+		free ((*piolst_head)->fname_delim);
 		free(*piolst_head);
 		(*piolst_head) = elem;
 	}

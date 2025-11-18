@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/18 17:13:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 17:17:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,20 +104,15 @@ t_cs	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 
 	while (cmd)
 	{
-		if (ft_strchr("|", cmd->ctrlchr))
+		if (cmd->ctrlchr == '|')
 		{
 			if (!(cmd->args && cmd->args[0]))
 			{
-				// if there is wrong redirection -> that means the whole syntax error should go to the ioredirect parsing
-				// and then cancel the whole command already there
-				if (cmd->ctrlchr)
-				{
-					ft_sprintf(buf, "%c", cmd->ctrlchr);
-					msh_syntaxerror(pcd, buf, cmdline);
-				}
+				ft_sprintf(buf, "%c", cmd->ctrlchr);
+				msh_syntaxerror(pcd, buf, cmdline);
 				return ((t_cs)cs_syntax_err);
 			}
-			if (cmd->ctrlchr == '|' && !cmd->next)
+			if (!cmd->next)
 			{
 				return ((t_cs)cs_unfinished_pipe);
 			}
