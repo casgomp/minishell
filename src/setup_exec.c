@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/15 16:19:58 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 17:49:07 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,8 +152,13 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *
 	{
 		if (pcd->exit_status == 126)
 			msh_error((char const *[]){path_noaccess, "Permission denied"}, 2, 0);
-		else if (pcd->exit_status == 127)
-			msh_error((char const *[]){curcmd->args[0], "command not found"}, 2, 0);
+		if (pcd->exit_status == 127)
+		{	
+			if (ft_strchr(curcmd->args[0], '/') || ctx->epaths[0] == NULL)
+				msh_error((char const *[]){curcmd->args[0], "No such file or directory"}, 2, 0);
+			else
+				msh_error((char const *[]){curcmd->args[0], "command not found"}, 2, 0);
+		}
 		if (path_noaccess)
 			free(path_noaccess);
 		exit (pcd->exit_status);
