@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/18 16:00:33 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 17:13:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,10 @@ void	cleanup_cls(t_cls *pcls)
 void	cleanup_cmds(t_cmd **pcmds_head)
 {
 	t_cmd	*cmd;
-	bool	stop_clean;
 
-	stop_clean = false;
 	if (!pcmds_head)
 		return ;
-	while (*pcmds_head && !stop_clean)
+	while (*pcmds_head)
 	{
 		rh_free_simple_array((void ***)(&((*pcmds_head)->args)));
 		cleanup_iolst(&((*pcmds_head)->iolst));

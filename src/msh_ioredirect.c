@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 17:24:02 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 16:59:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 {
 	char	**token_ws;
 
-	if (iotarget && ((ft_strlen(iotarget) == 0)
-			|| !ft_strchr(sqed.metachr, iotarget[0])))
+	if (iotarget && ft_strlen(iotarget) > 0
+			&& !ft_strchr(sqed.metachr, iotarget[0]))
 	{
 		token_ws = msh_expand_wordsplit_token(iotarget, &sqed);
 		if (!token_ws || token_ws[0] == (char *) NULL
