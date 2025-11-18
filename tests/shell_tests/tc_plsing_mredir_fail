@@ -1,27 +1,12 @@
 #Test bash behavior with only one cmd pipeline and multiple redirections. With one non-exisiting file that interrupts redirections.
-pwd
 echo apple > filex
 echo banana > filey
 echo carrot > filez
-echo ls
-ls
-echo cat filex
 cat filex
-echo cat filey
 cat filey
-echo cat filez
 cat filez
-echo 'cat > filep <filex >filepp <filro <filru 2<filey 2>fileppp >filepppp'
 cat > filep <filex >filepp <filro <filru 2<filey 2>fileppp >filepppp
-echo ls
-ls
-echo cat filep
 cat filep
-echo cat filepp
 cat filepp
-echo cat fileppp
 cat fileppp
-echo cat filepppp
 cat filepppp
-cd ..
-pwd

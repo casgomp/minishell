@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/18 17:49:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 18:25:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	fail_open_closefds(t_io *curredir)
 		curredir = curredir->next;
 	}
 	//ft_printf("fail_open_closefds?\n");
-	msh_error((char const *[]){curredir->fname_delim}, 1, errno);
+	msh_error((char const *[]){curredir->fname_delim, "No such file or directory"}, 2, 0);
 	return (1);
 }
 
