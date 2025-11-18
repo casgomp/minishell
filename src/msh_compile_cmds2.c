@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 20:55:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 17:17:09 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,12 @@ bool	msh_check_cmdstatus_ok(t_cd *const pcd, int ret, t_cmd **pcmds)
 {
 	if (!pcd->exit && ret == (t_cs)cs_cmds_ok)
 		return (true);
-	else if ((ret == (t_cs)cs_syntax_err) && (!(pcd->interactive)))
-		pcd->exit = true;
+	else if (ret == (t_cs)cs_syntax_err)
+	{
+		if (!(pcd->interactive))
+			pcd->exit = true;
+		cleanup_cmds(pcmds);
+	}
 	else if (ret == (t_cs)cs_unfinished_pipe)
 		pcd->pt = (t_pt)pt_contd;
 	if (pcd->exit)
@@ -100,7 +104,7 @@ t_cs	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 
 	while (cmd)
 	{
-		if (ft_strchr("|;", cmd->ctrlchr))
+		if (cmd->ctrlchr == '|')
 		{
 			if (!(cmd->args && cmd->args[0]))
 			{
@@ -108,7 +112,7 @@ t_cs	msh_check_cmds(t_cd *const pcd, t_cmd const *const cmds,
 				msh_syntaxerror(pcd, buf, cmdline);
 				return ((t_cs)cs_syntax_err);
 			}
-			if (cmd->ctrlchr == '|' && !cmd->next)
+			if (!cmd->next)
 			{
 				return ((t_cs)cs_unfinished_pipe);
 			}

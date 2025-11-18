@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 20:34:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 14:14:49 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 	tsp = (t_splprms){.split = (char **) NULL, .tsl_orig = (t_startlen *) NULL,
 		.tsl = (t_startlen *) NULL, .n_slelem = 0, .activeq = '\0'};
 	if (!(s && qes.blank))
-		return (cleanup_splt(&tsp), (char **) NULL);
+		return (cleanup_tsp(&tsp, true), (char **) NULL);
 	idx = 0;
 	while (s[idx])
 	{
@@ -106,7 +106,7 @@ char	**rh_split_quotes(char const *const s, t_qes const qes)
 				break ;
 		}
 		if (s[idx] && !set_tsl(&tsp, idx))
-			return (cleanup_splt(&tsp), (char **) NULL);
+			return (cleanup_tsp(&tsp, true), (char **) NULL);
 		advance_comment(s, &idx, qes);
 		if (preproc_qesstr(s, &idx, &qes, &tsp) == 2)
 			continue ;
