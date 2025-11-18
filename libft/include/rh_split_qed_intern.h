@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:14:25 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 20:37:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 14:14:47 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	postproc_metachars(char const *const s, int *const pidx,
 			t_splprms *ptsp);
 int		set_tsl(t_splprms *const ptsp, int idx);
 char	**transform_list(t_splprms *const ptsp, char const *const s);
-void	cleanup_splt(t_splprms *const ptsp);
+void	cleanup_tsp(t_splprms *const ptsp, bool incl_splt);
 
 // remove quotes, escapes and expand params
 // ----------------------------------------

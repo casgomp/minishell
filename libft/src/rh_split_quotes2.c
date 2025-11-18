@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 20:35:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 14:44:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,14 @@ void	postproc_metachars(char const *const s, int *const pidx,
 	}
 }
 
-void	cleanup_splt(t_splprms *const ptsp)
+void	cleanup_tsp(t_splprms *const ptsp, bool incl_splt)
 {
 	size_t		idx;
 	t_startlen	*tmp;
 
 	idx = 0;
-	while (ptsp->split && ptsp->split[idx])
-		free(ptsp->split[idx++]);
-	free(ptsp->split);
-	ptsp->split = (char **) NULL;
+	if (incl_splt)
+		rh_free_simple_array((void ***)&ptsp->split);
 	while (ptsp->tsl_orig)
 	{
 		tmp = ptsp->tsl_orig->next;
@@ -83,20 +81,17 @@ static int	transform_prep(t_splprms *const ptsp)
 char	**transform_list(t_splprms *const ptsp, char const *const s)
 {
 	int		idx;
-	char	**splt;
 
 	if (!transform_prep(ptsp))
-		return (cleanup_splt(ptsp), (char **) NULL);
-	splt = ptsp->split;
+		return (cleanup_tsp(ptsp, true), (char **) NULL);
 	idx = 0;
 	while (ptsp->tsl)
 	{
-		splt[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
-		if (!splt[idx])
-			return (cleanup_splt(ptsp), (char **) NULL);
+		ptsp->split[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
+		if (!ptsp->split[idx])
+			return (cleanup_tsp(ptsp, true), (char **) NULL);
 		++idx;
 		ptsp->tsl = ptsp->tsl->next;
 	}
-	ptsp->split = (char **) NULL;
-	return (cleanup_splt(ptsp), splt);
+	return (cleanup_tsp(ptsp, false), ptsp->split);
 }

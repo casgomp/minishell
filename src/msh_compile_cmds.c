@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 21:00:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/18 15:48:52 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 	int		res;
 	char	**args;
 
+	args = (char **) NULL;
 	res = msh_process_metachar(pcd, ptca, ptokenidx, sqed);
 	if (res == -1)
 		return (false);
@@ -37,9 +38,10 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 		while (args && args[res])
 		{
 			if (!get_curarg(ptca))
-				return (false);
+				return (rh_free_simple_array((void ***)args), false);
 			ptca->curarg->arg = args[res++];
 		}
+		free(args);
 	}
 	return (true);
 }
@@ -82,6 +84,7 @@ static bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, t_cls *pcls, t_cs cs)
 	status_ok = true;
 	if (!(pcls->cmdlines && pcls->cmdlines[pcls->idx]))
 	{
+		cleanup_cls(pcls);
 		if (!get_cmdline_add_history(pcd, &cmdln))
 			status_ok = false;
 		else
@@ -90,7 +93,7 @@ static bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, t_cls *pcls, t_cs cs)
 		pcls->idx = 0;
 		if (!(status_ok && pcls->cmdlines && pcls->cmdlines[0]))
 		{
-			rh_free_simple_array((void ***)&(pcls->cmdlines));
+			cleanup_cls(pcls);
 			status_ok = false;
 		}
 		if (!status_ok && !pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
