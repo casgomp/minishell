@@ -1,0 +1,3 @@
+echo hi > "" | echo hello
+echo hi >  | echo hello
+echo hi > >non-existant | echo hello #wrong return value
