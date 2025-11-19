@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/18 16:59:09 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/19 16:10:31 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,13 +130,13 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	iooperator = token;
 	if (!msh_ioredirect_from_fd(ptca, token, &iooperator, &fd_new))
 		return (false);
-	if (fd_new > 1023)
-	{
-		ft_sprintf(buf, "%d", fd_new);
-		pcd->exit_status = 1;
-		msh_error((char const *[]){buf, "Bad file descriptor"}, 2, -1);
-		return (false);
-	}
+	// if (fd_new > 1023)
+	// {
+	// 	ft_sprintf(buf, "%d", fd_new);
+	// 	pcd->exit_status = 1;
+	// 	msh_error((char const *[]){buf, "Bad file descriptor"}, 2, -1);
+	// 	return (false);
+	// }
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);
