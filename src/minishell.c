@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 12:30:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 20:11:29 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	ms_init(t_cd *pcd)
 		setup_signal(SIGINT, sigint_handler);
 		setup_signal(SIGQUIT, SIG_IGN);
 	}
+	rl_initialize();
 	return (1);
 }
 

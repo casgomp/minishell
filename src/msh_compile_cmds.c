@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/18 15:48:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/19 17:30:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,13 @@ static bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, t_cls *pcls, t_cs cs)
 		cleanup_cls(pcls);
 		if (!get_cmdline_add_history(pcd, &cmdln))
 			status_ok = false;
+		else if (cmdln && *cmdln == 0)
+		{
+			pcls->cmdlines = malloc(2*sizeof(char *));
+			pcls->cmdlines[0] = malloc(1*sizeof(char));
+			pcls->cmdlines[0][0] = '\0';
+			pcls->cmdlines[1] = (char *) NULL;
+		}
 		else
 			pcls->cmdlines = rh_split_quotes(cmdln,
 					rh_sqed2qes_cmdln(&pcd->default_sqed));

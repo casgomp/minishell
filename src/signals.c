@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/19 12:21:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 20:07:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,33 @@ void	sigint_handler_wait(t_cd *pcd, int wstatus, int ncmds, int idx, int *sgntcn
 void	sigint_handler_heredoc(int sig)
 {
 	g_signal_received = sig;
+	// int a = rl_catch_signals;
+	// (void)a;
 	if (sig == SIGINT)
-		write(1, "^C", 2);
+	{
+		// write(1, "^C heredoc", 10);
+	}
 	write(1, "\n", 1);
+	rl_done = 1;
+	write(0, "42\0\n", 4);
+	// rl_check_signals();
+	// rl_reset_after_signal();
+// test area
+	rl_free_line_state();
+	// rl_callback_sigcleanup();
+	// rl_cleanup_after_signal();
+	// rl_on_new_line();
+    // rl_done = 1;	
+	rl_replace_line("", 0);
+	// rl_free_line_state();
+	rl_redisplay();
+	// rl_done = 1;
+	// rl_cleanup_after_signal();
+    // rl_free_line_state();
+	// test area
+	
 	//rl_on_new_line();
-	//rl_replace_line("", 0);
+	// rl_replace_line("", 0);
 	//close(STDIN_FILENO);
 }
 
@@ -85,6 +107,10 @@ int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_
 {
 	struct sigaction	new_sa;
 
+	// setup_signal(SIGINT, SIG_IGN);
+	// setup_signal(SIGQUIT, SIG_IGN);
+	// return (1);
+
 	if (sigaction(SIGINT, NULL, sa_old_int) == -1)
 		return (0); //correct return? perror?
 	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
@@ -95,8 +121,12 @@ int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_
 	new_sa.sa_flags = 0;
 	if (sigaction(SIGINT, &new_sa, NULL) == -1)
 		return (perror("sigaction"), 0);
-	new_sa.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &new_sa, NULL);
+	
+	// new_sa.sa_handler = SIG_IGN;
+	// sigaction(SIGQUIT, &new_sa, NULL);
+
+	// new_sa.sa_handler = SIG_IGN;
+	setup_signal(SIGQUIT, SIG_IGN);
 	return (1);
 }
 
