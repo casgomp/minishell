@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 12:30:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 18:42:39 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ typedef struct s_cmd_ctx
 	int		*pids;
 	int		ncmds;
 	bool	childless;
+	char	*path_noaccess;
+	int		parpth;
 }	t_cmd_ctx;
 
 typedef struct s_fdcl
@@ -111,23 +113,29 @@ void	clear_fdinput(int fd);
 	// t_cmd_ctx *ctx, int *idx);
 int		process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx);
 int		init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd);
-int		wait_child_processes(t_cd *pcd, int *pids, int ncmds);
+//int		wait_child_processes(t_cd *pcd, int *pids, int ncmds);
+int		wait_child_processes(t_cd *pcd, t_cmd_ctx *ctx);
 
 //paths
 char	**ft_env_paths(t_cd *pcd, size_t *len);
-int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noaccess);
+//int		compose_check_cmd(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, char **path_noaccess);
+int	compose_check_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx);
 //static int	access_check_path(char *pathstr);
 int		free_splitstrs(char **split);
-int		compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess);
-void	cmd_no_permissions(t_cd *pcd, t_cmd *cmd, bool *flag, char **path_noaccess);
+//int		compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd, char **path_noaccess);
+int	compose_check_cmd_get_path(t_cd *pcd, t_cmd_ctx *ctx, t_cmd *cmd);
+//void	cmd_no_permissions(t_cd *pcd, t_cmd *cmd, bool *flag, char **path_noaccess);
+void	cmd_no_permissions(t_cd *pcd, t_cmd *cmd, bool *flag, t_cmd_ctx *ctx);
 
 //setup_exec
 //int		parent_setup(t_cd *pcd, t_cmd *curcmd, int *pids, int i);
 int		parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i);
 void	parent_reset_after_fork(t_fdcl *fdcl, int *fdpipe, t_io *curredir);
 //int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe);
-int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx);
-int		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess);
+//int		child_setup(t_cd *pcd, t_cmd *curcmd, t_fdcl *fdcl, int *fdpipe, t_cmd_ctx *ctx);
+int		child_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx);
+//int		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx, char **path_noaccess);
+int		prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx);
 int		inchild_pipe_setup(t_fdcl *fdcl, int *fdpipe);
 int		setup_redirections(t_io *iolst);
 int		open_files_setup(t_io *curredir);
@@ -153,5 +161,7 @@ void	sigint_handler_heredoc(int sig);
 void	sigint_handler_wait(t_cd *pcd, int wstatus, int ncmds, int idx, int *sgntcnt);
 void	reset_handlers_heredoc(struct sigaction *sa_old_int,
 			struct sigaction *sa_old_quit);
+
+void	fail_stat_exit(t_cd *pcd, t_cmd_ctx *ctx);
 
 #endif // MINISHELL_H

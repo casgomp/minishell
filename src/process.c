@@ -6,49 +6,21 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/19 12:30:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 17:35:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# define _POSIX_C_SOURCE 200809L
-# include "minishell.h"
-# include "msh_builtins.h"
-# include "msh_compile_cmds.h"
-
-# include "libft.h"
-
-# include <signal.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <sys/wait.h>
-# include <sys/types.h>
-# include <unistd.h>
-
-int	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
-{
-	int					*wstatus;
-	int					i;
-	//struct sigaction	sa_ignore;
-	struct sigaction	old_sigint;
-	int					sgntcnt;	
-
-	wstatus = malloc(sizeof(int) * ncmds);
-	if (!wstatus)	
-		return (free (pids), 0);
-	setup_signal_wait(&old_sigint);
-	sgntcnt = 0;
-	i = 0;
-	while (i < ncmds)
-	{
-		waitpid (pids[i], &wstatus[i], 0);
-		if (WIFEXITED(wstatus[i]))
-			pcd->exit_status = WEXITSTATUS(wstatus[i]);
-		else if (WIFSIGNALED(wstatus[i]))
-			sigint_handler_wait(pcd, wstatus[i], ncmds, i, &sgntcnt);
-		i ++;
-	}
-	return (sigaction(SIGINT, &old_sigint, NULL), free (wstatus), free(pids), 1);
-}
+#define _POSIX_C_SOURCE 200809L
+#include "minishell.h"
+#include "msh_builtins.h"
+#include "msh_compile_cmds.h"
+#include "libft.h"
+#include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static int	reset_stdiofds(t_cmd *curcmd)
 {
@@ -105,40 +77,15 @@ int	process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx)
 	return (1);
 }
 
-int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */)
+int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd)
 {
 	ctx->cmds = msh_compile_cmds(pcd, pcd->default_sqed, (char **) NULL);
-
-	/*////////////////////////////////////////////////////
-	//debugging loop to see what msh_compile_cmds returns
-	int	i = 0;
-	t_cmd *curcmd = ctx->cmds;
-	while (curcmd)
-	{
-		int	j = 0;
-		char **curargs = curcmd->args;
-		//ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
-		while (curargs[j])
-		{
-			ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
-			j ++;
-		}
-		t_io *curredir = curcmd->iolst;
-		while (curredir)
-		{
-			ft_printf("fname_delim=%s, old_fd=%d, new_fd=%d, tredirect=%d\n", curredir->fname_delim, curredir->old_fd, curredir->new_fd, curredir->tredirect);
-			curredir = curredir->next;
-		}
-		curcmd = curcmd->next;
-		i ++;
-	}
-	/*/////////////////////////////////////////////////////
-
-	//if (!ctx->cmds || !ctx->cmds->args || !ctx->cmds->args[0])
 	if (!ctx->cmds || !ctx->cmds->args)
-		 return (0);
+		return (0);
 	ctx->epaths = ft_env_paths(pcd, &ctx->epaths_len);
 	ctx->ncmds = count_cmds(ctx->cmds);
+	ctx->path_noaccess = NULL;
+	ctx->parpth = 0;
 	ctx->childless = (ctx->ncmds == 1 && ft_is_builtin(ctx->cmds->args[0]));
 	if (!ctx->childless)
 	{

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 12:30:54 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 17:28:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,46 +24,6 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-int	count_cmds(t_cmd *curcmd)
-{
-	int	ncmds;
-
-	ncmds = 0;
-	while (curcmd)
-	{
-		ncmds ++;
-		curcmd = curcmd->next;
-	}
-	return (ncmds);
-}
-
-int	ft_is_builtin(char *cmd)
-{
-	int			i;
-	const char	*bltn[] = {
-		"cd",
-		"echo",
-		"env",
-		"exit",
-		"export",
-		"pwd",
-		"unset",
-		NULL
-	};
-
-	if (cmd)
-	{
-		i = 0;
-		while (bltn[i])
-		{
-			if (ft_strcmp(cmd, bltn[i]) == 0)
-				return (true);
-			i ++;
-		}
-	}
-	return (false);
-}
-
 int	process_cmdline(t_cd *pcd)
 {
 	t_cmd_ctx	ctx;
@@ -74,13 +34,13 @@ int	process_cmdline(t_cd *pcd)
 		return (0);
 	ret = process_all_cmds(pcd, &ctx);
 	if (!ctx.childless && ret)
-		wait_child_processes(pcd, ctx.pids, ctx.ncmds);
+		wait_child_processes(pcd, &ctx);
 	else if (!ctx.childless && !ret)
 	{
 		if (ctx.pids)
 			free(ctx.pids);
 	}
-	if (ctx.epaths) //free pids too?
+	if (ctx.epaths)
 		free_splitstrs(ctx.epaths);
 	cleanup_cmds(&ctx.cmds);
 	return (ret);

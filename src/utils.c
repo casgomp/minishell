@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:40:59 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/17 20:23:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 17:27:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+int	count_cmds(t_cmd *curcmd)
+{
+	int	ncmds;
+
+	ncmds = 0;
+	while (curcmd)
+	{
+		ncmds ++;
+		curcmd = curcmd->next;
+	}
+	return (ncmds);
+}
+
+int	ft_is_builtin(char *cmd)
+{
+	int			i;
+	const char	*bltn[] = {
+		"cd",
+		"echo",
+		"env",
+		"exit",
+		"export",
+		"pwd",
+		"unset",
+		NULL
+	};
+
+	if (cmd)
+	{
+		i = 0;
+		while (bltn[i])
+		{
+			if (ft_strcmp(cmd, bltn[i]) == 0)
+				return (true);
+			i ++;
+		}
+	}
+	return (false);
+}
 
 size_t	get_envsize(char **const env)
 {
