@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 19:57:53 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 20:49:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,12 @@ static int	execute_builtin(t_cd *pcd, t_cmd *cmd)
 	cmd->stdio[0] = dup2(STDIN_FILENO , 240);
 	cmd->stdio[1] = dup2(STDOUT_FILENO, 241);
 	cmd->stdio[2] = dup2(STDERR_FILENO, 242);
-	if (!setup_redirections(cmd->iolst))
+	if (setup_redirections(cmd->iolst) <= 0)
+	{
+		reset_stdiofds(cmd);
+		pcd->exit_status = 1;
 		return (0);
+	}
 	msh_builtins(pcd, cmd->args);
 	reset_stdiofds(cmd);
 	return (1);

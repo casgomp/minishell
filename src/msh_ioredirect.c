@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 16:10:31 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/20 20:24:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	char const *const	iotarget = ptca->tokens[tokenidx + 1];
 	char const			*iooperator;
 	t_llong				fd_new;
-	char				buf[256];
+	//char				buf[256];
 
 	if (!get_iolstelem(ptca))
 		return (false);
