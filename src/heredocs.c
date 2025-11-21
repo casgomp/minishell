@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 19:13:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/21 16:22:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 
 	if (!ret)
 	{
-		if (g_signal_received == SIGINT)
-			return (false);
+		/*if (g_signal_received == SIGINT)
+			return (false);*/ //claude
 		if (!pcd->interactive)
 		{
 			ft_sprintf(buf, "here-document delimited by "
@@ -53,10 +53,16 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	len = ft_strlen(limiter);
 	while (1)
 	{
-		if (g_signal_received == SIGINT)
-			return (0);
+		/*if (g_signal_received == SIGINT)
+			return (0);*/
 		pcd->pt = (t_pt)pt_contd;
 		msh_compile_cmds(pcd, pcd->default_sqed, &ret);
+		if (g_signal_received == SIGINT)
+		{
+			if (ret)
+				free (ret);
+			return (0);
+		} //claude
 		if (!heredoc_check_retval(pcd, ret, limiter))
 			return (1);
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
@@ -107,7 +113,7 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 	int	ret;
 
 	ret = terminal_safe_heredoc_prompt(pcd, hdfdpipe[1], curredir->fname_delim);
-	close(hdfdpipe[1]);//
+	close(hdfdpipe[1]);
 	if (!ret)
 	{
 		close (hdfdpipe[0]);
@@ -116,7 +122,14 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 			reset_handlers_heredoc(&sa_old->sa_int, &sa_old->sa_quit);
 			sa_old->sig_modif = false;
 		}
-		pcd->exit_status = 128 + SIGINT;
+		if (g_signal_received == SIGINT)
+		{
+			pcd->exit_status = 130;
+			g_signal_received = 0;
+		}
+		else
+			pcd->exit_status = 1;
+		//pcd->exit_status = 128 + SIGINT;
 		return (0);
 	}
 	curredir->old_fd = hdfdpipe[0];

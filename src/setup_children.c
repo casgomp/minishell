@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 20:33:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/21 14:12:17 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,6 @@ int	setup_redirections(t_io *iolst)
 		ret = open_files_setup(curredir);
 		if (ret == 0)
 			return (fail_open_closefds(iolst), 0);
-		/*if (apply_redirection(curredir) == 0)
-			return (msh_error((char const *[]){iolst->fname_delim}, 
-				1, errno), 0);*/
 		ret = apply_redirection(curredir);
 		if (ret == 0)
 			return (0);
@@ -102,5 +99,7 @@ int	child_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx)
 		exit (pcd->exit_status);
 	else
 		child_cmd_execute(pcd, curcmd);
+	if (curcmd->path)
+		free (curcmd->path);
 	return (1);
 }

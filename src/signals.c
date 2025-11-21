@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/19 17:49:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/21 16:22:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,9 @@ void	sigint_handler_heredoc(int sig)
 	if (sig == SIGINT)
 		write(1, "^C", 2);
 	write(1, "\n", 1);
-	//rl_on_new_line();
-	//rl_replace_line("", 0);
+	/*rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();*/ //claude
 	//close(STDIN_FILENO);
 }
 

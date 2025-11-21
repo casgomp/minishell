@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 20:36:59 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/21 14:13:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static void	exit_status_wait(t_cd *pcd, t_cmd_ctx *ctx,
 	pcd->exit_status = WEXITSTATUS(wstatus_i);
 	ctx->parpth = 1;
 	compose_check_cmd(pcd, curcmd, ctx);
+	if (curcmd->path)
+		free (curcmd->path);
 	if (pcd->exit_status == 126)
 		msh_error((char const *[]){ctx->path_noaccess, 
 			"Permission denied"}, 2, 0);
