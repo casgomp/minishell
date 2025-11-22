@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/21 16:22:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/22 14:46:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,22 +25,26 @@
 #include <termios.h>
 #include <unistd.h>
 
-static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
+static bool	heredoc_check_retval(/*t_cd *pcd,*/ char const *const ret,
 	char const *const limiter)
 {
 	char	buf[512];
 
 	if (!ret)
 	{
-		/*if (g_signal_received == SIGINT)
-			return (false);*/ //claude
-		if (!pcd->interactive)
+		/*if (!pcd->interactive)
 		{
+			printf("DEBUG: heredoc_check_retval got NULL, returning false\n");
 			ft_sprintf(buf, "here-document delimited by "
 				"end-of-file (wanted `%s')", limiter);
 			msh_error((char const *[]){"warning", buf, }, 2, -1);
 			return (false);
-		}
+		}*/
+		//printf("DEBUG: heredoc_check_retval got NULL, returning false\n");
+		ft_sprintf(buf, "here-document delimited by "
+			"end-of-file (wanted `%s')", limiter);
+		msh_error((char const *[]){"warning", buf, }, 2, -1);
+		return (false);
 	}
 	return (true);
 }
@@ -53,6 +57,7 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	len = ft_strlen(limiter);
 	while (1)
 	{
+		ret = NULL;
 		/*if (g_signal_received == SIGINT)
 			return (0);*/
 		pcd->pt = (t_pt)pt_contd;
@@ -62,9 +67,11 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 			if (ret)
 				free (ret);
 			return (0);
-		} //claude
-		if (!heredoc_check_retval(pcd, ret, limiter))
+		}
+		if (!heredoc_check_retval(/*pcd,*/ ret, limiter))
+		{
 			return (1);
+		}
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
 			return (free(ret), 1);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)
@@ -93,7 +100,9 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		terminal_modified = 1;
 	}
 	pcd->pt = (t_pt)pt_contd;
+	pcd->in_heredoc = true;//
 	ret = heredoc_prompt(pcd, fd, limiter);
+	pcd->in_heredoc = false;//
 	pcd->pt = (t_pt)pt_std;
 	if (isatty(STDIN_FILENO) && terminal_modified)
 		tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
@@ -125,11 +134,10 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 		if (g_signal_received == SIGINT)
 		{
 			pcd->exit_status = 130;
-			g_signal_received = 0;
+			//g_signal_received = 0;
 		}
 		else
 			pcd->exit_status = 1;
-		//pcd->exit_status = 128 + SIGINT;
 		return (0);
 	}
 	curredir->old_fd = hdfdpipe[0];

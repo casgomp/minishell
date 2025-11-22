@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/20 18:42:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/22 14:45:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_minishell_core_data
 	int		fdscript;
 	bool	exit;
 	t_sqed	default_sqed;
+	bool	in_heredoc;
 }	t_cd;
 
 typedef struct s_commandline_section
