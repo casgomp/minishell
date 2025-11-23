@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 16:55:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 17:37:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,12 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 
 int	heredoc_prompt(t_cd *pcd, char *limiter)
 {
+	char	*heredoc;
 	char	*ret;
+	char	*tmp;
 	int		len;
 
+	heredoc = NULL;
 	ret = NULL;
 	len = ft_strlen(limiter);
 	while (true)
@@ -52,10 +55,23 @@ int	heredoc_prompt(t_cd *pcd, char *limiter)
 			return (0);
 		if (!heredoc_check_retval(pcd, ret, limiter))
 			return (0);
-		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
-			return (1);
-		if (ft_dprintf(1, "%s\n", ret) < 0)
-			return (0);
+		if (ret)
+		{
+			if (ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
+			{
+				len = ft_dprintf(STDOUT_FILENO, "%s\n", heredoc);
+				free(heredoc);
+				return (len >= 0);
+			}
+			if (!heredoc)
+				heredoc = ft_strdup(ret);
+			else
+			{
+				tmp = heredoc;
+				heredoc = ft_strjoin(tmp, ret);
+				free (tmp);
+			}
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/23 17:03:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 17:18:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,14 +91,15 @@ bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln, t_cs cs)
 			cls.cmdlines = rh_split_quotes(*pcmdln,
 					rh_sqed2qes_cmdln(&pcd->default_sqed));
 		cls.idx = 0;
-		if (!(cls.cmdlines && cls.cmdlines[0]))
-		{
-			if (!pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
-				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
-			return (cleanup_cls(&cls), false);
-		}
 	}
-	*pcmdln = cls.cmdlines[cls.idx++];
+	if (cls.cmdlines && cls.cmdlines[cls.idx])
+		*pcmdln = cls.cmdlines[cls.idx++];
+	if (!(*pcmdln))
+	{
+		if (!pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
+			msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
+		return (cleanup_cls(&cls), false);
+	}
 	return (true);
 }
 
