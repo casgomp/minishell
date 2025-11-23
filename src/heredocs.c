@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:46:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 16:55:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 	char const *const limiter)
 {
 	char	buf[512];
-	(void)pcd;
 
+	(void)pcd;
 	if (!ret)
 	{
 		if (g_signal_received == SIGINT)
@@ -38,7 +38,7 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 	return (true);
 }
 
-int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
+int	heredoc_prompt(t_cd *pcd, char *limiter)
 {
 	char	*ret;
 	int		len;
@@ -53,21 +53,21 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		if (!heredoc_check_retval(pcd, ret, limiter))
 			return (0);
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
-			return (true);
-		if (ft_dprintf(fd, "%s\n", ret) < 0)
-			return (false);
+			return (1);
+		if (ft_dprintf(1, "%s\n", ret) < 0)
+			return (0);
 	}
 }
 
-static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
+static int	terminal_safe_heredoc_prompt(t_cd *pcd, char *limiter)
 {
 	int	ret;
-	int stdin_safe;
+	int	stdin_safe;
 
 	stdin_safe = dup(STDIN_FILENO);
 	pcd->pt = (t_pt)pt_contd;
-	ret = heredoc_prompt(pcd, fd, limiter);
-	pcd->pt = (t_pt)pt_std;	
+	ret = heredoc_prompt(pcd, limiter);
+	pcd->pt = (t_pt)pt_std;
 	dup2(stdin_safe, STDIN_FILENO);
 	return (ret);
 }
@@ -80,15 +80,13 @@ void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old)
 	pcd->exit_status = 1;
 }
 
-int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *hdfdpipe)
+int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old)
 {
 	int	ret;
 
-	ret = terminal_safe_heredoc_prompt(pcd, hdfdpipe[1], curredir->fname_delim);
-	close(hdfdpipe[1]);
+	ret = terminal_safe_heredoc_prompt(pcd, curredir->fname_delim);
 	if (!ret)
 	{
-		close (hdfdpipe[0]);
 		if (sa_old->sig_modif)
 		{
 			reset_handlers_heredoc(&sa_old->sa_int, &sa_old->sa_quit);
@@ -97,31 +95,27 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 		pcd->exit_status = 128 + SIGINT;
 		return (0);
 	}
-	curredir->old_fd = hdfdpipe[0];
-	return(1);
+	return (1);
 }
 
 int	heredoc_setup(t_io *curredir, t_cd *pcd)
 {
-	int					hdfdpipe[2];
 	t_sa				sa_old;
 
 	sa_old.sig_modif = false;
 	while (curredir)
-	{	
+	{
 		if (curredir->tredirect == heredoc2fd)
 		{
 			if (!sa_old.sig_modif)
 			{
-				if (!setup_signal_heredoc(&sa_old.sa_int, &sa_old.sa_quit, sigint_handler_heredoc))
+				if (!setup_signal_heredoc(&sa_old, sigint_handler_heredoc))
 					return (pcd->exit_status = 1, 0);
 				sa_old.sig_modif = true;
 			}
-			if (pipe(hdfdpipe) == -1)
-				return (heredoc_setup_clean_pipe_fail(pcd, &sa_old), 0);
 			g_signal_received = 0;
-			if (!heredoc_setup_send_to_prompt(pcd, curredir, &sa_old, hdfdpipe))
-				return(0);
+			if (!heredoc_setup_send_to_prompt(pcd, curredir, &sa_old))
+				return (0);
 		}
 		curredir = curredir->next;
 	}

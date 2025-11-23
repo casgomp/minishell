@@ -6,23 +6,22 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:18:57 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 16:57:46 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# define _POSIX_C_SOURCE 200809L
-# include "minishell.h"
-# include "msh_builtins.h"
-# include "msh_compile_cmds.h"
+#include "minishell.h"
+#include "msh_builtins.h"
+#include "msh_compile_cmds.h"
 
-# include "libft.h"
+#include "libft.h"
 
-# include <signal.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <sys/wait.h>
-# include <sys/types.h>
-# include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
 {

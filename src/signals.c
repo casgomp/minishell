@@ -6,23 +6,21 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:50:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 16:56:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# define _GNU_SOURCE
-# define _POSIX_C_SOURCE 200809L
-# include "minishell.h"
+#include "minishell.h"
 
-# include <readline/readline.h>
-//# include <readline/history.h>
-# include <signal.h>
-# include <stdio.h>
-# include <sys/wait.h>
-# include <sys/types.h>
-# include <unistd.h>
+#include <readline/readline.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit)
+void	reset_handlers_heredoc(struct sigaction *sa_old_int,
+	struct sigaction *sa_old_quit)
 {
 	sigaction(SIGINT, sa_old_int, NULL);
 	sigaction(SIGQUIT, sa_old_quit, NULL);
@@ -43,39 +41,13 @@ void	sigint_handler_wait(t_cd *pcd, int wstatus, int ncmds, int idx, int *sgntcn
 void	sigint_handler_heredoc(int sig)
 {
 	g_signal_received = sig;
-	// int a = rl_catch_signals;
-	// (void)a;
-	if (sig == SIGINT)
-	{
-		// write(1, "^C heredoc", 10);
-		close(STDIN_FILENO);
-	}
-// 	write(1, "\n", 1);
-// 	rl_done = 1;
-// 	write(0, "42\0\n", 4);
-// 	// rl_check_signals();
-// 	// rl_reset_after_signal();
-// // test area
-// 	rl_free_line_state();
-// 	// rl_callback_sigcleanup();
-// 	// rl_cleanup_after_signal();
-// 	// rl_on_new_line();
-//     // rl_done = 1;	
-// 	rl_replace_line("", 0);
-// 	// rl_free_line_state();
-// 	rl_redisplay();
-// 	// rl_done = 1;
-// 	// rl_cleanup_after_signal();
-//     // rl_free_line_state();
-// 	// test area
-	
-// 	//rl_on_new_line();
-// 	// rl_replace_line("", 0);
-// 	//close(STDIN_FILENO);
 	write (1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	// rl_redisplay();
+	if (sig == SIGINT)
+	{
+		close(STDIN_FILENO);
+	}
 }
 
 void	sigint_handler(int sig)
@@ -102,14 +74,13 @@ void	setup_signal_wait(struct sigaction *old_sigint)
 	sigaction(SIGINT, &sa_ignore, old_sigint);
 }
 
-
-int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int))
+int	setup_signal_heredoc(t_sa *psa_old, void (*handler)(int))
 {
 	struct sigaction	new_sa;
 
-	if (sigaction(SIGINT, NULL, sa_old_int) == -1)
+	if (sigaction(SIGINT, NULL, &psa_old->sa_int) == -1)
 		return (0); //correct return? perror?
-	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
+	if (sigaction(SIGQUIT, NULL, &psa_old->sa_quit) == -1)
 		return (0); //correct return? perror?
 	ft_memset(&new_sa, 0, sizeof(new_sa));
 	new_sa.sa_handler = handler;

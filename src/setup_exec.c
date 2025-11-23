@@ -6,11 +6,10 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/19 12:21:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 16:26:34 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// # define _POSIX_C_SOURCE 200809L
 #include "minishell.h"
 #include "msh_builtins.h"
 #include "libft.h"
@@ -46,10 +45,8 @@ int	child_cmd_execute(t_cd *pcd, t_cmd *curcmd)
 			execve(curcmd->path, curcmd->args, pcd->msh_env);
 			perror(curcmd->args[0]);
 		}
-		//free curcmd->path?
-		//exit (???);
 	}
-	return (1);//free curcmd->path?
+	return (1);
 }
 
 int	apply_redirection(t_io *curredir)

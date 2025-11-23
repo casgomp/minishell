@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/23 15:19:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 16:55:44 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,17 +136,14 @@ int		apply_redirection(t_io *curredir);
 int		child_cmd_execute(t_cd *pcd, t_cmd *curcmd);
 
 //heredocs
-// int		heredoc_prompt(int fd, char *limiter);
-int		heredoc_prompt(t_cd *pcd, int fd, char *limiter);
-//static int	terminal_safe_heredoc_prompt(int fd, char *limiter);
+int		heredoc_prompt(t_cd *pcd, char *limiter);
 int		heredoc_setup(t_io *curredir, t_cd *pcd);
-int		heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *hdfdpipe);
+int		heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old);
 void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old);
 
-//signals...should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
+//signals
 int		setup_signal(int signum, void (*handler)(int));
-int		setup_signal_heredoc(struct sigaction *sa_old_int,
-			struct sigaction *sa_old_quit, void (*handler)(int));
+int		setup_signal_heredoc(t_sa *sa_old, void (*handler)(int));
 void	setup_signal_wait(struct sigaction *old_sigint);
 void	sigint_handler(int sig);
 void	sigint_handler_heredoc(int sig);
