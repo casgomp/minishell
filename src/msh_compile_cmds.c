@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 17:30:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:18:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,79 +75,89 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char *pcmdline,
 	return (cleanup_tca(&tca), tca.cmdlst);
 }
 
-static bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, t_cls *pcls, t_cs cs)
+bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln/* t_cls *pcls */, t_cs cs)
 {
-	char	*cmdln;
+	static t_cls	cls = (t_cls){.cmdlines = (char **) NULL, .idx = 0,};
+	// char	*cmdln;
 	bool	status_ok;
 
-	cmdln = (char *) NULL;
+	// cls.cmdln = (char *) NULL;
+	*pcmdln = (char *) NULL;
 	status_ok = true;
-	if (!(pcls->cmdlines && pcls->cmdlines[pcls->idx]))
+	if (!(cls.cmdlines && cls.cmdlines[cls.idx]))
 	{
-		cleanup_cls(pcls);
-		if (!get_cmdline_add_history(pcd, &cmdln))
-			status_ok = false;
-		else if (cmdln && *cmdln == 0)
+		cleanup_cls(&cls);
+		if (!get_cmdline_add_history(pcd, pcmdln))
 		{
-			pcls->cmdlines = malloc(2*sizeof(char *));
-			pcls->cmdlines[0] = malloc(1*sizeof(char));
-			pcls->cmdlines[0][0] = '\0';
-			pcls->cmdlines[1] = (char *) NULL;
+			status_ok = false;
+			// pcd->exit = true;
+		}
+		else if (*pcmdln && *(*pcmdln) == 0)
+		{
+			cls.cmdlines = malloc(2*sizeof(char *));
+			cls.cmdlines[0] = malloc(1*sizeof(char));
+			cls.cmdlines[0][0] = '\0';
+			cls.cmdlines[1] = (char *) NULL;
 		}
 		else
-			pcls->cmdlines = rh_split_quotes(cmdln,
+			cls.cmdlines = rh_split_quotes(*pcmdln,
 					rh_sqed2qes_cmdln(&pcd->default_sqed));
-		pcls->idx = 0;
-		if (!(status_ok && pcls->cmdlines && pcls->cmdlines[0]))
-		{
-			cleanup_cls(pcls);
+		cls.idx = 0;
+		if (!(status_ok && cls.cmdlines && cls.cmdlines[0]))
 			status_ok = false;
-		}
 		if (!status_ok && !pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
 			msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
 	}
 	if (status_ok)
-		pcls->cmdln = pcls->cmdlines[pcls->idx++];
-	return (free(cmdln), status_ok);
+		/* cls.cmdln */ *pcmdln = cls.cmdlines[cls.idx++];
+	else
+		cleanup_cls(&cls);
+	return (/* free(cmdln),  */status_ok);
 }
 
 static t_cmd	*msh_compile_multicmds(
-	t_cd *pcd, t_sqed const sqed, char **pcmdlns)
+	t_cd *pcd, t_sqed const sqed/* , char **pcmdlns */)
 {
-	static t_cls	cls = (t_cls){.cmdlines = (char **) NULL, .idx = 0,};
+	// static t_cls	cls = (t_cls){.cmdlines = (char **) NULL, .idx = 0,};
+	char			*cmdln;
 	t_cmd			*cmds;
 	t_cs			cs;
 
 	cmds = (t_cmd *) NULL;
-	cls.cmdln = (char *) NULL;
+	// cls.cmdln = (char *) NULL;
 	cs = (t_cs)cs_uninitialised;
+
 	while (!pcd->exit)
 	{
-		if (!msh_compile_cmds_get_cmdlines(pcd, &cls, cs))
-			return (cleanup_cmds(&cmds), cmds);
-		if (pcmdlns)
+		if (!msh_compile_cmds_get_cmdlines(pcd, &cmdln, cs))
 		{
-			*pcmdlns = ft_strdup(cls.cmdln);
-			return (cmds);
+			pcd->exit = true;
+			return (cleanup_cmds(&cmds), cmds);
 		}
-		cmds = msh_compile_cmds_core(pcd, cls.cmdln, cmds, sqed);
-		cs = msh_check_cmds(pcd, cmds, cls.cmdln);
+		// if (pcmdlns)
+		// {
+			// *pcmdlns = ft_strdup(cls.cmdln);
+			// return (cmds);
+		// }
+		cmds = msh_compile_cmds_core(pcd, /* cls. */cmdln, cmds, sqed);
+		cs = msh_check_cmds(pcd, cmds, /* cls. */cmdln);
 		if (msh_check_cmdstatus_ok(pcd, cs, &cmds))
 			break ;
 	}
-	if (cls.cmdlines && (!cls.cmdlines[cls.idx] || pcd->exit))
-		rh_free_simple_array((void ***)&cls.cmdlines);
+	// if (cls.cmdlines && (!cls.cmdlines[cls.idx] || pcd->exit))
+	// if (!cmdln || pcd->exit)
+	// 	rh_free_simple_array((void ***)&cls.cmdlines);
 	return (cmds);
 }
 
-t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed, char **pcmdlns)
+t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed/* , char **pcmdlns */)
 {
 	static t_cmd	*cmds = (t_cmd *) NULL;
 	t_cmd			*subcmds;
 	t_cmd			*subcmds_last;
 
 	if (!cmds)
-		cmds = msh_compile_multicmds(pcd, sqed, pcmdlns);
+		cmds = msh_compile_multicmds(pcd, sqed/* , pcmdlns */);
 	if (!cmds)
 		return ((t_cmd *) NULL);
 	subcmds = cmds;

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/19 15:58:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:18:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int	process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx)
 
 int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */)
 {
-	ctx->cmds = msh_compile_cmds(pcd, pcd->default_sqed, (char **) NULL);
+	ctx->cmds = msh_compile_cmds(pcd, pcd->default_sqed/* , (char **) NULL */);
 
 	/*////////////////////////////////////////////////////
 	//debugging loop to see what msh_compile_cmds returns

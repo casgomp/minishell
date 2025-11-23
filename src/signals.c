@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 20:07:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:36:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,39 +53,44 @@ void	sigint_handler_heredoc(int sig)
 	if (sig == SIGINT)
 	{
 		// write(1, "^C heredoc", 10);
+		close(STDIN_FILENO);
 	}
-	write(1, "\n", 1);
-	rl_done = 1;
-	write(0, "42\0\n", 4);
-	// rl_check_signals();
-	// rl_reset_after_signal();
-// test area
-	rl_free_line_state();
-	// rl_callback_sigcleanup();
-	// rl_cleanup_after_signal();
-	// rl_on_new_line();
-    // rl_done = 1;	
-	rl_replace_line("", 0);
-	// rl_free_line_state();
-	rl_redisplay();
-	// rl_done = 1;
-	// rl_cleanup_after_signal();
-    // rl_free_line_state();
-	// test area
+// 	write(1, "\n", 1);
+// 	rl_done = 1;
+// 	write(0, "42\0\n", 4);
+// 	// rl_check_signals();
+// 	// rl_reset_after_signal();
+// // test area
+// 	rl_free_line_state();
+// 	// rl_callback_sigcleanup();
+// 	// rl_cleanup_after_signal();
+// 	// rl_on_new_line();
+//     // rl_done = 1;	
+// 	rl_replace_line("", 0);
+// 	// rl_free_line_state();
+// 	rl_redisplay();
+// 	// rl_done = 1;
+// 	// rl_cleanup_after_signal();
+//     // rl_free_line_state();
+// 	// test area
 	
-	//rl_on_new_line();
-	// rl_replace_line("", 0);
-	//close(STDIN_FILENO);
+// 	//rl_on_new_line();
+// 	// rl_replace_line("", 0);
+// 	//close(STDIN_FILENO);
+	write (1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	// rl_redisplay();
 }
 
 void	sigint_handler(int sig)
 {
 	g_signal_received = sig;
 	write (1, "\n", 1);
-	if (sig == SIGINT)
-	{
-		;
-	}
+	// if (sig == SIGINT)
+	// {
+	// 	;
+	// }
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();

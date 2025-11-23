@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 12:30:52 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:19:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_commandline_section
 {
 	char	**cmdlines;
 	int		idx;
-	char	*cmdln;
+	// char	*cmdln;
 }	t_cls;
 
 typedef struct s_io

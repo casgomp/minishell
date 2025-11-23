@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 19:46:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:27:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,19 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 	char const *const limiter)
 {
 	char	buf[512];
+	(void)pcd;
 
 	if (!ret)
 	{
 		if (g_signal_received == SIGINT)
 			return (false);
-		if (!pcd->interactive)
-		{
+		// if (!pcd->interactive)
+		// {
 			ft_sprintf(buf, "here-document delimited by "
 				"end-of-file (wanted `%s')", limiter);
 			msh_error((char const *[]){"warning", buf, }, 2, -1);
 			return (false);
-		}
+		// }
 	}
 	return (true);
 }
@@ -59,16 +60,17 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		if (g_signal_received == SIGINT)
 			return (0);
 		// msh_compile_cmds(pcd, pcd->default_sqed, &ret);
-		ret = readline("specialprmt: ");
+		msh_compile_cmds_get_cmdlines(pcd, &ret, (t_cs)cs_uninitialised);
+		// ret = readline("specialprmt: ");
 		if (g_signal_received == SIGINT)
 			return (0);
 		if (!heredoc_check_retval(pcd, ret, limiter))
 			return (0);
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
-			return (free(ret), 1);
+			return (/* free(ret), */ 1);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)
 			return (free(ret), 0);
-		free (ret);
+		// free (ret);
 		ret = (char *) NULL;
 	}
 }
@@ -92,7 +94,9 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	// 	terminal_modified = 1;
 	// }
 	pcd->pt = (t_pt)pt_contd;
+	int stdin_safe = dup(STDIN_FILENO);
 	ret = heredoc_prompt(pcd, fd, limiter);
+	dup2(stdin_safe, STDIN_FILENO);
 	pcd->pt = (t_pt)pt_std;
 	// if (isatty(STDIN_FILENO) && terminal_modified)
 	// 	tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
