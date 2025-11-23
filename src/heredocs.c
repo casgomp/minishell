@@ -6,24 +6,18 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:27:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:46:51 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _POSIX_C_SOURCE 200809L
-#define _DEFAULT_SOURCE
-#define _BSD_SOURCE
 #include "minishell.h"
 #include "msh_builtins.h"
 #include "msh_compile_cmds.h"
 #include "libft.h"
 
 #include <errno.h>
-#include <readline/readline.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <unistd.h>
 
 static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
@@ -36,13 +30,10 @@ static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
 	{
 		if (g_signal_received == SIGINT)
 			return (false);
-		// if (!pcd->interactive)
-		// {
-			ft_sprintf(buf, "here-document delimited by "
-				"end-of-file (wanted `%s')", limiter);
-			msh_error((char const *[]){"warning", buf, }, 2, -1);
-			return (false);
-		// }
+		ft_sprintf(buf, "here-document delimited by "
+			"end-of-file (wanted `%s')", limiter);
+		msh_error((char const *[]){"warning", buf, }, 2, -1);
+		return (false);
 	}
 	return (true);
 }
@@ -54,52 +45,30 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 
 	ret = NULL;
 	len = ft_strlen(limiter);
-	while (1)
+	while (true)
 	{
-		// pcd->pt = (t_pt)pt_contd;
-		if (g_signal_received == SIGINT)
-			return (0);
-		// msh_compile_cmds(pcd, pcd->default_sqed, &ret);
 		msh_compile_cmds_get_cmdlines(pcd, &ret, (t_cs)cs_uninitialised);
-		// ret = readline("specialprmt: ");
 		if (g_signal_received == SIGINT)
 			return (0);
 		if (!heredoc_check_retval(pcd, ret, limiter))
 			return (0);
 		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
-			return (/* free(ret), */ 1);
+			return (true);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)
-			return (free(ret), 0);
-		// free (ret);
-		ret = (char *) NULL;
+			return (false);
 	}
 }
 
 static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 {
-	// struct termios	saved_termios;
-	// struct termios	new_termios;
-	int				ret;
-	// int				terminal_modified;
+	int	ret;
+	int stdin_safe;
 
-	// terminal_modified = 0;
-	// if (isatty(STDIN_FILENO))
-	// {
-	// 	if (tcgetattr(STDIN_FILENO, &saved_termios) == -1)
-	// 		return (perror("tcgetattr"), 0);
-	// 	new_termios = saved_termios;
-	// 	new_termios.c_lflag &= ~ECHOCTL;
-	// 	if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) == -1)
-	// 		return (perror("tcsetattr"), 0);
-	// 	terminal_modified = 1;
-	// }
+	stdin_safe = dup(STDIN_FILENO);
 	pcd->pt = (t_pt)pt_contd;
-	int stdin_safe = dup(STDIN_FILENO);
 	ret = heredoc_prompt(pcd, fd, limiter);
+	pcd->pt = (t_pt)pt_std;	
 	dup2(stdin_safe, STDIN_FILENO);
-	pcd->pt = (t_pt)pt_std;
-	// if (isatty(STDIN_FILENO) && terminal_modified)
-	// 	tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
 	return (ret);
 }
 
@@ -114,10 +83,9 @@ void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old)
 int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *hdfdpipe)
 {
 	int	ret;
-	(void)sa_old;
 
 	ret = terminal_safe_heredoc_prompt(pcd, hdfdpipe[1], curredir->fname_delim);
-	close(hdfdpipe[1]);//
+	close(hdfdpipe[1]);
 	if (!ret)
 	{
 		close (hdfdpipe[0]);
@@ -139,33 +107,24 @@ int	heredoc_setup(t_io *curredir, t_cd *pcd)
 	t_sa				sa_old;
 
 	sa_old.sig_modif = false;
-	// ft_printf("rl_catch_signals hdsetup1: %d\n", rl_catch_signals);
 	while (curredir)
 	{	
 		if (curredir->tredirect == heredoc2fd)
 		{
-			g_signal_received = 0;
 			if (!sa_old.sig_modif)
 			{
 				if (!setup_signal_heredoc(&sa_old.sa_int, &sa_old.sa_quit, sigint_handler_heredoc))
-				// if (!setup_signal_heredoc(&sa_old.sa_int, &sa_old.sa_quit, NULL))
 					return (pcd->exit_status = 1, 0);
-				// rl_set_signals();
 				sa_old.sig_modif = true;
-				// rl_catch_signals = 0;
 			}
 			if (pipe(hdfdpipe) == -1)
 				return (heredoc_setup_clean_pipe_fail(pcd, &sa_old), 0);
 			g_signal_received = 0;
-			// rl_catch_signals = 1;
-			// ft_printf("rl_catch_signals hdsetup11: %d\n", rl_catch_signals);
 			if (!heredoc_setup_send_to_prompt(pcd, curredir, &sa_old, hdfdpipe))
 				return(0);
-			// ft_printf("rl_catch_signals hdsetup12: %d\n", rl_catch_signals);
 		}
 		curredir = curredir->next;
 	}
-	// ft_printf("rl_catch_signals hdsetup2: %d\n", rl_catch_signals);
 	if (sa_old.sig_modif)
 		reset_handlers_heredoc(&sa_old.sa_int, &sa_old.sa_quit);
 	return (1);

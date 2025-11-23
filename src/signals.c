@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:36:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/23 15:50:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,6 @@
 
 void	reset_handlers_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit)
 {
-	/*sa->sa_handler = SIG_DFL;
-	sigemptyset(&sa->sa_mask);
-	//sa->sa_flags = 0;
-	sigaction(SIGINT, sa, NULL);
-	sigaction(SIGQUIT, sa, NULL);*/
 	sigaction(SIGINT, sa_old_int, NULL);
 	sigaction(SIGQUIT, sa_old_quit, NULL);
 }
@@ -112,10 +107,6 @@ int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_
 {
 	struct sigaction	new_sa;
 
-	// setup_signal(SIGINT, SIG_IGN);
-	// setup_signal(SIGQUIT, SIG_IGN);
-	// return (1);
-
 	if (sigaction(SIGINT, NULL, sa_old_int) == -1)
 		return (0); //correct return? perror?
 	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
@@ -126,11 +117,6 @@ int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_
 	new_sa.sa_flags = 0;
 	if (sigaction(SIGINT, &new_sa, NULL) == -1)
 		return (perror("sigaction"), 0);
-	
-	// new_sa.sa_handler = SIG_IGN;
-	// sigaction(SIGQUIT, &new_sa, NULL);
-
-	// new_sa.sa_handler = SIG_IGN;
 	setup_signal(SIGQUIT, SIG_IGN);
 	return (1);
 }
