@@ -6,11 +6,10 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 19:58:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 22:34:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define MAX_FD 1023
 #include "minishell.h"
 #include "msh_builtins.h"
 #include "libft.h"
@@ -47,23 +46,13 @@ int	child_cmd_execute(t_cd *pcd, t_cmd *curcmd)
 	return (1);
 }
 
-static int	validate_fd(int	fd)
-{
-	if (fd < 0 || fd > MAX_FD)
-		return (0);
-	return (1);
-}
-
 int	apply_redirection(t_io *curredir)
 {
-	if (!validate_fd(curredir->new_fd))
+	if (dup2(curredir->old_fd, curredir->new_fd) == -1)
 	{
-		msh_error((char const *[]){ft_itoa(curredir->new_fd), 
-		"Bad file descriptor"}, 2, 0);
+		msh_error((char const *[]){ft_itoa(curredir->new_fd),}, 1, errno);
 		return (0);
 	}
-	if (dup2(curredir->old_fd, curredir->new_fd) == -1)
-		return (-1);
 	close(curredir->old_fd);
 	return (1);
 }
