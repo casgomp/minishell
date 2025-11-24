@@ -6,6 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "args": [
+			// "<tests/shell_tests/tc_echo_expand",
 			// "<tests/shell_tests/tc_redirect6",
 			// "<tests/shell_tests/tc_openpipe",
 			// "<tests/shell_tests/tc_heredoc",

@@ -1,7 +1,8 @@
 #!/bin/bash --norc
 
 OLDWD="$(pwd)"
-WORKDIR="/tmp/mshtest_$(date +%F_%T)"
+WORKDIRBASE="/tmp/mshtest_"
+WORKDIR="${WORKDIRBASE}$(date +%F_%T)"
 #WORKDIR="/tmp/mshtest_$(date +%F)"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 MSHBIN="$SCRIPT_DIR/../../minishell"
@@ -31,16 +32,19 @@ printf "################################################################\n"
 printf "### msh tests\n"
 printf "################################################################\n"
 
-WORKDIRS="${WORKDIR%5-*}*"
-WORKDIRS="$(ls -dt1 $WORKDIRS | tail -n+3)"
-if [[ ! -z "$WORKDIRS" ]]; then
+#WORKDIRS="${WORKDIR%5-*}*"
+WORKDIRS="${WORKDIRBASE}*"
+WORKDIRS2DEL="$(ls -dt1 $WORKDIRS | tail -n +3)"
+if [[ ! -z "$WORKDIRS2DEL" ]]; then
 #	printf "\n\nDo you want to cleanup all old output data in:\n"
 #	printf "(The 2 latest ones will be kept in any case)\n"
-#	echo "$WORKDIRS"
+	echo "$WORKDIRS"
 #	PS3="Please select an option (number): "
 #	select ANS in YES no; do
 #		if [[ "$ANS" == "YES" ]]; then
-			rm -r $WORKDIRS
+			#echo There: $WORKDIRS
+			#echo Removing: $WORKDIRS2DEL
+			#rm -rv $WORKDIRS2DEL
 #			printf "\nStill available output dirs:\n"
 #			ls -1 -d /tmp/ms* # | tail -n +3
 #		fi
@@ -83,7 +87,7 @@ echo "$TC_SCRPTS" |
 		TCOUT="${TESTDIR}.result"
 		truncate -s 0 "$TCOUT"
 
-		<"$TCSCRIPT" "$MSHBIN" >"$MSHOUT"_1 2>"$MSHOUT"_2
+		<"$TCSCRIPT" "$MSHBIN" 1>"$MSHOUT"_1 2>"$MSHOUT"_2
 		MSRET=$?
 		<"$TCSCRIPT" bash --norc >"$BSHOUT"_1 2>"$BSHOUT"_2
 		BRET=$?
