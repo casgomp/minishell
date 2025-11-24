@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:33:36 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:38:33 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static bool	heredoc_check_retval(/*t_cd *pcd,*/ char const *const ret,
+static bool	heredoc_check_retval(char const *const ret,
 	char const *const limiter)
 {
 	char	buf[512];
 
-	(void)pcd;
 	if (!ret)
 	{
 		if (g_signal_received == SIGINT)
@@ -50,7 +49,7 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		msh_compile_cmds_get_cmdlines(pcd, &ret, (t_cs)cs_uninitialised);
 		if (g_signal_received == SIGINT)
 			return (0);
-		if ((!heredoc_check_retval(pcd, ret, limiter))
+		if ((!heredoc_check_retval(ret, limiter))
 			|| (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0'))
 			return (true);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)

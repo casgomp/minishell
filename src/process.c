@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:35:41 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:44:40 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,31 +23,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int	wait_child_processes(t_cd *pcd, int *pids, int ncmds)
-{
-	int					*wstatus;
-	int					i;
-	//struct sigaction	sa_ignore;
-	struct sigaction	old_sigint;
-	int					sgntcnt;	
-
-	wstatus = malloc(sizeof(int) * ncmds);
-	if (!wstatus)	
-		return (free (pids), 0);
-	setup_signal_wait(&old_sigint);
-	sgntcnt = 0;
-	i = 0;
-	while (i < ncmds)
-	{
-		waitpid (pids[i], &wstatus[i], 0);
-		if (WIFEXITED(wstatus[i]))
-			pcd->exit_status = WEXITSTATUS(wstatus[i]);
-		else if (WIFSIGNALED(wstatus[i]))
-			sigint_handler_wait(pcd, wstatus[i], ncmds, i, &sgntcnt);
-		i ++;
-	}
-	return (sigaction(SIGINT, &old_sigint, NULL), free (wstatus), free(pids), 1);
-}
 
 static int	reset_stdiofds(t_cmd *curcmd)
 {
