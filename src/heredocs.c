@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/23 15:46:51 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 12:44:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,8 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 		msh_compile_cmds_get_cmdlines(pcd, &ret, (t_cs)cs_uninitialised);
 		if (g_signal_received == SIGINT)
 			return (0);
-		if (!heredoc_check_retval(pcd, ret, limiter))
-			return (0);
-		if (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0')
+		if ((!heredoc_check_retval(pcd, ret, limiter))
+			|| (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0'))
 			return (true);
 		if (ft_dprintf(fd, "%s\n", ret) < 0)
 			return (false);
@@ -65,9 +64,13 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	int stdin_safe;
 
 	stdin_safe = dup(STDIN_FILENO);
+	// dup2(fd, STDIN_FILENO);
 	pcd->pt = (t_pt)pt_contd;
 	ret = heredoc_prompt(pcd, fd, limiter);
-	pcd->pt = (t_pt)pt_std;	
+	pcd->pt = (t_pt)pt_std;
+	// dup2(STDIN_FILENO, fd);
+	// close(STDIN_FILENO);
+	close(fd);
 	dup2(stdin_safe, STDIN_FILENO);
 	return (ret);
 }
@@ -85,7 +88,7 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *h
 	int	ret;
 
 	ret = terminal_safe_heredoc_prompt(pcd, hdfdpipe[1], curredir->fname_delim);
-	close(hdfdpipe[1]);
+	// close(hdfdpipe[1]);
 	if (!ret)
 	{
 		close (hdfdpipe[0]);
