@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 15:33:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 23:29:23 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int	ms_init(t_cd *pcd)
 	pcd->pt = (t_pt)pt_std;
 	pcd->fdscript = -1;
 	pcd->exit = false;
-	pcd->in_heredoc = false;
 	pcd->default_sqed = (t_sqed){.q = "\"\'", .rmqe = false, .esc = '\\',
 		.lncmt = "# \t|<>\n;", .blank = " \t", .soloblnk = false,
 		.metachr = "|<>\n;", .ifs = " \t\n", .expnd = '$',
@@ -43,6 +42,7 @@ int	ms_init(t_cd *pcd)
 	{
 		msh_setup_signal(SIGINT, sigint_handler);
 		msh_setup_signal(SIGQUIT, SIG_IGN);
+		rl_catch_signals = 0;
 	}
 	rl_initialize();
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:36:50 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 23:25:42 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,13 @@ void	sigint_handler_heredoc(int sig)
 {
 	g_signal_received = sig;
 	close(STDIN_FILENO);
-	write (1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	// rl_redisplay();
+	write (1, "^C", 2);
 }
 
 void	sigint_handler(int sig)
 {
 	g_signal_received = sig;
-	write (1, "\n", 1);
+	write (1, "^C\n", 3);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();

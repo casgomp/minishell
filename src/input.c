@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 15:32:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 23:26:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,6 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		if (g_signal_received == SIGINT)
 		{
 			pcd->exit_status = 130;
-			//g_signal_received = 0;
-			if (pcd->pt != pt_contd)
-				g_signal_received = 0;
 		}
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 17:22:56 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 23:28:25 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,7 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 
 	stdin_safe = dup(STDIN_FILENO);
 	pcd->pt = (t_pt)pt_contd;
-	pcd->in_heredoc = true;//
 	ret = heredoc_prompt(pcd, fd, limiter);
-	pcd->in_heredoc = false;//
 	pcd->pt = (t_pt)pt_std;
 	close(fd);
 	close(STDIN_FILENO);
