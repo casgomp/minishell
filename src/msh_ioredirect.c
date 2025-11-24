@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/19 16:55:49 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:26:10 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ static bool	msh_ioredirect_setiotarget(t_cd *pcd, t_tca *ptca,
 	char	**token_ws;
 
 	if (iotarget && ft_strlen(iotarget) > 0
-			&& !ft_strchr(sqed.metachr, iotarget[0]))
+		&& !ft_strchr(sqed.metachr, iotarget[0]))
 	{
 		token_ws = msh_expand_wordsplit_token(iotarget, &sqed);
 		if (!token_ws || token_ws[0] == (char *) NULL
@@ -123,20 +123,12 @@ bool	msh_process_ioredirector(t_cd *pcd, t_tca *ptca,
 	char const *const	iotarget = ptca->tokens[tokenidx + 1];
 	char const			*iooperator;
 	t_llong				fd_new;
-	// char				buf[256];
 
 	if (!get_iolstelem(ptca))
 		return (false);
 	iooperator = token;
 	if (!msh_ioredirect_from_fd(ptca, token, &iooperator, &fd_new))
 		return (false);
-	// if (fd_new > 1023)
-	// {
-	// 	ft_sprintf(buf, "%d", fd_new);
-	// 	pcd->exit_status = 1;
-	// 	msh_error((char const *[]){buf, "Bad file descriptor"}, 2, -1);
-	// 	return (false);
-	// }
 	msh_ioredirect_settype(ptca, iooperator, fd_new);
 	if (!msh_ioredirect_setiotarget(pcd, ptca, sqed, iotarget))
 		return (false);

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/23 13:24:26 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:06:30 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,8 @@ void	postproc_metachars(char const *const s, int *const pidx,
 
 void	cleanup_tsp(t_splprms *const ptsp, bool incl_splt)
 {
-	// size_t		idx;
 	t_startlen	*tmp;
 
-	// idx = 0;
 	if (incl_splt)
 		rh_free_simple_array((void ***)&ptsp->split);
 	while (ptsp->tsl_orig)
