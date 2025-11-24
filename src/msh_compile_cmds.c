@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 16:33:18 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 16:36:01 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static t_cmd	*msh_compile_cmds_core(t_cd *pcd, char *pcmdline,
 	return (cleanup_tca(&tca), tca.cmdlst);
 }
 
-bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln, t_cs cs)
+bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln)
 {
 	static t_cls	cls = (t_cls){.cmdlines = (char **) NULL, .idx = 0,};
 
@@ -94,12 +94,6 @@ bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln, t_cs cs)
 	}
 	if (cls.cmdlines && cls.cmdlines[cls.idx])
 		*pcmdln = cls.cmdlines[cls.idx++];
-	if (!(*pcmdln))
-	{
-		if (!pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
-			msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
-		return (cleanup_cls(&cls), false);
-	}
 	return (true);
 }
 
@@ -114,7 +108,7 @@ static t_cmd	*msh_compile_multicmds(
 	cs = (t_cs)cs_uninitialised;
 	while (!pcd->exit)
 	{
-		if (!msh_compile_cmds_get_cmdlines(pcd, &cmdln, cs))
+		if (!msh_compile_cmds_get_cmdlines(pcd, &cmdln))
 		{
 			if (!pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
 				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 15:01:09 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 16:36:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 char	*msh_dict(char const *const key, void *dict_data);
 bool	msh_isvalidvarchar(char const c, void *validchar_data);
 t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed);
-bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln, t_cs cs);
+bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln);
 void	cleanup_cmds(t_cmd **pcmds_head);
 void	cleanup_cls(t_cls *pcls);
 
