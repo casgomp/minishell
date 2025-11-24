@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 12:44:04 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 14:54:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "libft.h"
 
 #include <errno.h>
+// #include <readline/readline.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -49,7 +50,12 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	{
 		msh_compile_cmds_get_cmdlines(pcd, &ret, (t_cs)cs_uninitialised);
 		if (g_signal_received == SIGINT)
+		{
+			// rl_free_line_state();
+			// rl_cleanup_after_signal();
+			// rl_reset_after_signal();
 			return (0);
+		}
 		if ((!heredoc_check_retval(pcd, ret, limiter))
 			|| (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0'))
 			return (true);

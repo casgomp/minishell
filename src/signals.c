@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:20:45 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 12:47:07 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 14:51:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	sigint_handler_heredoc(int sig)
 		write (1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
+		// rl_redisplay();
 	// }
 }
 
@@ -76,26 +77,22 @@ void	setup_signal_wait(struct sigaction *old_sigint)
 	sigaction(SIGINT, &sa_ignore, old_sigint);
 }
 
-
 int	setup_signal_heredoc(struct sigaction *sa_old_int, struct sigaction *sa_old_quit, void(*handler)(int))
 {
-	struct sigaction	new_sa;
+	// struct sigaction	new_sa;
 
 	if (sigaction(SIGINT, NULL, sa_old_int) == -1)
-		return (0); //correct return? perror?
-	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
-		return (0); //correct return? perror?
-	ft_memset(&new_sa, 0, sizeof(new_sa));
-	new_sa.sa_handler = handler;
-	sigemptyset(&new_sa.sa_mask);
-	new_sa.sa_flags = 0;
-	if (sigaction(SIGINT, &new_sa, NULL) == -1)
+		// return (0); //correct return? perror?
 		return (perror("sigaction"), 0);
-	setup_signal(SIGQUIT, SIG_IGN);
+	if (sigaction(SIGQUIT, NULL, sa_old_quit) == -1)
+		// return (0); //correct return? perror?
+		return (perror("sigaction"), 0);
+	msh_setup_signal(SIGINT, handler);
+	msh_setup_signal(SIGQUIT, SIG_IGN);
 	return (1);
 }
 
-int	setup_signal(int signum, void(*handler)(int))
+int	msh_setup_signal(int signum, void(*handler)(int))
 {
 	struct sigaction sa;
 
@@ -103,6 +100,7 @@ int	setup_signal(int signum, void(*handler)(int))
 	sa.sa_handler = handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
+	// sa.sa_flags = 0;
 	if (sigaction(signum, &sa, NULL) == -1)
 		return (perror("sigaction"), 0);
 	return (1);

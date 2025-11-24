@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:33:10 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/23 15:19:23 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 13:00:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ int		heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir, t_sa *sa_old, int *
 void	heredoc_setup_clean_pipe_fail(t_cd *pcd, t_sa *sa_old);
 
 //signals...should add D_POSIX_C_SOURCE 200809L to CFLAGS in Makefile?
-int		setup_signal(int signum, void (*handler)(int));
+int		msh_setup_signal(int signum, void (*handler)(int));
 int		setup_signal_heredoc(struct sigaction *sa_old_int,
 			struct sigaction *sa_old_quit, void (*handler)(int));
 void	setup_signal_wait(struct sigaction *old_sigint);

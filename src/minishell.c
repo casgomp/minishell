@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/23 15:16:20 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 13:00:13 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ int	ms_init(t_cd *pcd)
 		.validchar = &msh_isvalidvarchar, .validchar_data = (bool *) NULL};
 	if (pcd->interactive)
 	{
-		setup_signal(SIGINT, sigint_handler);
-		setup_signal(SIGQUIT, SIG_IGN);
+		msh_setup_signal(SIGINT, sigint_handler);
+		msh_setup_signal(SIGQUIT, SIG_IGN);
 	}
 	rl_initialize();
 	return (1);
