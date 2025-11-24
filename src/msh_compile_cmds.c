@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 15:04:09 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 16:33:18 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ static t_cmd	*msh_compile_multicmds(
 	{
 		if (!msh_compile_cmds_get_cmdlines(pcd, &cmdln, cs))
 		{
+			if (!pcd->interactive && cs == (t_cs)cs_unfinished_pipe)
+				msh_syntaxerror(pcd, (char *) NULL, "unexpected end of file");
 			pcd->exit = true;
 			return (cleanup_cmds(&cmds), cmds);
 		}
