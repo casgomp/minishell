@@ -1,1 +1,3 @@
-> '' | > 'a'
+echo -n 'This is a race condition: exit status must always be that of the last cmd. !!!! ignore rest of line:'
+date +%N | grep -Po '\d{3}$'
+echo > '' | > 'a'
