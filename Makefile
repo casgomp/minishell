@@ -44,10 +44,15 @@ MANDATORY_SRCS	:= 	minishell.c \
 					msh_compile_cmds_utils.c \
 					msh_compile_cmds_utils2.c \
 					paths.c \
+					permissions.c \
 					process.c \
-					setup_exec.c \
+					setup_parent.c \
+					setup_children.c \
+					setup_children2.c \
 					signals.c \
 					utils.c \
+					utils2.c \
+					wait.c \
 
 BONUS_SRCS		:=  
 

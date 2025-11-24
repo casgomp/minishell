@@ -14,4 +14,4 @@ cat stderr_tmp
 #rm stderr_tmp
 echo hi > "" | echo hello
 echo hi >  | echo hello
-echo hi > >non-existant | echo hello #wrong return value
+echo hi > >non-existant | echo hello

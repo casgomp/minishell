@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 15:03:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:32:32 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,63 +24,29 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-int	count_cmds(t_cmd *curcmd)
-{
-	int	ncmds;
-
-	ncmds = 0;
-	while (curcmd)
-	{
-		ncmds ++;
-		curcmd = curcmd->next;
-	}
-	return (ncmds);
-}
-
-int	ft_is_builtin(char *cmd)
-{
-	int			i;
-	const char	*bltn[] = {
-		"cd",
-		"echo",
-		"env",
-		"exit",
-		"export",
-		"pwd",
-		"unset",
-		NULL
-	};
-
-	if (cmd)
-	{
-		i = 0;
-		while (bltn[i])
-		{
-			if (ft_strcmp(cmd, bltn[i]) == 0)
-				return (true);
-			i ++;
-		}
-	}
-	return (false);
-}
-
 int	process_cmdline(t_cd *pcd)
 {
 	t_cmd_ctx	ctx;
 	int			ret;
 
+	/*if (g_signal_received == SIGINT)
+	{
+		pcd->exit_status = SIGINT;
+		g_signal_received = 0;
+		return (1);
+	}*/
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
 	if (!init_cmd_ctx(&ctx, pcd))
 		return (0);
 	ret = process_all_cmds(pcd, &ctx);
 	if (!ctx.childless && ret)
-		wait_child_processes(pcd, ctx.pids, ctx.ncmds);
+		wait_child_processes(pcd, &ctx);
 	else if (!ctx.childless && !ret)
 	{
 		if (ctx.pids)
 			free(ctx.pids);
 	}
-	if (ctx.epaths) //free pids too?
+	if (ctx.epaths)
 		free_splitstrs(ctx.epaths);
 	cleanup_cmds(&ctx.cmds);
 	return (ret);
@@ -143,7 +109,16 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 		return (0);
 	*pcmdline = (char *) NULL;
 	if (pcd->interactive)
+	{
 		get_cmdline_addhist_prompt(pcd, pcmdline);
+		if (g_signal_received == SIGINT)
+		{
+			pcd->exit_status = 130;
+			//g_signal_received = 0;
+			if (pcd->pt != pt_contd)
+				g_signal_received = 0;
+		}
+	}
 	else
 	{
 		while (true)

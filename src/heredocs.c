@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:28:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:33:36 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static bool	heredoc_check_retval(t_cd *pcd, char const *const ret,
+static bool	heredoc_check_retval(/*t_cd *pcd,*/ char const *const ret,
 	char const *const limiter)
 {
 	char	buf[512];
@@ -65,7 +65,9 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 
 	stdin_safe = dup(STDIN_FILENO);
 	pcd->pt = (t_pt)pt_contd;
+	pcd->in_heredoc = true;//
 	ret = heredoc_prompt(pcd, fd, limiter);
+	pcd->in_heredoc = false;//
 	pcd->pt = (t_pt)pt_std;
 	close(fd);
 	close(STDIN_FILENO);
@@ -95,7 +97,13 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir,
 			reset_handlers_heredoc(&sa_old->sa_int, &sa_old->sa_quit);
 			sa_old->sig_modif = false;
 		}
-		pcd->exit_status = 128 + SIGINT;
+		if (g_signal_received == SIGINT)
+		{
+			pcd->exit_status = 130;
+			//g_signal_received = 0;
+		}
+		else
+			pcd->exit_status = 1;
 		return (0);
 	}
 	curredir->old_fd = hdfdpipe[0];

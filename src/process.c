@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:04:29 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:35:41 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,12 @@ static int	execute_builtin(t_cd *pcd, t_cmd *cmd)
 	cmd->stdio[0] = dup2(STDIN_FILENO , 240);
 	cmd->stdio[1] = dup2(STDOUT_FILENO, 241);
 	cmd->stdio[2] = dup2(STDERR_FILENO, 242);
-	if (!setup_redirections(cmd->iolst))
+	if (setup_redirections(cmd->iolst) <= 0)
+	{
+		reset_stdiofds(cmd);
+		pcd->exit_status = 1;
 		return (0);
+	}
 	msh_builtins(pcd, cmd->args);
 	reset_stdiofds(cmd);
 	return (1);
@@ -104,40 +108,15 @@ int	process_all_cmds(t_cd *pcd, t_cmd_ctx *ctx)
 	return (1);
 }
 
-int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd/* , char const *in */)
+int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd)
 {
-	ctx->cmds = msh_compile_cmds(pcd, pcd->default_sqed/* , (char **) NULL */);
-
-	/*////////////////////////////////////////////////////
-	//debugging loop to see what msh_compile_cmds returns
-	int	i = 0;
-	t_cmd *curcmd = ctx->cmds;
-	while (curcmd)
-	{
-		int	j = 0;
-		char **curargs = curcmd->args;
-		//ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
-		while (curargs[j])
-		{
-			ft_printf("cmd n.%d, arg n.%d = %s\n", i, j, curargs[j]);
-			j ++;
-		}
-		t_io *curredir = curcmd->iolst;
-		while (curredir)
-		{
-			ft_printf("fname_delim=%s, old_fd=%d, new_fd=%d, tredirect=%d\n", curredir->fname_delim, curredir->old_fd, curredir->new_fd, curredir->tredirect);
-			curredir = curredir->next;
-		}
-		curcmd = curcmd->next;
-		i ++;
-	}
-	/*/////////////////////////////////////////////////////
-
-	//if (!ctx->cmds || !ctx->cmds->args || !ctx->cmds->args[0])
+	ctx->cmds = msh_compile_cmds(pcd, pcd->default_sqed);
 	if (!ctx->cmds || !ctx->cmds->args)
-		 return (0);
+		return (0);
 	ctx->epaths = ft_env_paths(pcd, &ctx->epaths_len);
 	ctx->ncmds = count_cmds(ctx->cmds);
+	ctx->path_noaccess = NULL;
+	ctx->parpth = 0;
 	ctx->childless = (ctx->ncmds == 1 && ft_is_builtin(ctx->cmds->args[0]));
 	if (!ctx->childless)
 	{
