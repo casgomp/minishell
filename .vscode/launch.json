@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "args": [
-			// "<tests/shell_tests/tc_redir_fdnum",
+			// "<tests/shell_tests/tc_syntaxerror5",
 			// "<tests/shell_tests/tc_openpipe",
 			// "<tests/shell_tests/tc_heredoc",
 			// "<tests/shell_tests/tc_quotes_cmts",
