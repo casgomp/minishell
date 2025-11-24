@@ -6,13 +6,13 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/20 18:55:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 19:49:27 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// # define _POSIX_C_SOURCE 200809L
 #include "minishell.h"
 #include "msh_builtins.h"
+#include "msh_compile_cmds.h"
 #include "libft.h"
 
 #include <errno.h>
@@ -58,6 +58,7 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 {
 	static t_fdcl	fdcl = {{-1, -1}, {-1, -1}};
 	int				fdpipe[2];
+	int				ret;
 
 	parent_setup_init(&fdcl, fdpipe);
 	if (!heredoc_setup(curcmd->iolst, pcd))
@@ -74,8 +75,9 @@ int	parent_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx, int i)
 	{
 		g_signal_received = 0;
 		inchild_pipe_setup(&fdcl, fdpipe);
-		child_setup(pcd, curcmd, ctx);
-		exit(1);
+		ret = child_setup(pcd, curcmd, ctx);
+		cleanup_cmds(&(ctx->cmds));
+		exit(ret);
 	}
 	return (parent_reset_after_fork(&fdcl, fdpipe, curcmd->iolst), 1);
 }

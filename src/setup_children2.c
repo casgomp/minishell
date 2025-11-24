@@ -6,11 +6,10 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/21 14:05:42 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 19:58:04 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// # define _POSIX_C_SOURCE 200809L
 #define MAX_FD 1023
 #include "minishell.h"
 #include "msh_builtins.h"
@@ -29,13 +28,10 @@ int	child_cmd_execute(t_cd *pcd, t_cmd *curcmd)
 	struct sigaction	sa;
 
 	if (!curcmd->args || !curcmd->args[0])
-		exit (127);
+		return (127);
 	ft_memset(&sa, 0, sizeof(sa));
 	if (ft_is_builtin(curcmd->args[0]))
-	{
-		msh_builtins(pcd, curcmd->args);
-		exit(0);
-	}
+		return (!msh_builtins(pcd, curcmd->args));
 	else
 	{
 		if (curcmd->args[0])

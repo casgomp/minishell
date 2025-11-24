@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/21 14:12:17 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 19:57:37 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,9 @@ int	prepare_external_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx)
 int	child_setup(t_cd *pcd, t_cmd *curcmd, t_cmd_ctx *ctx)
 {
 	if (!setup_redirections(curcmd->iolst))
-		exit (1);
+		return (1);
 	if (!prepare_external_cmd(pcd, curcmd, ctx))
-		exit (pcd->exit_status);
+		return (pcd->exit_status);
 	else
-		child_cmd_execute(pcd, curcmd);
-	if (curcmd->path)
-		free (curcmd->path);
-	return (1);
+		return (child_cmd_execute(pcd, curcmd));
 }
