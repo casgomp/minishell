@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 16:36:27 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 17:22:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	char	*ret;
 	int		len;
 
-	ret = NULL;
 	len = ft_strlen(limiter);
 	while (true)
 	{
+		ret = NULL;
 		msh_compile_cmds_get_cmdlines(pcd, &ret);
 		if (g_signal_received == SIGINT)
 			return (0);

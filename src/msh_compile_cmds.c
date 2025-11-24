@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 16:36:01 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 17:59:19 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ static bool	msh_process_simplecmd_token(t_cd *pcd, t_tca *ptca,
 		while (args && args[res])
 		{
 			if (!get_curarg(ptca))
-				return (rh_free_simple_array((void ***)args), false);
-			ptca->curarg->arg = args[res++];
+				return (rh_free_simple_array((void ***)&args), false);
+			ptca->curarg->arg = ft_strdup(args[res++]);
 		}
-		free(args);
+		rh_free_simple_array((void ***)&args);
 	}
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:12:30 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/21 16:26:48 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 18:07:20 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,10 @@ int	msh_process_metachar(t_cd *pcd, t_tca *ptca,
 bool	msh_check_cmdstatus_ok(t_cd *const pcd, int ret, t_cmd **pcmds)
 {
 	if (!pcd->exit && ret == (t_cs)cs_cmds_ok)
+	{
+		pcd->pt = (t_pt)pt_std;
 		return (true);
+	}
 	else if (ret == (t_cs)cs_syntax_err)
 	{
 		if (!(pcd->interactive))
