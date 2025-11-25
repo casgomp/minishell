@@ -6,11 +6,10 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 13:50:29 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 19:57:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 12:21:24 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// # define _POSIX_C_SOURCE 200809L
 #include "minishell.h"
 #include "msh_builtins.h"
 #include "libft.h"

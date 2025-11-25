@@ -6,11 +6,10 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/25 12:02:16 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 12:21:14 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _POSIX_C_SOURCE 200809L
 #include "minishell.h"
 #include "msh_builtins.h"
 #include "msh_compile_cmds.h"
@@ -27,6 +26,8 @@ static void	exit_status_wait(t_cd *pcd, t_cmd_ctx *ctx,
 {
 	pcd->exit_status = WEXITSTATUS(wstatus_i);
 	ctx->parpth = 1;
+	if (!(curcmd->args && curcmd->args[0]))
+		return ;
 	compose_check_cmd(pcd, curcmd, ctx);
 	if (curcmd->path)
 		free (curcmd->path);
