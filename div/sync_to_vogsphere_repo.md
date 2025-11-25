@@ -1,0 +1,1 @@
+```clear && rsync -avn --exclude 'div/' --exclude 'tests/' --exclude '.git*' --exclude 'README*' --exclude 'obj/' --exclude '.vscode' --exclude 'minishell' --exclude '*.a' --exclude '*code-workspace' gr_msh/ minishell```
