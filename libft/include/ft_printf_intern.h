@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:55:46 by raphha            #+#    #+#             */
-/*   Updated: 2025/09/18 19:51:39 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/20 10:32:22 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 
 # include <stdarg.h>
 # include <stddef.h>
+
+typedef struct s_printf_output_destination
+{
+	int		fd;
+	char	*buf;
+}	t_pfod;
 
 typedef enum e_fsflag
 {
@@ -46,11 +52,12 @@ typedef struct s_outstr_fmtspec
 
 typedef struct s_bytecount_fd
 {
-	int	lastwrite;
-	int	total;
-	int	fd;
+	int		lastwrite;
+	int		total;
+	t_pfod	pfod;
 }				t_bytecount_fd;
 
+int		ft_coreprintf(const t_pfod pfod, const char *fmt, va_list valst);
 int		rh_set_formatspec(const char **pfmt, t_fmtspec *fmtspec);
 int		rh_actflx(t_fsflag flag, const t_fmtspec *const fmtspec);
 int		rh_convspec_c(va_list valst, const t_fmtspec *const fmtspec,

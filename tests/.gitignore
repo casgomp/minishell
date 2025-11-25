@@ -1,1 +1,4 @@
+bin_tests/
+shell_tests/*.result
 test*.txt
+*[shf]out

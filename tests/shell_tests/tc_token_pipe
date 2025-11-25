@@ -1,0 +1,3 @@
+# should work just like "echo hi | grep i"
+# but gives syntax error
+echo hi| grep i

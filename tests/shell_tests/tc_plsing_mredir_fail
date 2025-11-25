@@ -1,0 +1,12 @@
+#Test bash behavior with only one cmd pipeline and multiple redirections. With one non-exisiting file that interrupts redirections.
+echo apple > filex
+echo banana > filey
+echo carrot > filez
+cat filex
+cat filey
+cat filez
+cat > filep <filex >filepp <filro <filru 2<filey 2>fileppp >filepppp
+cat filep
+cat filepp
+cat fileppp
+cat filepppp

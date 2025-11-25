@@ -1,0 +1,4 @@
+#echo hi6     6>/dev/stdout
+printf hi6     6>/tmp/sth
+#echo hiNot6  234>/dev/stdout
+echo hiD 2147483647>/dev/stdout

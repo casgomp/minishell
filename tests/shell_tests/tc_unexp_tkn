@@ -1,0 +1,1 @@
+echo hi > >non-existant | echo hello

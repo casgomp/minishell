@@ -1,21 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ms_rmquotes_expand.h                               :+:      :+:    :+:   */
+/*   msh_compile_cmds.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:13:03 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:24:03 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 16:36:11 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MS_RMQUOTES_EXPAND_H
-# define MS_RMQUOTES_EXPAND_H
+#ifndef MSH_COMPILE_CMDS_H
+# define MSH_COMPILE_CMDS_H
+
+# include "minishell.h"
 
 # include <stdbool.h>
 
-char	*ms_dict(char const *const key, void *dict_data);
-bool	ms_isvalidvarchar(char const c, void *validchar_data);
+char	*msh_dict(char const *const key, void *dict_data);
+bool	msh_isvalidvarchar(char const c, void *validchar_data);
+t_cmd	*msh_compile_cmds(t_cd *pcd, t_sqed const sqed);
+bool	msh_compile_cmds_get_cmdlines(t_cd *pcd, char **pcmdln);
+void	cleanup_cmds(t_cmd **pcmds_head);
+void	cleanup_cls(t_cls *pcls);
 
-#endif // MS_RMQUOTES_EXPAND_H
+#endif // MSH_COMPILE_CMDS_H

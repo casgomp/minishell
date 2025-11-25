@@ -8,6 +8,8 @@ MKDIR           := /usr/bin/mkdir -p
 MAKE			:= make -L
 
 # === DIRECTORIES ===
+# Test executables
+TESTBIN_DIR		:= bin_tests
 # Object file directories
 OBJ_DIR			:= obj
 # Library & Include directories
@@ -51,13 +53,14 @@ all:
 	@make $(shell find . -regex './src/test_.+\.c' -print0 | xargs -0 basename -s .c)
 
 run_tests:
-	@find . -regex './test_[^.]+' -execdir '{}' \; | tee test_results.txt | grep -B4 -P '# KO #' 1>&2; echo 0
+	@find . -regex './$(TESTBIN_DIR)/test_[^.]+' -execdir '{}' \; | tee test_results.txt | grep -B4 -P '# KO #' 1>&2; echo 0
 	@less test_results.txt
 
 COMMON_RECIPE =\
-	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" ;\
-	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) ;\
-	printf "$(GREEN)✓ Test '$@' created successfully!$(RESET)\n" ;\
+	@printf "$(BLUE_BOLD)Linking executable '$@'$(RESET)\n" &&\
+	$(MKDIR) -p $(TESTBIN_DIR) &&\
+	$(CC) $^ -o $(TESTBIN_DIR)/$@ $(LDFLAGS) $(LDLIBS) &&\
+	printf "$(GREEN)✓ Test '$@' created successfully!$(RESET)\n"
 
 OBJFILES = $(addprefix $(OBJ_DIR)/, $(SRCFILES:.c=.o))
 COMMON_DEPS = $(OBJFILES) $(LIBFT)
@@ -65,12 +68,18 @@ COMMON_INC = $(OBJFILES:.o=.d)
 #$(info $$var is [${OBJFILES:.o=.d}])
 
 # --- TARGETS ---
-SRCFILES	:= test_quote_expand.c ms_rmquotes_expand.c
+SRCFILES	:= test_split_rmqed.c msh_rmquotes_expand.c msh_rmquotes_expand_utils.c utils.c
+-include $(COMMON_INC)
+test_split_rmqed: $(COMMON_DEPS)
+	@printf "$@: Deprecated discarded function, won't build anymore.\n"
+# 	$(COMMON_RECIPE)
+
+SRCFILES	:= test_quote_expand.c msh_rmquotes_expand.c msh_rmquotes_expand_utils.c utils.c
 -include $(COMMON_INC)
 test_quote_expand: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
 
-SRCFILES	:= test_split.c ms_rmquotes_expand.c
+SRCFILES	:= test_split.c msh_rmquotes_expand.c msh_rmquotes_expand_utils.c utils.c
 -include $(COMMON_INC)
 test_split: $(COMMON_DEPS)
 	$(COMMON_RECIPE)
@@ -105,7 +114,7 @@ clean:
 
 fclean: clean
 	@printf "$(GREEN)Cleaning libraries and executables...$(RESET)\n"
-	@$(RM) -i test_*
+	@$(RM) -rf $(TESTBIN_DIR)
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 

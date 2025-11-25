@@ -1,0 +1,7 @@
+#cmd after unset PATH
+#"Warning: don't use env, because it's a builtin in msh and an external cmd in bash!"
+unset PATH ; cat
+unset PATH ; cat | sort 
+unset PATH ; export PATH=/home/pecastro/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+cat filex
+unset PATH ; cat filex #correctly doesn't find cat, but prints cat: Success to terminal.

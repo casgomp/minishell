@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 15:21:09 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/26 14:36:32 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/10/07 14:59:59 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ bool generate_testoutput(char const *const testsuite, t_tstcs tests[],
     }
     printf("%11s %s\n", "info :", tests[i].info);
     printf("%11s %s\n", "msout :", tests[i].minishout);
-    printf("%11s %s\n", "bashout :", tests[i].shellout);
+    printf("%11s %s\n", "cmp_out :", tests[i].shellout);
     printf("%11s %s\n", "Status :", test_result_str(tests[i].minishout, tests[i].shellout, 1));
 
     // Cleanup

@@ -1,0 +1,10 @@
+#1If I'm not mistaken, this stuff should best be handled during parsing.
+
+#2bash: syntax error near un'expected token `|' exit status = 2
+echo hi | | echo bye
+echo sleep
+sleep 3
+#3bash: syntax error near unexpected token `|' exit status = 2
+ | echo hi | echo bye #4asdfasdf
+ #5when last cmd in pipeline is empty (i.e. trailing pipe), bash waits for a cmd and arguments in stdin.
+echo hi | echo bye |

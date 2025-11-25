@@ -1,0 +1,6 @@
+export A=a B=b 3C=3c
+unset A b
+export A=a B=b C3=3c
+unset X
+unset X Y Z
+env | sort | grep -Pv '^(_=|SHLVL=)'

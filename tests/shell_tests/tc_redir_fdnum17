@@ -1,0 +1,1 @@
+echo hiF -42>/dev/stdout

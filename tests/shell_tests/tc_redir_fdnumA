@@ -1,0 +1,8 @@
+#echo hi6     6>/dev/stdout
+echo hi5
+echo hi6     6>/tmp/sth
+#echo hiNot6  234>/dev/stdout
+#echo hiD 2147483647>/dev/stdout
+echo ho 64>/dev/stdout
+echo ho 214748364>/dev/stdout
+echo hiD 2147483647>/tmp/sth3

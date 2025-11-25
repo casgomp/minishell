@@ -1,0 +1,2 @@
+echo hi1  1>/dev/stderr
+echo ho

@@ -1,0 +1,3 @@
+# in interactive mode: will wait for further input
+# in non-interactive mode: will print "syntax error: unexpected end of file"
+echo hi | cat |

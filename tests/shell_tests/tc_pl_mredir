@@ -1,0 +1,11 @@
+#Test bash behavior with multiple redirections (exisiting files and command names).
+echo apple > filex
+echo banana > filey
+echo carrot > filez
+cat filex
+cat filey
+cat filez
+cat < filez < filey <filex >filep | cat <filex <filez <filey >filep >fileppp >filepp | cat <filex <filey <filez >filep >filepp > fileppp
+cat filep
+cat filepp
+cat fileppp

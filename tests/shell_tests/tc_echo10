@@ -1,0 +1,11 @@
+# -> '
+echo 'hi
+ho'
+
+echo df | | cat; echo 'hi\
+ ho\
+hye\
+sdf
+
+
+'

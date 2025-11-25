@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split_quotes2.c                                 :+:      :+:    :+:   */
+/*   rh_split_quotes2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 17:57:26 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 16:18:37 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/24 15:53:56 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,25 @@
 
 #include <stdlib.h>
 
-void	cleanup_splt(t_splprms *const ptsp)
+void	postproc_metachars(char const *const s, int *const pidx,
+								t_splprms *ptsp)
 {
-	size_t		idx;
+	char const	metac = s[*pidx];
+
+	if ((ptsp->tsl->len == 0) || (metac == '>'))
+	{
+		while (s[ptsp->tsl->start + ptsp->tsl->len] == metac)
+			++(ptsp->tsl->len);
+		*pidx = ptsp->tsl->start + ptsp->tsl->len;
+	}
+}
+
+void	cleanup_tsp(t_splprms *const ptsp, bool incl_splt)
+{
 	t_startlen	*tmp;
 
-	idx = 0;
-	while (ptsp->split && ptsp->split[idx])
-		free(ptsp->split[idx++]);
-	free(ptsp->split);
-	ptsp->split = (char **) NULL;
+	if (incl_splt)
+		rh_free_simple_array((void ***)&ptsp->split);
 	while (ptsp->tsl_orig)
 	{
 		tmp = ptsp->tsl_orig->next;
@@ -36,7 +45,7 @@ void	cleanup_splt(t_splprms *const ptsp)
 
 int	set_tsl(t_splprms *const ptsp, int idx)
 {
-	if (!(ptsp->tsl_orig) || (ptsp->tsl)->len)
+	if (!(ptsp->tsl_orig) || (ptsp->tsl)->complete)
 	{
 		if (!(ptsp->tsl_orig))
 		{
@@ -48,7 +57,8 @@ int	set_tsl(t_splprms *const ptsp, int idx)
 			ptsp->tsl->next = malloc(sizeof(t_startlen));
 			ptsp->tsl = ptsp->tsl->next;
 		}
-		*(ptsp->tsl) = (t_startlen){idx, 0, (t_startlen *) NULL};
+		*(ptsp->tsl) = (t_startlen){.start = idx, .len = 0,
+			.complete = false, .next = (t_startlen *) NULL};
 		++(ptsp->n_slelem);
 	}
 	return (ptsp->tsl != (t_startlen *) NULL);
@@ -69,20 +79,17 @@ static int	transform_prep(t_splprms *const ptsp)
 char	**transform_list(t_splprms *const ptsp, char const *const s)
 {
 	int		idx;
-	char	**splt;
 
 	if (!transform_prep(ptsp))
-		return (cleanup_splt(ptsp), (char **) NULL);
-	splt = ptsp->split;
+		return (cleanup_tsp(ptsp, true), (char **) NULL);
 	idx = 0;
 	while (ptsp->tsl)
 	{
-		splt[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
-		if (!splt[idx])
-			return (cleanup_splt(ptsp), (char **) NULL);
+		ptsp->split[idx] = ft_substr(s, ptsp->tsl->start, ptsp->tsl->len);
+		if (!ptsp->split[idx])
+			return (cleanup_tsp(ptsp, true), (char **) NULL);
 		++idx;
 		ptsp->tsl = ptsp->tsl->next;
 	}
-	ptsp->split = (char **) NULL;
-	return (cleanup_splt(ptsp), splt);
+	return (cleanup_tsp(ptsp, false), ptsp->split);
 }

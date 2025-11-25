@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:58:19 by rhaas             #+#    #+#             */
-/*   Updated: 2025/09/24 17:24:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/09/29 19:59:58 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dsize);
 size_t	ft_strlcat(char *dst, const char *src, size_t dsize);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
+
+// The ft_strchr() function returns a pointer
+// to the first occurrence of the character c in the string s.
 char	*ft_strchr(const char *s, int c);
 char	*ft_strrchr(const char *s, int c);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -54,6 +57,9 @@ char	*ft_itoa_base(int n, const char *const base, bool issigned);
 char	*ft_lltoa_base(t_llong val, const char *const base, bool issigned);
 
 void	*ft_calloc(size_t nmemb, size_t size);
+
+// ft_strdup returns a ptr to a new str which is a duplicate of s.
+// Memory for the new string is obtained with malloc, and must be freed later
 char	*ft_strdup(const char *s);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);

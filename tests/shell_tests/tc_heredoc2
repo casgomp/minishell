@@ -1,0 +1,6 @@
+# check if heredoc also works with non-interactive mode
+/usr/bin/cat << "EOF"
+This is
+a multi-line
+heredoc
+EOF

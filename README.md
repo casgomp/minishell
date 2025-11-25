@@ -10,5 +10,10 @@
 + test: norminette, make re, valgrind, regressions, ...?
 + generate a pull request from branch
 
+## usefull general info on the project
+https://github.com/jmartini89/42_minishell/wiki/
+
 ## checks
 [minishell eval sheet](https://wormav.github.io/42_eval/Cursus/Minishell/index.html)
+
+test against `bash --norc --posix`

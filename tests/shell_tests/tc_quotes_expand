@@ -1,0 +1,5 @@
+export VAR='S   a  y	"Hello,   World"!'
+echo $VAR
+echo "$VAR"
+echo '$VAR'
+unset VAR

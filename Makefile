@@ -21,7 +21,7 @@ SRC_DIRS        := src src/utils
 LIBFT			:= $(LIBFT_DIR)/libft.a
 
 # === FLAGS ===
-CFLAGS          := -Wall -Wextra -Werror -O3 -MD
+CFLAGS          := -Wall -Wextra -Werror -MD
 CFLAGS			+= -g3 -O0
 CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/$(INC_DIR)
 LDFLAGS         :=  -L$(LIBFT_DIR)
@@ -34,9 +34,25 @@ vpath %.c $(SRC_DIRS)
 
 MANDATORY_SRCS	:= 	minishell.c \
 					builtins1.c \
+					builtins2.c \
+					heredocs.c \
 					input.c \
-					ms_rmquotes_expand.c \
+					msh_sqed_functions.c \
+					msh_ioredirect.c \
+					msh_compile_cmds.c \
+					msh_compile_cmds2.c \
+					msh_compile_cmds_utils.c \
+					msh_compile_cmds_utils2.c \
+					paths.c \
+					permissions.c \
+					process.c \
+					setup_parent.c \
+					setup_children.c \
+					setup_children2.c \
+					signals.c \
 					utils.c \
+					utils2.c \
+					wait.c \
 
 BONUS_SRCS		:=  
 
@@ -109,7 +125,7 @@ re:
 # --- HELPER RULES ---
 norm:
 	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
-	watch "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
+	watch -n1 "norminette -R CheckForbiddenSourceHeader $(INC_DIR) src libft | grep Error"
 
 .PHONY: all bonus mandatory clean fclean re norm
 # $(LIBFT)

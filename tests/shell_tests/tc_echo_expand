@@ -1,0 +1,39 @@
+export T1=''
+#sleep .2
+echo 1 $T1
+echo 2 "$T1"
+echo 3 +$T1
+echo 4 $T1+
+echo 5 +$T1+
+echo 6 +$T1 +
+echo 7 + $T1+
+echo 8 +"$T1"+
+echo 9 + $T1 +
+echo 10 + "$T1" +
+echo 11 +"$T1" | cat -e
+echo 12 + "$T1" | cat -e
+echo 13 $T1""+ | cat -e
+echo 14 $T1"" + | cat -e
+unset T1
+export T2='+  ""  +'
+#sleep .2
+echo 15 +$T2+
+echo 16 +"$T2"+
+unset T2
+export T3='  '
+#sleep .2
+echo 17 $T3
+echo 18 "$T3"
+echo 19 +$T3
+echo 20 $T3+
+echo 21 +$T3+
+echo 22 +$T3 +
+echo 23 + $T3+
+echo 24 +"$T3"+
+echo 25 + $T3 +
+echo 26 + "$T3" +
+echo 27 +"$T3" | cat -e
+echo 28 + "$T3" | cat -e
+echo 29 $T3""+ | cat -e
+echo 30 $T3"" + | cat -e
+unset T3
