@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/21 14:13:10 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 12:02:16 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,10 @@ static void	exit_status_wait(t_cd *pcd, t_cmd_ctx *ctx,
 				"command not found"}, 2, 0);
 	}
 	if (ctx->path_noaccess)
+	{
 		free(ctx->path_noaccess);
+		ctx->path_noaccess = (char *) NULL;
+	}
 }
 
 int	wait_child_processes(t_cd *pcd, t_cmd_ctx *ctx)
