@@ -35,7 +35,8 @@ vpath %.c $(SRC_DIRS)
 MANDATORY_SRCS	:= 	minishell.c \
 					builtins1.c \
 					builtins2.c \
-					heredocs.c \
+					heredocs_prompt.c \
+					heredocs_setup.c \
 					input.c \
 					msh_sqed_functions.c \
 					msh_ioredirect.c \
@@ -50,6 +51,7 @@ MANDATORY_SRCS	:= 	minishell.c \
 					setup_children.c \
 					setup_children2.c \
 					signals.c \
+					signals_heredoc.c \
 					utils.c \
 					utils2.c \
 					wait.c \

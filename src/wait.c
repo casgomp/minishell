@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/25 14:22:08 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 14:38:55 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	wait_child_processes(t_cd *pcd, t_cmd_ctx *ctx)
 		if (WIFEXITED(wstatus[i]))
 			exit_status_wait(pcd, ctx, curcmd, wstatus[i]);
 		else if (WIFSIGNALED(wstatus[i]))
-			sigint_handler_wait(pcd, wstatus[i], ctx->ncmds, i, &sgntcnt);
+			sigint_hndlr_wait(pcd, wstatus[i], (i == ctx->ncmds - 1), &sgntcnt);
 		i ++;
 		curcmd = curcmd->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/25 14:21:12 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 14:47:53 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-
 static int	reset_stdiofds(t_cmd *curcmd)
 {
 	dup2(curcmd->stdio[0], STDIN_FILENO);
@@ -37,7 +36,7 @@ static int	reset_stdiofds(t_cmd *curcmd)
 
 static int	execute_builtin(t_cd *pcd, t_cmd *cmd)
 {
-	cmd->stdio[0] = dup2(STDIN_FILENO , 240);
+	cmd->stdio[0] = dup2(STDIN_FILENO, 240);
 	cmd->stdio[1] = dup2(STDOUT_FILENO, 241);
 	cmd->stdio[2] = dup2(STDERR_FILENO, 242);
 	if (setup_redirections(cmd->iolst) <= 0)

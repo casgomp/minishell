@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredocs.c                                         :+:      :+:    :+:   */
+/*   heredocs_setup.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 16:20:50 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 23:28:25 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:02:05 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,43 +20,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static bool	heredoc_check_retval(char const *const ret,
-	char const *const limiter)
-{
-	char	buf[512];
-
-	if (!ret)
-	{
-		if (g_signal_received == SIGINT)
-			return (false);
-		ft_sprintf(buf, "here-document delimited by "
-			"end-of-file (wanted `%s')", limiter);
-		msh_error((char const *[]){"warning", buf, }, 2, -1);
-		return (false);
-	}
-	return (true);
-}
-
-int	heredoc_prompt(t_cd *pcd, int fd, char *limiter)
-{
-	char	*ret;
-	int		len;
-
-	len = ft_strlen(limiter);
-	while (true)
-	{
-		ret = NULL;
-		msh_compile_cmds_get_cmdlines(pcd, &ret);
-		if (g_signal_received == SIGINT)
-			return (0);
-		if ((!heredoc_check_retval(ret, limiter))
-			|| (ret && ft_strncmp(ret, limiter, len) == 0 && ret[len] == '\0'))
-			return (true);
-		if (ft_dprintf(fd, "%s\n", ret) < 0)
-			return (false);
-	}
-}
-
 static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 {
 	int	ret;
@@ -67,7 +30,6 @@ static int	terminal_safe_heredoc_prompt(t_cd *pcd, int fd, char *limiter)
 	ret = heredoc_prompt(pcd, fd, limiter);
 	pcd->pt = (t_pt)pt_std;
 	close(fd);
-	close(STDIN_FILENO);
 	dup2(stdin_safe, STDIN_FILENO);
 	return (ret);
 }
@@ -95,10 +57,7 @@ int	heredoc_setup_send_to_prompt(t_cd *pcd, t_io *curredir,
 			sa_old->sig_modif = false;
 		}
 		if (g_signal_received == SIGINT)
-		{
 			pcd->exit_status = 130;
-			//g_signal_received = 0;
-		}
 		else
 			pcd->exit_status = 1;
 		return (0);

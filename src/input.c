@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:35:05 by rhaas             #+#    #+#             */
-/*   Updated: 2025/11/24 23:26:13 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:05:57 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,6 @@ int	process_cmdline(t_cd *pcd)
 	t_cmd_ctx	ctx;
 	int			ret;
 
-	/*if (g_signal_received == SIGINT)
-	{
-		pcd->exit_status = SIGINT;
-		g_signal_received = 0;
-		return (1);
-	}*/
 	ft_memset(&ctx, 0, sizeof(t_cmd_ctx));
 	if (!init_cmd_ctx(&ctx, pcd))
 		return (0);
@@ -112,9 +106,7 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 	{
 		get_cmdline_addhist_prompt(pcd, pcmdline);
 		if (g_signal_received == SIGINT)
-		{
 			pcd->exit_status = 130;
-		}
 	}
 	else
 	{
@@ -129,7 +121,5 @@ int	get_cmdline_add_history(t_cd *pcd, char **pcmdline)
 			free (cmdlnsection);
 		}
 	}
-	if (!*pcmdline)
-		return (0);
-	return (1);
+	return (*pcmdline != (char *) NULL);
 }

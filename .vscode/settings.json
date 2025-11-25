@@ -109,7 +109,8 @@
 	"types.h": "c",
 	"signal.h": "c",
 	"wait.h": "c",
-	"initializer_list": "c"
+	"initializer_list": "c",
+	"msh_divdefs.h": "c"
 },
 "editor.defaultFoldingRangeProvider": "ms-vscode.cpptools",
 "editor.defaultFormatter": "keyhr.42-c-format",
