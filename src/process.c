@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/24 15:44:40 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 14:21:12 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int	init_cmd_ctx(t_cmd_ctx *ctx, t_cd *pcd)
 	ctx->childless = (ctx->ncmds == 1 && ft_is_builtin(ctx->cmds->args[0]));
 	if (!ctx->childless)
 	{
-		ctx->pids = malloc(sizeof(int) * ctx->ncmds);
+		ctx->pids = ft_calloc(ctx->ncmds, sizeof(int));
 		if (!ctx->pids)
 			return (0);
 	}

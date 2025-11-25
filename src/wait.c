@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:46:49 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/25 12:21:14 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 14:22:08 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	wait_child_processes(t_cd *pcd, t_cmd_ctx *ctx)
 	int					sgntcnt;
 	t_cmd				*curcmd;
 
-	wstatus = malloc(sizeof(int) * ctx->ncmds);
+	wstatus = ft_calloc(ctx->ncmds, sizeof(int));
 	if (!wstatus)
 		return (free (ctx->pids), 0);
 	setup_signal_wait(&old_sigint);

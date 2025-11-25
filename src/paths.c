@@ -6,7 +6,7 @@
 /*   By: rhaas <rhaas@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:41:08 by pecastro          #+#    #+#             */
-/*   Updated: 2025/11/21 14:05:44 by rhaas            ###   ########.fr       */
+/*   Updated: 2025/11/25 13:26:43 by rhaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ int	compose_check_cmd(t_cd *pcd, t_cmd *cmd, t_cmd_ctx *ctx)
 {
 	char			*pcmd;
 
+	if (!(cmd->args && cmd->args[0]))
+		return (0);
 	pcmd = cmd->args[0];
 	cmd->bufferlen = ctx->epaths_len + ft_strlen(pcmd) + 1;
 	if (cmd->path)
