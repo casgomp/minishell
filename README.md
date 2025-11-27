@@ -51,6 +51,7 @@ Key things learned from this project:
 - Signals
 - Parsing
 - Shells (Bash)
+- Team workflow (this includes improving Git(hub) skills)
 
 ### Useful sources:
 - Bash manual (man bash)
