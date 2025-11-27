@@ -1,19 +1,63 @@
-# minishell 42
+# minishell
 
-## general
-+ add work packages in the project [Kanban Board](https://github.com/users/gitraphha/projects/4)
- -> a corresponding issue will be created automatically, but not the other way around!
-+ no commits directly on branch main, only via pull request and review!
+### Description:
+This (two-person team) project is about creating a simple shell ...a mini Bash.
 
-## pull request check list
-+ merge branch main into feature branch, so that all conflicts are resolved in the feature branch
-+ test: norminette, make re, valgrind, regressions, ...?
-+ generate a pull request from branch
+### Requirements:
+Your shell should:
+- Display a prompt when waiting for a new command.
+- Have a working history.
+- Search and launch the right executable (based on the PATH variable or using a
+relative or an absolute path).
+- Use at most one global variable to indicate a received signal. Consider the
+implications: this approach ensures that your signal handler will not access your
+main data structures.
+- Not interpret unclosed quotes or special characters which are not required by the
+subject such as \ (backslash) or ; (semicolon).
+- Handle ’ (single quote) which should prevent the shell from interpreting the meta-
+characters in the quoted sequence.
+- Handle " (double quote) which should prevent the shell from interpreting the meta-
+characters in the quoted sequence except for $ (dollar sign).
+- Implement the following redirections:
+  - < should redirect input.
+  - '>' should redirect output.
+  - << should be given a delimiter, then read the input until a line containing the
+delimiter is seen. However, it doesn’t have to update the history!
+  - '>>' should redirect output in append mode.
+- Implement pipes (| character). The output of each command in the pipeline is
+connected to the input of the next command via a pipe.
+- Handle environment variables ($ followed by a sequence of characters) which
+should expand to their values.
+- Handle $? which should expand to the exit status of the most recently executed
+foreground pipeline.
+- Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
+- In interactive mode:
+  - ctrl-C displays a new prompt on a new line.
+  - ctrl-D exits the shell.
+  - ctrl-\ does nothing.
+- Your shell must implement the following built-in commands:
+  - echo with option -n
+  - cd with only a relative or absolute path
+  - pwd with no options
+  - export with no options
+  - unset with no options
+  - env with no options or arguments
+  - exit with no options
 
-## usefull general info on the project
-https://github.com/jmartini89/42_minishell/wiki/
+### Learning process:
+Key things learned from this project:
+- Processes
+- File descriptors
+- Signals
+- Parsing
+- Shells (Bash)
 
-## checks
-[minishell eval sheet](https://wormav.github.io/42_eval/Cursus/Minishell/index.html)
+### Useful sources:
+- Bash manual (man bash)
+- One of the most helpful tools we used for our minisehll was strace (man strace), "a useful diagnostic, instructional, and debugging tool. In the simplest case strace runs the specified command until it  exits.
+       It  intercepts  and  records  the  system  calls  which are called by a
+       process and the signals which are received by a process.  The  name  of
+       each  system  call,  its  arguments and its return value are printed on
+       standard error or to the file specified with the -o option." ...strace allowed us to see exactly how bash and any command executed in a parent or child process work under the hood.
 
 test against `bash --norc --posix`
