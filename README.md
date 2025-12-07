@@ -55,7 +55,7 @@ Key things learned from this project:
 
 ### Useful sources:
 - Bash manual (man bash)
-- One of the most helpful tools we used for our minisehll was strace (man strace), "a useful diagnostic, instructional, and debugging tool. In the simplest case strace runs the specified command until it  exits.
+- One of the most helpful tools we used for our minishell was strace (man strace), "a useful diagnostic, instructional, and debugging tool. In the simplest case strace runs the specified command until it  exits.
        It  intercepts  and  records  the  system  calls  which are called by a
        process and the signals which are received by a process.  The  name  of
        each  system  call,  its  arguments and its return value are printed on
