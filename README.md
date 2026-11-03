@@ -346,17 +346,30 @@ A suggested order for showing the project:
 - [42 minishell wiki by jmartini89](https://github.com/jmartini89/42_minishell/wiki/)
 - [minishell evaluation sheet](https://wormav.github.io/42_eval/Cursus/Minishell/index.html)
 
-### Use of AI
+### How AI was used
 
-AI assistants were used as a support tool, never as a replacement for
-understanding the code:
+An AI assistant was used for the following tasks. Everything it produced was
+reviewed, tested against bash and discussed by the team before it went into the
+repository.
 
-- **Explanations**: clarifying bash behaviour in edge cases (word splitting,
-  `$?` after signals, here‑doc and signal interaction) and system call semantics.
-- **Debugging help**: discussing file‑descriptor leaks and signal handling issues
-  found with valgrind and our test suite.
-- **Documentation**: drafting and structuring this README from the existing code.
+- **Understanding bash:** explaining edge cases where the subject says "take bash
+  as a reference": word splitting after `$VAR`, quoting rules, `$?` after a
+  signal, and how here-docs and ctrl-C interact.
+- **System calls:** clarifying the behaviour of `fork`, `pipe`, `dup2`,
+  `waitpid`, `sigaction` and `termios`, and why unused pipe ends must be closed.
+- **Debugging:** analysing file-descriptor leaks and memory leaks reported by
+  valgrind, and failures found by our bash-comparison test suite.
+- **Documentation:** first draft of this README, written from the existing code
+  and checked against the final build.
+- **Review:** explaining specific functions and suggesting small fixes, which
+  were applied and tested by the team.
 
-All design decisions, the parser, the executor and the test cases were written
-and reviewed by us; every AI suggestion was checked against bash and our tests
-before being used.
+## Known limitations
+
+- Only the mandatory part is implemented: no `&&`, `||`, parentheses or `*`
+  wildcards (bonus).
+- Redirections to another file descriptor (`2>&1`) are not supported; `&1` is
+  treated as a file name.
+- `export` without arguments does not escape `"` inside values, unlike bash.
+- `;` and `#` comments are interpreted, although the subject does not require
+  them.
